@@ -1,4 +1,3 @@
-
 /* Copyright (C) 2007-2011  Egon Willighagen <egonw@users.sf.net>
  *               2007       Rajarshi Guha
  *                    2011  Nimish Gopal <nimishg@ebi.ac.uk>
@@ -4211,6 +4210,19 @@ public class CDKAtomTypeMatcherTest extends AbstractCDKAtomTypeTest {
         String[] expectedTypes3 = {"C.sp2", "Se.1"};
         assertAtomTypes(testedAtomTypes, expectedTypes3, mol);
     }
+    
+       
+    @Test
+    public void test_Se_2() throws Exception {
+        IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
+        IAtomContainer mol = builder.newInstance(IAtomContainer.class);
+        IAtom a1 = builder.newInstance(IAtom.class, "Se");
+        a1.setFormalCharge(0);
+        mol.addAtom(a1);
+     
+        String[] expectedTypes = {"Se.2"};
+        assertAtomTypes(testedAtomTypes, expectedTypes, mol);
+  }
 
     @Test
     public void testSe_3() throws Exception {
