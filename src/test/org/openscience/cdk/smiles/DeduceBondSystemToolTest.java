@@ -34,6 +34,7 @@ import org.openscience.cdk.interfaces.IBond.Order;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.ringsearch.AllRingsFinder;
+import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.silent.Atom;
 import org.openscience.cdk.silent.AtomContainer;
 import org.openscience.cdk.silent.Bond;
@@ -76,11 +77,33 @@ public class DeduceBondSystemToolTest extends CDKTestCase {
         molecule = dbst.fixAromaticBondOrders(molecule);
         Assert.assertNotNull(molecule);
 
-        molecule = (IAtomContainer) AtomContainerManipulator.removeHydrogens(molecule);
+        molecule = AtomContainerManipulator.removeHydrogens(molecule);
+        int doubleBondCount = 0;
         for (int i = 0; i < molecule.getBondCount(); i++) {
         	IBond bond = molecule.getBond(i);
         	Assert.assertTrue(bond.getFlag(CDKConstants.ISAROMATIC));
+            if (bond.getOrder() == Order.DOUBLE) doubleBondCount++;
         }
+        Assert.assertEquals(6, doubleBondCount);
+    }
+
+	@Test(timeout=1000) 
+	public void testPyrrole_Silent() throws Exception {
+        String smiles = "c2ccc3n([H])c1ccccc1c3(c2)";
+        SmilesParser smilesParser = new SmilesParser(SilentChemObjectBuilder.getInstance());
+        IAtomContainer molecule = smilesParser.parseSmiles(smiles);
+        
+        molecule = dbst.fixAromaticBondOrders(molecule);
+        Assert.assertNotNull(molecule);
+
+        molecule = (IAtomContainer) AtomContainerManipulator.removeHydrogens(molecule);
+        int doubleBondCount = 0;
+        for (int i = 0; i < molecule.getBondCount(); i++) {
+        	IBond bond = molecule.getBond(i);
+        	Assert.assertTrue(bond.getFlag(CDKConstants.ISAROMATIC));
+            if (bond.getOrder() == Order.DOUBLE) doubleBondCount++;
+        }
+        Assert.assertEquals(6, doubleBondCount);
     }
 
 	@Test
@@ -143,10 +166,13 @@ public class DeduceBondSystemToolTest extends CDKTestCase {
         Assert.assertNotNull(molecule);
 
         molecule = (IAtomContainer) AtomContainerManipulator.removeHydrogens(molecule);
+        int doubleBondCount = 0;
         for (int i = 0; i < molecule.getBondCount(); i++) {
             IBond bond = molecule.getBond(i);
             Assert.assertTrue(bond.getFlag(CDKConstants.ISAROMATIC));
+            if (bond.getOrder() == Order.DOUBLE) doubleBondCount++;
         }
+        Assert.assertEquals(6, doubleBondCount);
     }
 
 	/**
