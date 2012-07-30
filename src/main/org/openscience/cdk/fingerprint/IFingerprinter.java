@@ -1,6 +1,7 @@
 /* $Revision$ $Author$ $Date$
  *
  * Copyright (C) 2005-2007  Egon Willighagen <egonw@users.sf.net>
+ * Copyright (C) 2011       Jonathan Alvarsson <jonalv@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -24,11 +25,10 @@
  */
 package org.openscience.cdk.fingerprint;
 
+import java.util.Map;
+
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
-
-import java.util.BitSet;
-import java.util.Map;
 
 /**
  * Interface for fingerprint calculators.
@@ -41,17 +41,30 @@ import java.util.Map;
 public interface IFingerprinter {
 
 	/**
-	 * Returns the fingerprint for the given {@link IAtomContainer}.
+	 * Returns the bit fingerprint for the given {@link IAtomContainer}.
 	 * 
 	 * @param  container {@link IAtomContainer} for which the fingerprint should be calculated.
-	 * @return           the fingerprint
+	 * @return           the bit fingerprint
 	 * @throws CDKException may be thrown if there is an error during aromaticity detection
      * or (for key based fingerprints) if there is a SMARTS parsing error
+     * @throws UnsupportedOperationException if the Fingerprinter can not produce bit fingerprints
 	 */
-	public BitSet getFingerprint(IAtomContainer container) throws CDKException;
+	public IBitFingerprint getBitFingerprint(IAtomContainer container) throws CDKException;
 
-    /**
-     * Returns the raw representation of the fingerprint for the given IAtomContainer.
+	/**
+	 * Returns the count fingerprint for the given {@link IAtomContainer}.
+	 * 
+	 * @param container {@link IAtomContainer} for which the fingerprint should be calculated.
+	 * @return the count fingerprint
+	 * @throws CDKException if there is an error during aromaticity detection
+     * or (for key based fingerprints) if there is a SMARTS parsing error.
+     * @throws UnsupportedOperationException if the Fingerprinter can not produce count fingerprints
+	 */
+	public ICountFingerprint getCountFingerprint(IAtomContainer container) throws CDKException;
+    
+	/**
+     * Returns the raw representation of the fingerprint for the given IAtomContainer. The raw representation contains 
+     * counts as well as the key strings.
      *
      * @param container IAtomContainer for which the fingerprint should be calculated.
      * @return the raw fingerprint

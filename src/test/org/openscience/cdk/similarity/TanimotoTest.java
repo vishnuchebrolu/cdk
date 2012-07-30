@@ -30,20 +30,27 @@
 
 package org.openscience.cdk.similarity;
 
-import java.util.BitSet;
-import java.util.Map;
-
+import static org.junit.Assert.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.DefaultChemObjectBuilder;
+import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.fingerprint.Fingerprinter;
+import org.openscience.cdk.fingerprint.IBitFingerprint;
+import org.openscience.cdk.fingerprint.ICountFingerprint;
+import org.openscience.cdk.fingerprint.IntArrayCountFingerprint;
 import org.openscience.cdk.fingerprint.LingoFingerprinter;
 import org.openscience.cdk.fingerprint.SignatureFingerprinter;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.templates.MoleculeFactory;
+
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @cdk.module test-fingerprint
@@ -58,8 +65,8 @@ public class TanimotoTest extends CDKTestCase
 	    IAtomContainer mol1 = MoleculeFactory.makeIndole();
 	    IAtomContainer mol2 = MoleculeFactory.makePyrrole();
 		Fingerprinter fingerprinter = new Fingerprinter();
-		BitSet bs1 = fingerprinter.getFingerprint(mol1);
-		BitSet bs2 = fingerprinter.getFingerprint(mol2);
+		BitSet bs1 = fingerprinter.getBitFingerprint(mol1).asBitSet();
+		BitSet bs2 = fingerprinter.getBitFingerprint(mol2).asBitSet();
 		float tanimoto = Tanimoto.calculate(bs1, bs2);
 		if (standAlone) System.out.println("Tanimoto: " + tanimoto);
 		if (!standAlone) Assert.assertEquals(0.3939, tanimoto, 0.01);
@@ -70,8 +77,8 @@ public class TanimotoTest extends CDKTestCase
 	    IAtomContainer mol1 = MoleculeFactory.makeIndole();
 	    IAtomContainer mol2 = MoleculeFactory.makeIndole();
 		Fingerprinter fingerprinter = new Fingerprinter();
-		BitSet bs1 = fingerprinter.getFingerprint(mol1);
-		BitSet bs2 = fingerprinter.getFingerprint(mol2);
+		BitSet bs1 = fingerprinter.getBitFingerprint(mol1).asBitSet();
+		BitSet bs2 = fingerprinter.getBitFingerprint(mol2).asBitSet();
 		float tanimoto = Tanimoto.calculate(bs1, bs2);
 		if (standAlone) System.out.println("Tanimoto: " + tanimoto);
 		if (!standAlone) Assert.assertEquals(1.0, tanimoto, 0.001);
@@ -109,10 +116,10 @@ public class TanimotoTest extends CDKTestCase
     		IAtomContainer molecule3 = sp.parseSmiles(smiles3);
     		IAtomContainer molecule4 = sp.parseSmiles(smiles4);
     		Fingerprinter fingerprinter = new Fingerprinter(1024, 6);
-    		BitSet bs1 = fingerprinter.getFingerprint(molecule1);
-    		BitSet bs2 = fingerprinter.getFingerprint(molecule2);
-    		BitSet bs3 = fingerprinter.getFingerprint(molecule3);
-    		BitSet bs4 = fingerprinter.getFingerprint(molecule4);
+    		BitSet bs1 = fingerprinter.getBitFingerprint(molecule1).asBitSet();
+    		BitSet bs2 = fingerprinter.getBitFingerprint(molecule2).asBitSet();
+    		BitSet bs3 = fingerprinter.getBitFingerprint(molecule3).asBitSet();
+    		BitSet bs4 = fingerprinter.getBitFingerprint(molecule4).asBitSet();
     		float tanimoto1 = Tanimoto.calculate(bs1, bs2);
     		float tanimoto2 = Tanimoto.calculate(bs1, bs3);
     		float tanimoto3 = Tanimoto.calculate(bs1, bs4);
@@ -156,5 +163,73 @@ public class TanimotoTest extends CDKTestCase
 	    			           tanimoto > 0 && tanimoto < 1 );
     }
 
-}
+    	
+    @Test public void testICountFingerprintComparison() throws Exception {
+        IAtomContainer mol1 = MoleculeFactory.makeIndole();
+        IAtomContainer mol2 = MoleculeFactory.makeIndole();
+        SignatureFingerprinter fingerprinter = new SignatureFingerprinter();
+        ICountFingerprint fp1 = fingerprinter.getCountFingerprint(mol1);
+        ICountFingerprint fp2 = fingerprinter.getCountFingerprint(mol2);
+        double tanimoto = Tanimoto.calculate(fp1, fp2);
+        Assert.assertEquals(1.0, tanimoto, 0.001);
 
+    }
+    
+    @Test public void compareCountFingerprintAndRawFingerprintTanimoto() throws CDKException {
+    		IAtomContainer mol1 = MoleculeFactory.make123Triazole();
+    		IAtomContainer mol2 = MoleculeFactory.makeImidazole();
+    		SignatureFingerprinter fingerprinter = new SignatureFingerprinter(1);
+    		ICountFingerprint countFp1 = fingerprinter.getCountFingerprint(mol1);
+    		ICountFingerprint countFp2 = fingerprinter.getCountFingerprint(mol2);
+    		Map<String, Integer> feat1 = fingerprinter.getRawFingerprint(mol1);
+    		Map<String, Integer> feat2 = fingerprinter.getRawFingerprint(mol2);
+    		float rawTanimoto = Tanimoto.calculate(feat1, feat2);
+    		double countTanimoto = Tanimoto.calculate(countFp1, countFp2);
+    		Assert.assertEquals(rawTanimoto, countTanimoto, 0.001);
+    }
+    
+    @Test
+    public void testCountMethod1and2() throws CDKException {
+    		ICountFingerprint fp1 = new IntArrayCountFingerprint(
+                                    new HashMap<String, Integer>() {{
+             	                        put("A", 3);
+                                    }}
+            		                );
+    		ICountFingerprint fp2 = new IntArrayCountFingerprint(
+                                    new HashMap<String, Integer>() {{
+             	                        put("A", 4);
+                                    }}
+                                );
+		Assert.assertEquals(0.923, Tanimoto.method1(fp1, fp2), 0.001 );
+		Assert.assertEquals(0.75, Tanimoto.method2(fp1, fp2), 0.001 );
+		
+		IAtomContainer mol1 = MoleculeFactory.makeIndole();
+        IAtomContainer mol2 = MoleculeFactory.makeIndole();
+        SignatureFingerprinter fingerprinter = new SignatureFingerprinter();
+        fp1 = fingerprinter.getCountFingerprint(mol1);
+        fp2 = fingerprinter.getCountFingerprint(mol2);
+        Assert.assertEquals(1.0, Tanimoto.method1(fp1, fp2), 0.001);
+        Assert.assertEquals(1.0, Tanimoto.method2(fp1, fp2), 0.001);
+    }
+    
+    @Test
+    public void testComparingBitFingerprintAndCountBehavingAsBit() 
+                throws Exception {
+    	IAtomContainer mol1 = MoleculeFactory.make123Triazole();
+		IAtomContainer mol2 = MoleculeFactory.makeImidazole();
+		
+		SignatureFingerprinter fingerprinter = new SignatureFingerprinter(1);
+		ICountFingerprint countFp1 = fingerprinter.getCountFingerprint(mol1);
+		ICountFingerprint countFp2 = fingerprinter.getCountFingerprint(mol2);
+		countFp1.setBehaveAsBitFingerprint(true);
+		countFp2.setBehaveAsBitFingerprint(true);
+		IBitFingerprint bitFp1 = fingerprinter.getBitFingerprint(mol1);
+		IBitFingerprint bitFp2 = fingerprinter.getBitFingerprint(mol2);
+		double bitTanimoto = Tanimoto.calculate(bitFp1, bitFp2);
+		double countTanimoto1 = Tanimoto.method1(countFp1, countFp2);
+		double countTanimoto2 = Tanimoto.method2(countFp1, countFp2);
+		
+		Assert.assertEquals(countTanimoto1, countTanimoto2, 0.001);
+		Assert.assertEquals(bitTanimoto, countTanimoto1, 0.001);
+    }
+}

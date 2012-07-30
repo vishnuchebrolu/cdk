@@ -1,7 +1,6 @@
-/* Copyright (C) 2000-2007  Christoph Steinbeck 
- *               2001-2007,2009  Egon Willighagen 
- *
- * Contact: cdk-devel@lists.sourceforge.net
+/* Copyright (C) 2012 Daniel Szisz 
+ *             
+ * Contact: orlando@caesar.elte.hu
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -27,8 +26,6 @@ package org.openscience.cdk.modeling.builder3d;
 import static junit.framework.Assert.*;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.junit.Test;
 import org.openscience.cdk.CDKConstants;
@@ -46,9 +43,8 @@ import org.openscience.cdk.tools.HOSECodeGenerator;
  * Checks the functionality of {@link #ForceFieldConfigurator}.
  * 
  * @author danielszisz
- * @version 01/04/2012
- * @module test-modelbuilder3d
- * 
+ * @version 09/05/2012
+ * @cdk.module test-forcefield
  */
 public class ForceFieldConfiguratorTest  {
 
@@ -215,5 +211,105 @@ public class ForceFieldConfiguratorTest  {
 		 assertEquals(expectedAtomTypes, ffAtomTypes);
 		
 	}
+	
+	/**
+	 * @cdk.bug #3523240
+	 */
+	@Test
+	public void testAssignAtomTyps_bug() throws Exception {
+		String smiles = "CC(C)C1CCC(CC1)C(=O)NC(Cc1ccccc1)C(=O)O";
+		IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
+		SmilesParser parser = new SmilesParser(builder);
+		IAtomContainer bugmol = parser.parseSmiles(smiles);
+		forceFieldConfigurator.setForceFieldConfigurator("mmff94");
+		IAtom amideN = bugmol.getAtom(11);
+		forceFieldConfigurator.configureMMFF94BasedAtom(amideN, 
+				new HOSECodeGenerator().getHOSECode(bugmol, amideN, 3), 
+				false);
+//		System.err.println(amideN.getAtomTypeName());
+		assertEquals("NC=O", amideN.getAtomTypeName());
+	}
+	
+	/**
+	 * @cdk.bug #3524734
+	 */
+	@Test 
+	public void testAssignAtomTyps_bug_no2() throws Exception {
+		String smiles = "CC[N+](=O)[O-]";
+		IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
+		SmilesParser parser = new SmilesParser(builder);
+		IAtomContainer bugmol = parser.parseSmiles(smiles);
+		forceFieldConfigurator.setForceFieldConfigurator("mmff94");
+		IAtom amideN = bugmol.getAtom(2);
+		forceFieldConfigurator.configureMMFF94BasedAtom(amideN, 
+				new HOSECodeGenerator().getHOSECode(bugmol, amideN, 3), 
+				false);
+//		System.err.println(amideN.getAtomTypeName());
+		assertEquals("NO3", amideN.getAtomTypeName());
+		
+	}
+	
+    /**
+     * 
+     * @cdk.bug #3525096
+     */
+	@Test
+	public void testAssignAtomTyps_bug_so2() throws Exception {
+		String smiles = "CS(=O)(=O)NC(=O)NN1CC2CCCC2C1";
+		IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
+		SmilesParser parser = new SmilesParser(builder);
+		IAtomContainer bugmol = parser.parseSmiles(smiles);
+		forceFieldConfigurator.setForceFieldConfigurator("mmff94");
+		IAtom sulphur = bugmol.getAtom(1);
+		HOSECodeGenerator hscodegen = new HOSECodeGenerator();
+		forceFieldConfigurator.configureAtom(sulphur, 
+				hscodegen.getHOSECode(bugmol, sulphur, 3), false);
+		assertEquals("SO2", sulphur.getAtomTypeName());
+	}
+	
+	/**
+	 * @cdk.bug #3525144
+	 */
+	@Test
+	public void testAssignAtomTyps_bug_nitrogenatomType() throws Exception {
+		String smiles = "CNC(=O)N(C)N=O";
+		IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
+		SmilesParser parser = new SmilesParser(builder);
+		IAtomContainer bugmol = parser.parseSmiles(smiles);
+		forceFieldConfigurator.setForceFieldConfigurator("mmff94");
+		IAtom nitrogen1 = bugmol.getAtom(1);
+		IAtom nitrogen2 = bugmol.getAtom(4);
+		IAtom nitrogen3 = bugmol.getAtom(6);
+		HOSECodeGenerator hscodegen = new HOSECodeGenerator();
+		forceFieldConfigurator.configureAtom(nitrogen1, 
+				hscodegen.getHOSECode(bugmol, nitrogen1, 3), false);
+		forceFieldConfigurator.configureAtom(nitrogen2, 
+				hscodegen.getHOSECode(bugmol, nitrogen2, 3), false);
+		forceFieldConfigurator.configureAtom(nitrogen3, 
+				hscodegen.getHOSECode(bugmol, nitrogen3, 3), false);
+		assertEquals("NC=O", nitrogen1.getAtomTypeName());
+		assertEquals("NC=O", nitrogen2.getAtomTypeName());
+		
+	}
+	
+	/**
+	 * @cdk.bug #3526295
+	 */
+	@Test
+	public void testAssignAtomTyps_bug_amideRingAtomType() throws Exception {
+		String smiles = "O=C1N(C(=O)C(C(=O)N1)(CC)CC)C";
+		IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
+		SmilesParser parser = new SmilesParser(builder);
+		IAtomContainer bugmol = parser.parseSmiles(smiles);
+		forceFieldConfigurator.setForceFieldConfigurator("mmff94");
+		IAtom nitrogen1 = bugmol.getAtom(2);
+		HOSECodeGenerator hscodegen = new HOSECodeGenerator();
+		forceFieldConfigurator.configureAtom(nitrogen1, 
+				hscodegen.getHOSECode(bugmol, nitrogen1, 3), false);
+		assertEquals("NC=O", nitrogen1.getAtomTypeName());
+		
+	}
+	
+	
 
 }

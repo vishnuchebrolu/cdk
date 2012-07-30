@@ -35,7 +35,7 @@ import java.util.Map;
  */
 public class SignatureFingerprinterTest extends AbstractFingerprinterTest {
 
-    public IFingerprinter getFingerprinter() {
+    public IFingerprinter getBitFingerprinter() {
         return new SignatureFingerprinter();
     }
 
@@ -64,6 +64,6 @@ public class SignatureFingerprinterTest extends AbstractFingerprinterTest {
     	SignatureFingerprinter fingerprinter = new SignatureFingerprinter(0);
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer mol = sp.parseSmiles("O(NC)CC");
-        fingerprinter.getFingerprint(mol);
+        fingerprinter.getBitFingerprint(mol);
     }
 }

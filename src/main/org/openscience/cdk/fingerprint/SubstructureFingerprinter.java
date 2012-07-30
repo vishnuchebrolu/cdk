@@ -398,11 +398,9 @@ public class SubstructureFingerprinter implements IFingerprinter {
         this.smarts = smarts;
     }
 
-    /**
-     * Calculates the substructure fingerprint for the given AtomContainer.
-     */
+    /** {@inheritDoc} */
     @TestMethod("testUserFunctionalGroups,testFingerprint")
-    public BitSet getFingerprint(IAtomContainer atomContainer) 
+    public IBitFingerprint getBitFingerprint(IAtomContainer atomContainer) 
                   throws CDKException {
         if (smarts == null) {
             throw new CDKException("No substructures were defined");
@@ -419,7 +417,7 @@ public class SubstructureFingerprinter implements IFingerprinter {
             boolean status = sqt.matches(atomContainer);
             if (status) fingerPrint.set(i, true);
         }
-        return fingerPrint;
+        return new BitSetFingerprint(fingerPrint);
     }
 
     /** {@inheritDoc} */
@@ -427,6 +425,7 @@ public class SubstructureFingerprinter implements IFingerprinter {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
     @TestMethod("testSize")
     public int getSize() {
         return smarts.length;
@@ -444,4 +443,12 @@ public class SubstructureFingerprinter implements IFingerprinter {
     public String getSubstructure(int bitIndex) {
     	return smarts[bitIndex];
     }
+    
+    /** {@inheritDoc} */
+	@Override
+	public ICountFingerprint getCountFingerprint(IAtomContainer container)
+			throws CDKException {
+		throw new UnsupportedOperationException();
+	}
+
 }
