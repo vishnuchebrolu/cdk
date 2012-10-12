@@ -57,6 +57,7 @@ import org.openscience.cdk.tools.LoggingToolFactory;
  *
  * @cdk.module io
  * @cdk.githash
+ * @cdk.iooptions
  *
  * @cdk.keyword file format, PubChem Compound ASN
  */
@@ -108,6 +109,7 @@ public class PCCompoundASNReader extends DefaultChemObjectReader {
 
 	@TestMethod("testAccepts")
     public boolean accepts(Class classObject) {
+        if (IChemFile.class.equals(classObject)) return true;
 		Class[] interfaces = classObject.getInterfaces();
 		for (int i=0; i<interfaces.length; i++) {
 			if (IChemFile.class.equals(interfaces[i])) return true;

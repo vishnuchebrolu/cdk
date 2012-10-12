@@ -92,6 +92,7 @@ import java.util.regex.Pattern;
  *
  * @cdk.module io
  * @cdk.githash
+ * @cdk.iooptions
  *
  * @author     steinbeck
  * @author     Egon Willighagen
@@ -706,13 +707,14 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                         newBond = molecule.getBuilder().newInstance(IBond.class,a1, a2, cdkOrder);
                     }
                 } else if (order == 4) {                
-                    // aromatic bond
+                    // aromatic bond                	
                     if (stereo != null) {
-                        newBond = molecule.getBuilder().newInstance(IBond.class,a1, a2, IBond.Order.SINGLE, stereo);
+                        newBond = molecule.getBuilder().newInstance(IBond.class,a1, a2, IBond.Order.UNSET, stereo);
                     } else {
-                        newBond = molecule.getBuilder().newInstance(IBond.class,a1, a2, IBond.Order.SINGLE);
+                        newBond = molecule.getBuilder().newInstance(IBond.class,a1, a2, IBond.Order.UNSET);
                     }
-                    // mark both atoms and the bond as aromatic
+                    // mark both atoms and the bond as aromatic and raise the SINGLE_OR_DOUBLE-flag
+                    newBond.setFlag(CDKConstants.SINGLE_OR_DOUBLE, true);
                 	newBond.setFlag(CDKConstants.ISAROMATIC, true);
                     a1.setFlag(CDKConstants.ISAROMATIC, true);
                     a2.setFlag(CDKConstants.ISAROMATIC, true);

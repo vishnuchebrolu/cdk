@@ -28,6 +28,7 @@ import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IBond;
+import org.openscience.cdk.interfaces.IBond.Order;
 
 import java.util.Iterator;
 import java.util.List;
@@ -255,6 +256,46 @@ public class BondManipulator {
 			if (isHigherOrder(bond.getOrder(), maxOrder)) maxOrder = bond.getOrder();
 		}
 		return maxOrder;
+	}
+
+    /**
+     * Returns the maximum bond order for the two bonds.
+     *
+     * @param  firstBond  first bond to compare
+     * @param  secondBond second bond to compare
+     * @return            The maximum bond order found
+     */
+    @TestMethod("testGetMaximumBondOrder_IBond_IBond,testGetMaximumBondOrder_IBond_IBond_null")
+    public static IBond.Order getMaximumBondOrder(IBond firstBond, IBond secondBond) {
+        if(firstBond == null || secondBond == null)
+            throw new IllegalArgumentException("null instance of IBond provided");
+    	return getMaximumBondOrder(firstBond.getOrder(), secondBond.getOrder());
+	}
+
+    /**
+     * Returns the maximum bond order for the two bond orders.
+     *
+     * @param  firstOrder  first bond order to compare
+     * @param  secondOrder second bond order to compare
+     * @return             The maximum bond order found
+     */
+    @TestMethod("testGetMaximumBondOrder_Order_Order,testGetMaximumBondOrder_Unset_Unset")
+    public static IBond.Order getMaximumBondOrder(IBond.Order firstOrder, IBond.Order secondOrder) {
+    	if (firstOrder == Order.UNSET) {
+            if(secondOrder == Order.UNSET)
+                throw new IllegalArgumentException("Both bond orders are unset");
+            return secondOrder;
+        }
+    	if (secondOrder == Order.UNSET) {
+            if(firstOrder == Order.UNSET)
+                throw new IllegalArgumentException("Both bond orders are unset");
+            return firstOrder;
+        }
+
+    	if (isHigherOrder(firstOrder, secondOrder))
+    		return firstOrder;
+    	else
+    		return secondOrder;
 	}
 
 	/**

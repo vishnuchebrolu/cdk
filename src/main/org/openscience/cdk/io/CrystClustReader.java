@@ -48,6 +48,7 @@ import org.openscience.cdk.tools.LoggingToolFactory;
 /**
  * @cdk.module extra
  * @cdk.githash
+ * @cdk.iooptions
  */
 @TestClass("org.openscience.cdk.io.CrystClustReaderTest")
 public class CrystClustReader extends DefaultChemObjectReader {
@@ -93,6 +94,7 @@ public class CrystClustReader extends DefaultChemObjectReader {
 
 	@TestMethod("testAccepts")
     public boolean accepts(Class classObject) {
+        if (IChemFile.class.equals(classObject)) return true;
 		Class[] interfaces = classObject.getInterfaces();
 		for (int i=0; i<interfaces.length; i++) {
 			if (IChemFile.class.equals(interfaces[i])) return true;

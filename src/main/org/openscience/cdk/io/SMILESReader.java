@@ -64,6 +64,7 @@ import org.openscience.cdk.tools.LoggingToolFactory;
  *
  * @cdk.module  smiles
  * @cdk.githash
+ * @cdk.iooptions
  * @cdk.keyword file format, SMILES
  *
  * @see org.openscience.cdk.io.iterator.IteratingSMILESReader
@@ -115,6 +116,8 @@ public class SMILESReader extends DefaultChemObjectReader {
 
     @TestMethod("testAccepts")
     public boolean accepts(Class classObject) {
+		if (IAtomContainerSet.class.equals(classObject)) return true;
+		if (IChemFile.class.equals(classObject)) return true;
 		Class[] interfaces = classObject.getInterfaces();
         for (Class anInterface : interfaces) {
             if (IChemFile.class.equals(anInterface)) return true;

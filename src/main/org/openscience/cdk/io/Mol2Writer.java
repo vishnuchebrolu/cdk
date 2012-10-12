@@ -49,6 +49,7 @@ import org.openscience.cdk.tools.LoggingToolFactory;
  *
  * @cdk.module io
  * @cdk.githash
+ * @cdk.iooptions
  *
  * @author     Egon Willighagen
  */
@@ -110,6 +111,7 @@ public class Mol2Writer extends DefaultChemObjectWriter {
 
 	@TestMethod("testAccepts")
     public boolean accepts(Class classObject) {
+        if (IAtomContainer.class.equals(classObject)) return true;
 		Class[] interfaces = classObject.getInterfaces();
         for (Class anInterface : interfaces) {
             if (IAtomContainer.class.equals(anInterface)) return true;

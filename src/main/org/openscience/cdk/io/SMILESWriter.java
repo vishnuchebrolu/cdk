@@ -31,6 +31,7 @@ package org.openscience.cdk.io;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.interfaces.IChemFile;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 import org.openscience.cdk.interfaces.IChemObject;
@@ -55,6 +56,7 @@ import java.io.Writer;
  *
  * @cdk.module  smiles
  * @cdk.githash
+ * @cdk.iooptions
  *
  * @cdk.keyword file format, SMILES
  */
@@ -129,6 +131,8 @@ public class SMILESWriter extends DefaultChemObjectWriter {
 
 	@TestMethod("testAccepts")
     public boolean accepts(Class classObject) {
+        if (IAtomContainer.class.equals(classObject)) return true;
+        if (IAtomContainerSet.class.equals(classObject)) return true;
 		Class[] interfaces = classObject.getInterfaces();
 		for (int i=0; i<interfaces.length; i++) {
 			if (IAtomContainerSet.class.equals(interfaces[i])) return true;

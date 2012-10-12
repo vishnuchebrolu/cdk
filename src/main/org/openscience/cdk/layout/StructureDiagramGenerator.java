@@ -259,14 +259,15 @@ public class StructureDiagramGenerator
 		// first make a shallow copy: Atom/Bond references are kept
 	    IAtomContainer original = molecule;
 	    IAtomContainer shallowCopy = molecule.getBuilder().newInstance(IAtomContainer.class,molecule);
-		// ok, delete H's from
+		// delete single-bonded H's from
 		//IAtom[] atoms = shallowCopy.getAtoms();
-		for (int i = 0; i < shallowCopy.getAtomCount(); i++) {
-			IAtom curAtom = shallowCopy.getAtom(i);
-				if (curAtom.getSymbol().equals("H")) {
-						shallowCopy.removeAtomAndConnectedElectronContainers(curAtom);
-						curAtom.setPoint2d(null);
+		for (IAtom curAtom : shallowCopy.atoms()) {
+			if (curAtom.getSymbol().equals("H")) {
+				if (shallowCopy.getConnectedBondsCount(curAtom) < 2) {
+					shallowCopy.removeAtomAndConnectedElectronContainers(curAtom);
+					curAtom.setPoint2d(null);
 				}
+			}
 		}
 		// do layout on the shallow copy
 		molecule = shallowCopy;

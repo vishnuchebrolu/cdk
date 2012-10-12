@@ -56,6 +56,7 @@ import java.util.StringTokenizer;
  * @cdk.created 2004-01-27
  *
  * @cdk.keyword file format, HIN 
+ * @cdk.iooptions
  */
 @TestClass("org.openscience.cdk.io.HINReaderTest")
 public class HINReader extends DefaultChemObjectReader {
@@ -105,6 +106,7 @@ public class HINReader extends DefaultChemObjectReader {
 
 	@TestMethod("testAccepts")
     public boolean accepts(Class classObject) {
+        if (IChemFile.class.equals(classObject)) return true;
 		Class[] interfaces = classObject.getInterfaces();
         for (Class anInterface : interfaces) {
             if (IChemFile.class.equals(anInterface)) return true;

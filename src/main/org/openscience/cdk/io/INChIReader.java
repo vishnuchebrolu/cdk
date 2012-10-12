@@ -57,6 +57,7 @@ import org.xml.sax.XMLReader;
  *
  * @cdk.module extra
  * @cdk.githash
+ * @cdk.iooptions
  *
  * @author      Egon Willighagen <egonw@sci.kun.nl>
  * @cdk.created 2004-05-17
@@ -161,6 +162,7 @@ public class INChIReader extends DefaultChemObjectReader {
 
 	@TestMethod("testAccepts")
     public boolean accepts(Class classObject) {
+        if (IChemFile.class.equals(classObject)) return true;
 		Class[] interfaces = classObject.getInterfaces();
 		for (int i=0; i<interfaces.length; i++) {
 			if (IChemFile.class.equals(interfaces[i])) return true;

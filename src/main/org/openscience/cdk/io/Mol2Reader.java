@@ -62,6 +62,7 @@ import org.openscience.cdk.tools.periodictable.PeriodicTable;
  * @author Egon Willighagen
  * @cdk.module io
  * @cdk.githash
+ * @cdk.iooptions
  * @cdk.created 2003-08-21
  * @cdk.keyword file format, Mol2
  */
@@ -112,6 +113,9 @@ public class Mol2Reader extends DefaultChemObjectReader {
 
     @TestMethod("testAccepts")
     public boolean accepts(Class classObject) {
+        if (IChemFile.class.equals(classObject)) return true;
+        if (IChemModel.class.equals(classObject)) return true;
+        if (IAtomContainer.class.equals(classObject)) return true;
         Class[] interfaces = classObject.getInterfaces();
         for (Class anInterface : interfaces) {
             if (IChemModel.class.equals(anInterface)) return true;

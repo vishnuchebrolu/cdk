@@ -97,34 +97,67 @@ public abstract class AbstractChemObjectTest extends AbstractCDKObjectTest {
     
     @Test public void testSetFlags_arrayboolean(){
       IChemObject chemObject=newChemObject();
-      chemObject.setFlag(1,true);
+      chemObject.setFlag(CDKConstants.ISINRING,true);
       IChemObject chemObject2=newChemObject();
       chemObject2.setFlags(chemObject.getFlags());
-      Assert.assertTrue(chemObject2.getFlag(1));
+      Assert.assertTrue(chemObject2.getFlag(CDKConstants.ISINRING));
     }
     
     @Test public void testGetFlags(){
       IChemObject chemObject=newChemObject();
-      chemObject.setFlag(1,true);
+      chemObject.setFlag(CDKConstants.ISINRING,true);
       IChemObject chemObject2=newChemObject();
       chemObject2.setFlags(chemObject.getFlags());
-      Assert.assertTrue(chemObject2.getFlag(1));
+      Assert.assertTrue(chemObject2.getFlag(CDKConstants.ISINRING));
+    }
+
+    @Test public void testGetFlagValueZeroDefault(){
+        IChemObject chemObject = newChemObject();
+        Assert.assertEquals((short)0, chemObject.getFlagValue());
+    }
+
+    @Test public void testGetFlagValue(){
+        IChemObject chemObject = newChemObject();
+        chemObject.setFlag(CDKConstants.ISALIPHATIC, true);
+        Assert.assertNotSame((short)0, chemObject.getFlagValue());
+    }
+
+    /**
+     * Different flags are reflected by different numbers.
+     */
+    @Test public void testGetFlagValueDifferentFlags(){
+        IChemObject chemObject = newChemObject();
+        chemObject.setFlag(CDKConstants.ISALIPHATIC, true);
+        IChemObject chemObject2 = newChemObject();
+        chemObject2.setFlag(CDKConstants.VISITED, true);
+        Assert.assertNotSame(chemObject.getFlagValue(), chemObject2.getFlagValue());
+    }
+
+    /**
+     * The number is always the same for the same flag.
+     */
+    @Test public void testGetFlagValueSameFlag(){
+        IChemObject chemObject = newChemObject();
+        chemObject.setFlag(CDKConstants.ISPLACED, true);
+        IChemObject chemObject2 = newChemObject();
+        chemObject2.setFlag(CDKConstants.ISPLACED, true);
+        Assert.assertEquals(chemObject.getFlagValue(), chemObject2.getFlagValue());
     }
 
     @Test public void testGetFlags_Array(){
         IChemObject chemObject=newChemObject();
-        chemObject.setFlag(1,true);
+        chemObject.setFlag(CDKConstants.ISINRING, true);
         boolean[] flags = chemObject.getFlags();
         Assert.assertTrue(flags[1]);
     }
 
     @Test public void testSetFlag_int_boolean() {
         IChemObject chemObject = newChemObject();
-        Assert.assertFalse(chemObject.getFlag(0));
-        chemObject.setFlag(0, true);
-        Assert.assertTrue(chemObject.getFlag(0));
-        chemObject.setFlag(0, false);
-        Assert.assertFalse(chemObject.getFlag(0));
+        Assert.assertFalse(chemObject.getFlag(CDKConstants.ISPLACED));
+        chemObject.setFlag(CDKConstants.ISPLACED, true);
+        Assert.assertTrue(chemObject.getFlag(CDKConstants.ISPLACED));
+        chemObject.setFlag(CDKConstants.ISPLACED, false);
+        Assert.assertFalse(chemObject.getFlag(CDKConstants.ISPLACED));
     }
     @Test public void testGetFlag_int() {
         testSetFlag_int_boolean();
@@ -132,7 +165,7 @@ public abstract class AbstractChemObjectTest extends AbstractCDKObjectTest {
     
     @Test public void testClone() throws Exception {
         IChemObject chemObject = newChemObject();
-        chemObject.setFlag(3, true);
+        chemObject.setFlag(CDKConstants.ISALIPHATIC, true);
         
         // test cloning of itself
         Object clone = chemObject.clone();
@@ -146,12 +179,12 @@ public abstract class AbstractChemObjectTest extends AbstractCDKObjectTest {
     
     @Test public void testClone_Flags() throws Exception {
         IChemObject chemObject1 = newChemObject();
-        chemObject1.setFlag(3, true);
+        chemObject1.setFlag(CDKConstants.ISALIPHATIC, true);
         IChemObject chemObject2 = (IChemObject)chemObject1.clone();
 
         // test cloning of flags field
-        chemObject2.setFlag(3, false);
-        Assert.assertTrue(chemObject1.getFlag(3));
+        chemObject2.setFlag(CDKConstants.ISALIPHATIC, false);
+        Assert.assertTrue(chemObject1.getFlag(CDKConstants.ISALIPHATIC));
     }
 
     @Test public void testClone_Identifier() throws Exception {
@@ -279,7 +312,7 @@ public abstract class AbstractChemObjectTest extends AbstractCDKObjectTest {
 
         listener.reset();
         Assert.assertFalse(listener.changed);
-        chemObject.setFlag(3, true);
+        chemObject.setFlag(CDKConstants.ISALIPHATIC, true);
         Assert.assertTrue(listener.changed);
     }
     
