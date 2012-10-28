@@ -2102,6 +2102,14 @@
     <at:lonePairCount>2</at:lonePairCount>
     <at:piBondCount>1</at:piBondCount>
     <at:hybridization rdf:resource="&at;sp2"/>
+  </at:AtomType>
+
+  <at:AtomType rdf:ID="Se.2">
+   <at:formalCharge>0</at:formalCharge>
+    <at:hasElement rdf:resource="&elem;Se"/>
+    <at:formalNeighbourCount>0</at:formalNeighbourCount>
+    <at:lonePairCount>0</at:lonePairCount>
+    <at:piBondCount>0</at:piBondCount>
   </at:AtomType> 
   
   <at:AtomType rdf:ID="Se.sp3.3">
