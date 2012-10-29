@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openscience.cdk.CDKConstants;
+import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IChemObject;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
@@ -354,7 +355,8 @@ public class QueryChemObject implements IChemObject {
     }
 
      public IChemObjectBuilder getBuilder() {
-         throw new IllegalAccessError();
+         //throw new IllegalAccessError();
+		 return DefaultChemObjectBuilder.getInstance();
      }
 
      public boolean matches(IAtom atom) {
