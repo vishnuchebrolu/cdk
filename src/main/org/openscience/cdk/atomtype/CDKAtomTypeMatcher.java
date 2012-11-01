@@ -248,7 +248,7 @@ public class CDKAtomTypeMatcher implements IAtomTypeMatcher {
             if (atom.getFormalCharge() != CDKConstants.UNSET
                     && atom.getFormalCharge() == 0) {
                 if (atomContainer.getConnectedAtomsCount(atom) == 0) {
-                    IAtomType type = getAtomType("Se.2");
+                    IAtomType type = getAtomType("Se.3");
                     if (isAcceptable(atom, atomContainer, type)) return type;
                 } else if (atomContainer.getConnectedAtomsCount(atom) == 1) {
 
@@ -256,7 +256,7 @@ public class CDKAtomTypeMatcher implements IAtomTypeMatcher {
                         IAtomType type = getAtomType("Se.1");
                         if (isAcceptable(atom, atomContainer, type)) return type;
                     } else if (doublebondcount == 0) {
-                        IAtomType type = getAtomType("Se.2");
+                        IAtomType type = getAtomType("Se.3");
                         if (isAcceptable(atom, atomContainer, type)) return type;
                     }
                 } else if (atomContainer.getConnectedAtomsCount(atom) == 2) {
@@ -289,6 +289,10 @@ public class CDKAtomTypeMatcher implements IAtomTypeMatcher {
             } else if ((atom.getFormalCharge() != CDKConstants.UNSET && atom.getFormalCharge() == 1)
                     && atomContainer.getConnectedAtomsCount(atom) == 3) {
                 IAtomType type = getAtomType("Se.plus.3");
+                if (isAcceptable(atom, atomContainer, type)) return type;
+            } else if ((atom.getFormalCharge() != CDKConstants.UNSET && atom.getFormalCharge() == -2)
+                    && atomContainer.getConnectedAtomsCount(atom) == 0) {
+                IAtomType type = getAtomType("Se.2minus");
                 if (isAcceptable(atom, atomContainer, type)) return type;
             }
         }
@@ -644,7 +648,10 @@ public class CDKAtomTypeMatcher implements IAtomTypeMatcher {
     			} else if (countAttachedDoubleBonds(atomContainer, nextAtom) > 0) {
     				// OK, it's SP2
     				count++;
-    			} // OK, not SP2
+    			} else if (atomContainer.getBond(atom, nextAtom).getFlag(CDKConstants.ISAROMATIC)) {
+                    // two aromatic bonds indicate sp2
+                    count++;
+                } // OK, not SP2
     		}
     	}
     	return count >= 2;
@@ -852,9 +859,14 @@ public class CDKAtomTypeMatcher implements IAtomTypeMatcher {
                             bonds.get(1).getFlag(CDKConstants.ISAROMATIC)) {
                         Integer hCount = atom.getImplicitHydrogenCount();
                         if (hCount == CDKConstants.UNSET || hCount == 0) {
-                            IAtomType type = getAtomType("N.sp2");
-                            if (isAcceptable(atom, atomContainer, type))
-                                return type;
+                            if (atomContainer.getMaximumBondOrder(atom) == CDKConstants.BONDORDER_SINGLE &&
+                                    isSingleHeteroAtom(atom, atomContainer)) {
+                                IAtomType type = getAtomType("N.planar3");
+                                if (isAcceptable(atom, atomContainer, type)) return type;
+                            } else {
+                                IAtomType type = getAtomType("N.sp2");
+                                if (isAcceptable(atom, atomContainer, type)) return type;
+                            }
                         } else if (hCount == 1) {
                             IAtomType type = getAtomType("N.planar3");
                             if (isAcceptable(atom, atomContainer, type))
@@ -906,6 +918,25 @@ public class CDKAtomTypeMatcher implements IAtomTypeMatcher {
             }
         }
     	return null;
+    }
+
+    private boolean isSingleHeteroAtom(IAtom atom, IAtomContainer atomContainer) {
+
+        for (IAtom atom1 : atomContainer.getConnectedAtomsList(atom)) {
+            if (atomContainer.getBond(atom, atom1).getFlag(CDKConstants.ISAROMATIC) && !atom1.getSymbol().equals("C")) {
+                return false;
+            } else if (atomContainer.getBond(atom, atom1).getFlag(CDKConstants.ISAROMATIC)) {
+                for (IAtom atom2 : atomContainer.getConnectedAtomsList(atom1)) {
+                    if (atom2 != atom && atomContainer.getBond(atom1, atom2).getFlag(CDKConstants.ISAROMATIC) &&
+                            !atom2.getSymbol().equals("C")) {
+                        return false;
+                    }
+                }
+            } else {
+                continue;
+            }
+        }
+        return true;
     }
 
     private boolean isRingAtom(IAtom atom, IAtomContainer atomContainer) {

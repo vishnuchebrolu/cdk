@@ -77,6 +77,9 @@ IDeduceBondOrderTool {
 	 */
 	public void decideBondOrder(IAtomContainer atomContainer, 
 			boolean atomsSaturated) throws CDKException {
+		if (atomContainer.getBondCount() == 0)
+			// In this case the atom only has implicit bonds, and then it wan't be aromatic
+			return;
 		startBond = 0;
 		int saturnatedAtoms = 0;
 		int[] bestGuess = { startBond, saturnatedAtoms };
@@ -207,12 +210,21 @@ IDeduceBondOrderTool {
 	public boolean bondOrderCanBeIncreased(IBond bond, 
 			IAtomContainer atomContainer) throws CDKException {
 		boolean atom0isUnsaturated = false, atom1isUnsaturated = false;
-		if (bondsUsed(bond.getAtom(0), atomContainer) < bond.getAtom(0)
-				.getBondOrderSum())
+		double sum;
+		if (bond.getAtom(0).getBondOrderSum() == null) {
+			sum = getAtomBondordersum(bond.getAtom(1), atomContainer);
+		} else
+			sum = bond.getAtom(0).getBondOrderSum();		
+		if (bondsUsed(bond.getAtom(0), atomContainer) < sum )
 			atom0isUnsaturated = true;
-		if (bondsUsed(bond.getAtom(1), atomContainer) < bond.getAtom(1)
-				.getBondOrderSum())
+		
+		if (bond.getAtom(1).getBondOrderSum() == null) {
+			sum = getAtomBondordersum(bond.getAtom(1), atomContainer);
+		} else
+			sum = bond.getAtom(1).getBondOrderSum();
+		if (bondsUsed(bond.getAtom(1), atomContainer) < sum )
 			atom1isUnsaturated = true;
+		
 		if (atom0isUnsaturated == atom1isUnsaturated)
 			return atom0isUnsaturated;
 		else {
@@ -242,7 +254,25 @@ IDeduceBondOrderTool {
 			}
 		}
 	}
+	
+	/**
+	 * This method is used if, by some reason, the bond order sum is not set 
+	 * for an atom.
+	 * 
+	 * @param atom The atom in question
+	 * @param mol The molecule that the atom belongs to
+	 * @return The bond order sum
+	 * @throws CDKException
+	 */
+	private double getAtomBondordersum(IAtom atom, IAtomContainer mol) throws CDKException {
+		double sum = 0;
 
+		for (IBond bond:mol.bonds())
+			if (bond.contains(atom))
+				sum += BondManipulator.destroyBondOrder(bond.getOrder());
+		
+		return sum;
+	}
 	/**
 	 * Look if any atoms in <code>bond1</code> also are in <code>bond2</code>
 	 * and if so it conceder the bonds connected.
