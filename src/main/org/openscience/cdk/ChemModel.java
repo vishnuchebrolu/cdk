@@ -24,6 +24,7 @@
 
 package org.openscience.cdk;
 
+import org.openscience.cdk.annotations.TestMethod;
 import java.io.Serializable;
 
 import org.openscience.cdk.interfaces.IAtomContainerSet;
@@ -261,6 +262,24 @@ public class ChemModel extends ChemObject implements Serializable, IChemModel, I
 	public void stateChanged(IChemObjectChangeEvent event)
 	{
 		notifyChanged(event);
+	}
+	
+    /**
+     * @inheritDoc
+     */
+    @TestMethod("testIsEmpty_MoleculeSet,testIsEmpty_RingSet,testIsEmpty_Crystal,testIsEmpty_ReactionSet")
+    @Override
+    public boolean isEmpty() 
+	{
+    	if (setOfMolecules != null && !setOfMolecules.isEmpty())
+    		return false;
+    	if (setOfReactions != null && !setOfReactions.isEmpty())
+    		return false;
+    	if (ringSet != null && !ringSet.isEmpty())
+    		return false;
+        if (crystal != null && !crystal.isEmpty())
+    		return false;
+		return true;
 	}
 }
 

@@ -538,7 +538,7 @@ public interface IAtomContainer extends IChemObject, IChemObjectListener {
 	public void removeAtomAndConnectedElectronContainers(IAtom atom);
 
 	/**
-	 * Removes all atoms and bond from this container.
+	 * Removes all atoms, bonds and stereo elements from this container.
 	 */
 	public void removeAllElements();
 
@@ -628,6 +628,15 @@ public interface IAtomContainer extends IChemObject, IChemObjectListener {
 	 *@return                   True, if the AtomContainer contains the given bond object
 	 */
 	public boolean contains(IElectronContainer electronContainer);
+
+    /**
+     * Indicates whether this container is empty. The container is considered empty if
+     * there are no atoms. Bonds are not checked as a graph with no vertexes can not
+     * have edges.
+     *
+     * @return whether the container is empty
+     */
+    public boolean isEmpty();
 
 }
 

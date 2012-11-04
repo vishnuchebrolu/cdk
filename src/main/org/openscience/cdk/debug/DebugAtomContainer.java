@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
@@ -545,6 +546,16 @@ public class DebugAtomContainer extends AtomContainer
 
     public IChemObjectBuilder getBuilder() {
         return DebugChemObjectBuilder.getInstance();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    @TestMethod("testIsEmpty")
+    @Override
+    public boolean isEmpty() {
+        logger.debug("AtomContainer.isEmpty(): ", atomCount == 0);
+        return atomCount == 0;
     }
 
 }

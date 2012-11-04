@@ -49,6 +49,8 @@ public class DoubleBondStereochemistry implements IDoubleBondStereochemistry {
 	 * <code>ligandBonds[0]</code>, <code>stereoBonds</code>, and <code>ligandBonds[1]</code>.
 	 */
 	public DoubleBondStereochemistry(IBond stereoBond, IBond[] ligandBonds, Conformation stereo) {
+        if(ligandBonds.length > 2)
+            throw new IllegalArgumentException("expected two ligand bonds");
 		this.stereoBond = stereoBond;
 		this.ligandBonds = ligandBonds;
 		this.stereo = stereo;
@@ -67,12 +69,14 @@ public class DoubleBondStereochemistry implements IDoubleBondStereochemistry {
 
 	/** {@inheritDoc} */
 	@Override
+    @TestMethod("testBuilder")
 	public IChemObjectBuilder getBuilder() {
 		return this.builder;
 	}
 
 	/** {@inheritDoc} */
 	@Override
+	@TestMethod("testGetBonds")
 	public IBond[] getBonds() {
 		IBond[] arrayCopy = new IBond[2];
         System.arraycopy(ligandBonds, 0, arrayCopy, 0, 2);
@@ -81,12 +85,14 @@ public class DoubleBondStereochemistry implements IDoubleBondStereochemistry {
 
 	/** {@inheritDoc} */
 	@Override
+	@TestMethod("testGetStereoBond")
 	public IBond getStereoBond() {
 		return this.stereoBond;
 	}
 
 	/** {@inheritDoc} */
 	@Override
+	@TestMethod("testGetStereo")
 	public Conformation getStereo() {
 		return this.stereo;
 	}

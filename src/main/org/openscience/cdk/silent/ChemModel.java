@@ -19,6 +19,7 @@
 
 package org.openscience.cdk.silent;
 
+import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 import org.openscience.cdk.interfaces.IChemModel;
 import org.openscience.cdk.interfaces.IChemObjectChangeEvent;
@@ -234,5 +235,23 @@ public class ChemModel extends ChemObject implements Serializable, IChemModel, I
 	 *@param  event  A change event pointing to the source of the change
 	 */
 	public void stateChanged(IChemObjectChangeEvent event) {}
+
+    /**
+     * @inheritDoc
+     */
+    @TestMethod("testIsEmpty_MoleculeSet,testIsEmpty_RingSet,testIsEmpty_Crystal,testIsEmpty_ReactionSet")
+    @Override
+    public boolean isEmpty() 
+	{
+    	if (setOfMolecules != null && !setOfMolecules.isEmpty())
+    		return false;
+    	if (setOfReactions != null && !setOfReactions.isEmpty())
+    		return false;
+    	if (ringSet != null && !ringSet.isEmpty())
+    		return false;
+        if (crystal != null && !crystal.isEmpty())
+    		return false;
+		return true;
+	}
 }
 

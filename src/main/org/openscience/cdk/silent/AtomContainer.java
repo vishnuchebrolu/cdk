@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
@@ -1292,12 +1293,14 @@ public class AtomContainer extends ChemObject
 	}
 
 	/**
-	 * Removes all atoms and bond from this container.
+	 * @inheritDoc
 	 */
+    @Override
 	public void removeAllElements() {
 		removeAllElectronContainers();
         atoms = new IAtom[growArraySize];
         atomCount = 0;
+        stereoElements.clear();
 	}
 
 
@@ -1333,19 +1336,7 @@ public class AtomContainer extends ChemObject
 			            IBond.Stereo stereo)
 	{
 		IBond bond = getBuilder().newInstance(IBond.class,getAtom(atom1), getAtom(atom2), order, stereo);
-
-		if (contains(bond))
-		{
-			return;
-		}
-
-		if (bondCount >= bonds.length)
-		{
-			growBondArray();
-		}
 		addBond(bond);
-		/* no notifyChanged() here because addBond(bond) does 
-		   it already */
 	}
 
 
@@ -1359,14 +1350,7 @@ public class AtomContainer extends ChemObject
 	public void addBond(int atom1, int atom2, IBond.Order order)
 	{
 		IBond bond = getBuilder().newInstance(IBond.class,getAtom(atom1), getAtom(atom2), order);
-
-		if (bondCount >= bonds.length)
-		{
-			growBondArray();
-		}
 		addBond(bond);
-		/* no notifyChanged() here because addBond(bond) does 
-		   it already */
 	}
 
 
@@ -1666,6 +1650,15 @@ public class AtomContainer extends ChemObject
 	 *@param  event  A change event pointing to the source of the change
 	 */
 	public void stateChanged(IChemObjectChangeEvent event) {}
+
+    /**
+     * @inheritDoc
+     */
+    @TestMethod("testIsEmpty")
+    @Override
+    public boolean isEmpty() {
+        return atomCount == 0;
+    }
 
 }
 
