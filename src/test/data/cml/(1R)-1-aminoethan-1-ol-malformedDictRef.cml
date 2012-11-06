@@ -2,9 +2,8 @@
 <cml>
     <MDocument>
         <MChemicalStruct>
-            <!-- A very simple molecule to test bug 1245 and 1248
-                 - 1245: Atoms missing explicit atomic number default to 1.
-                 - 1248: Only support for bond stereo with attribute dictRef
+            <!-- A very simple molecule to test bug 1275
+                 - when dictRef is incomplete it should not throw an exception
             -->
             <molecule molID="m1">
                 <atomArray>
@@ -19,10 +18,11 @@
                 </atomArray>
                 <bondArray>
                     <bond atomRefs2="a1 a2" order="1"/>
-                    <bond atomRefs2="a1 a3" order="1"/>
                     <bond atomRefs2="a1 a4" order="1">
-                        <bondStereo>W</bondStereo>
+                        <!-- the dictRef is incomplete and should not be used -->
+                        <bondStereo dictRef="cml:">W</bondStereo>
                     </bond>
+                    <bond atomRefs2="a1 a3" order="1"/>
                 </bondArray>
             </molecule>
         </MChemicalStruct>

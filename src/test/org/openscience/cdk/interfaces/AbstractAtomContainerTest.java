@@ -20,6 +20,8 @@
  */
 package org.openscience.cdk.interfaces;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,6 +30,13 @@ import javax.vecmath.Point2d;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openscience.cdk.stereo.DoubleBondStereochemistry;
+import org.openscience.cdk.stereo.TetrahedralChirality;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertThat;
 
 /**
  * Checks the functionality of the AtomContainer.
@@ -341,6 +350,254 @@ public abstract class AbstractAtomContainerTest extends AbstractChemObjectTest {
         Assert.assertEquals(1, acetone.getConnectedBondsList(c3).size());
     }
 
+    /**
+     * Unit test to ensure that the stereo elements remain intact on cloning a
+     * container. This test ensures tetrahedral chirality is preserved
+     *
+     * @cdk.bug 1264
+     * @throws Exception
+     */
+    @Test public void testClone_IStereoElement_Tetrahedral() throws Exception {
+
+        IAtomContainer container = (IAtomContainer) newChemObject();
+
+        IChemObjectBuilder builder = container.getBuilder();
+
+        IAtom c1 = builder.newInstance(IAtom.class, "C");
+        IAtom o2 = builder.newInstance(IAtom.class, "O");
+        IAtom n3 = builder.newInstance(IAtom.class, "N");
+        IAtom c4 = builder.newInstance(IAtom.class, "C");
+        IAtom h5 = builder.newInstance(IAtom.class, "H");
+
+        container.addAtom(c1);
+        container.addAtom(o2);
+        container.addAtom(n3);
+        container.addAtom(c4);
+        container.addAtom(h5);
+
+        IBond c1o2 = builder.newInstance(IBond.class, c1, o2);
+        IBond c1n3 = builder.newInstance(IBond.class, c1, n3);
+        IBond c1c4 = builder.newInstance(IBond.class, c1, c4);
+        IBond c1h5 = builder.newInstance(IBond.class, c1, h5);
+
+        c1o2.setStereo(IBond.Stereo.UP);
+
+        container.addBond(c1o2);
+        container.addBond(c1n3);
+        container.addBond(c1c4);
+        container.addBond(c1h5);
+
+        ITetrahedralChirality chirality =  builder.newInstance(ITetrahedralChirality.class,
+                                                               c1,
+                                                               new IAtom[] {o2, n3, c4, h5},
+                                                               ITetrahedralChirality.Stereo.CLOCKWISE);
+
+        container.addStereoElement(chirality);
+
+
+        // clone the container
+        IAtomContainer clone = (IAtomContainer) container.clone();
+
+        Iterator<IStereoElement> elements = clone.stereoElements().iterator();
+
+        assertThat("no stereo elements cloned", elements.hasNext(), is(true));
+
+        IStereoElement element = elements.next();
+
+        Assert.assertEquals("cloned element was incorrect class", chirality.getClass(), element.getClass());
+        assertThat("too many stereo elements", elements.hasNext(), is(not(true)));
+
+        // we've tested the class already  - cast is okay
+        ITetrahedralChirality cloneChirality = (ITetrahedralChirality) element;
+        IAtom[]               ligands = cloneChirality.getLigands();
+
+        assertThat("not enough ligands", ligands.length, is(4));
+
+        // test same instance - reference equality '=='
+        assertThat("expected same oxygen instance",   ligands[0], sameInstance(clone.getAtom(1)));
+        assertThat("expected same nitrogen instance", ligands[1], sameInstance(clone.getAtom(2)));
+        assertThat("expected same carbon instance",   ligands[2], sameInstance(clone.getAtom(3)));
+        assertThat("expected same hydrogen instance", ligands[3], sameInstance(clone.getAtom(4)));
+
+        assertThat("incorrect stereo", cloneChirality.getStereo(), sameInstance(ITetrahedralChirality.Stereo.CLOCKWISE));
+
+        assertThat("incorrect chiral atom", cloneChirality.getChiralAtom(), sameInstance(clone.getAtom(0)));
+
+    }
+
+
+    /**
+     * Unit test to ensure that the stereo elements remain intact on cloning a
+     * container. This test ensures DoubleBondStereochemistry is preserved
+     *
+     * @cdk.bug 1264
+     * @throws Exception
+     */
+    @Test public void testClone_IStereoElement_DoubleBond() throws Exception {
+
+        IAtomContainer container = (IAtomContainer) newChemObject();
+
+        IChemObjectBuilder builder = container.getBuilder();
+
+        IAtom c1 = builder.newInstance(IAtom.class, "C");
+        IAtom c2 = builder.newInstance(IAtom.class, "C");
+        IAtom c3 = builder.newInstance(IAtom.class, "C");
+        IAtom c4 = builder.newInstance(IAtom.class, "C");
+
+        container.addAtom(c1);
+        container.addAtom(c2);
+        container.addAtom(c3);
+        container.addAtom(c4);
+
+        IBond c1c2 = builder.newInstance(IBond.class, c1, c2, IBond.Order.DOUBLE);
+        IBond c2c3 = builder.newInstance(IBond.class, c2, c3);
+        IBond c1c4 = builder.newInstance(IBond.class, c1, c4);
+
+        container.addBond(c1c2);
+        container.addBond(c2c3);
+        container.addBond(c1c4);
+
+        IDoubleBondStereochemistry dbStereo =  new DoubleBondStereochemistry(c1c2,
+                                                                             new IBond[] {c2c3, c1c4},
+                                                                             IDoubleBondStereochemistry.Conformation.OPPOSITE);
+
+        container.addStereoElement(dbStereo);
+
+        // clone the container
+        IAtomContainer clone = (IAtomContainer) container.clone();
+
+        Iterator<IStereoElement> elements = clone.stereoElements().iterator();
+
+        assertThat("no stereo elements cloned", elements.hasNext(), is(true));
+
+        IStereoElement element = elements.next();
+
+        Assert.assertEquals("cloned element was incorrect class", dbStereo.getClass(), element.getClass());
+        assertThat("too many stereo elements", elements.hasNext(), is(not(true)));
+
+        // we've tested the class already - cast is okay
+        IDoubleBondStereochemistry clonedDBStereo = (IDoubleBondStereochemistry) element;
+        IBond[]                    ligands        = clonedDBStereo.getBonds();
+
+        assertThat("not enough ligands", ligands.length, is(2));
+
+        // test same instance - reference equality '=='
+        assertThat("expected same c2-c3 instance",  ligands[0], sameInstance(clone.getBond(1)));
+        assertThat("expected same c1-c4 instance",  ligands[1], sameInstance(clone.getBond(2)));
+
+        assertThat("incorrect stereo", clonedDBStereo.getStereo(), sameInstance(IDoubleBondStereochemistry.Conformation.OPPOSITE));
+
+        assertThat("incorrect chiral atom", clonedDBStereo.getStereoBond(), sameInstance(clone.getBond(0)));
+
+    }
+
+
+    /**
+     * Unit test to ensure that the stereo elements remain intact on cloning a
+     * container. This test ensures AtomParity is preserved
+     *
+     * @cdk.bug 1264
+     * @throws Exception
+     */
+    @Test public void testClone_IStereoElement_AtomParity() throws Exception {
+
+        IAtomContainer container = (IAtomContainer) newChemObject();
+
+        IChemObjectBuilder builder = container.getBuilder();
+
+        IAtom c1 = builder.newInstance(IAtom.class, "C");
+        IAtom o2 = builder.newInstance(IAtom.class, "O");
+        IAtom n3 = builder.newInstance(IAtom.class, "N");
+        IAtom c4 = builder.newInstance(IAtom.class, "C");
+        IAtom h5 = builder.newInstance(IAtom.class, "H");
+
+        container.addAtom(c1);
+        container.addAtom(o2);
+        container.addAtom(n3);
+        container.addAtom(c4);
+        container.addAtom(h5);
+
+        IBond c1o2 = builder.newInstance(IBond.class, c1, o2);
+        IBond c1n3 = builder.newInstance(IBond.class, c1, n3);
+        IBond c1c4 = builder.newInstance(IBond.class, c1, c4);
+        IBond c1h5 = builder.newInstance(IBond.class, c1, h5);
+
+        c1o2.setStereo(IBond.Stereo.UP);
+
+        container.addBond(c1o2);
+        container.addBond(c1n3);
+        container.addBond(c1c4);
+        container.addBond(c1h5);
+
+        IAtomParity chirality =  builder.newInstance(IAtomParity.class,
+                                                               c1,
+                                                               o2, n3, c4, h5,
+                                                               1);
+
+        container.addStereoElement(chirality);
+
+
+        // clone the container
+        IAtomContainer clone = (IAtomContainer) container.clone();
+
+        Iterator<IStereoElement> elements = clone.stereoElements().iterator();
+
+        assertThat("no stereo elements cloned", elements.hasNext(), is(true));
+
+        IStereoElement element = elements.next();
+
+        Assert.assertEquals("cloned element was incorrect class", chirality.getClass(), element.getClass());
+        assertThat("too many stereo elements", elements.hasNext(), is(not(true)));
+
+        // we've tested the class already  - cast is okay
+        IAtomParity  cloneChirality = (IAtomParity) element;
+        IAtom[]      ligands        = cloneChirality.getSurroundingAtoms();
+
+        assertThat("not enough ligands", ligands.length, is(4));
+
+        // test same instance - reference equality '=='
+        assertThat("expected same oxygen instance",   ligands[0], sameInstance(clone.getAtom(1)));
+        assertThat("expected same nitrogen instance", ligands[1], sameInstance(clone.getAtom(2)));
+        assertThat("expected same carbon instance",   ligands[2], sameInstance(clone.getAtom(3)));
+        assertThat("expected same hydrogen instance", ligands[3], sameInstance(clone.getAtom(4)));
+
+        assertThat("incorrect stereo", cloneChirality.getParity(), is(1));
+
+        assertThat("incorrect chiral atom", cloneChirality.getAtom(), sameInstance(clone.getAtom(0)));
+
+    }
+
+
+
+    @Test public void testSetStereoElements_List() {
+
+        IAtomContainer container = (IAtomContainer) newChemObject();
+
+        Assert.assertThat("empty container had stereo elements", container.stereoElements().iterator().hasNext(), is(false));
+
+        List<IStereoElement> dbElements = new ArrayList<IStereoElement>();
+        dbElements.add(new DoubleBondStereochemistry(null,
+                                                   new IBond[2],
+                                                   IDoubleBondStereochemistry.Conformation.TOGETHER));
+        container.setStereoElements(dbElements);
+        Iterator<IStereoElement> first = container.stereoElements().iterator();
+        Assert.assertThat("container did not have stereo elements", first.hasNext(), is(true));
+        Assert.assertThat("expected element to equal set element (double bond)", first.next(), is(dbElements.get(0)));
+        Assert.assertThat("container had more then one stereo element", first.hasNext(), is(false));
+
+        List<IStereoElement> tetrahedralElements = new ArrayList<IStereoElement>();
+        tetrahedralElements.add(new TetrahedralChirality(null, new IAtom[4], ITetrahedralChirality.Stereo.CLOCKWISE));
+        container.setStereoElements(tetrahedralElements);
+        Iterator<IStereoElement> second = container.stereoElements().iterator();
+        Assert.assertThat("container did not have stereo elements", second.hasNext(), is(true));
+        Assert.assertThat("expected element to equal set element (tetrahedral)", second.next(), is(tetrahedralElements.get(0)));
+        Assert.assertThat("container had more then one stereo element", second.hasNext(), is(false));
+
+
+
+
+    }
+
 //    @Test public void testGetConnectedBonds_IAtom() {
 //        // acetone molecule
 //        IAtomContainer acetone = getNewBuilder().newInstance(IAtomContainer.class);
@@ -564,7 +821,40 @@ public abstract class AbstractAtomContainerTest extends AbstractChemObjectTest {
         Assert.assertEquals(0, container.getAtomCount());
         Assert.assertEquals(0, container.getBondCount());
     }
-    
+
+    /**
+     * Unit test ensures that stereo-elements are removed from a container
+     * when {@link IAtomContainer#removeAllElements()} is invoked.
+     * @cdk.bug 1270
+     */
+    @Test public void testRemoveAllElements_StereoElements() {
+
+        IAtomContainer container = (IAtomContainer)newChemObject();
+        container.addStereoElement(new TetrahedralChirality(container.getBuilder().newInstance(IAtom.class),
+                                                            new IAtom[4],
+                                                            ITetrahedralChirality.Stereo.CLOCKWISE));
+
+        int count = 0;
+        for (IStereoElement element : container.stereoElements()) {
+            count++;
+        }
+
+        assertThat("no stereo elements were added", count, is(1));
+
+        count = 0;
+
+        assertThat("count did not reset", count, is(0));
+
+        container.removeAllElements();
+
+        for (IStereoElement element : container.stereoElements()) {
+            count++;
+        }
+
+        assertThat("stereo elements were not removed", count, is(0));
+
+    }
+
     @Test public void testRemoveAtom_int() {
     	IAtomContainer acetone = (IAtomContainer)newChemObject();
         IAtom c1 = acetone.getBuilder().newInstance(IAtom.class,"C");

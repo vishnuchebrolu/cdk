@@ -71,6 +71,15 @@ public class DebugAtomContainer extends AtomContainer
         super.addStereoElement(parity);
     }
 
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void setStereoElements(List<IStereoElement> elements) {
+        logger.debug("Setting stereo elements: ", elements);
+        super.setStereoElements(elements);
+    }
+
     public Iterable<IStereoElement> stereoElements() {
         logger.debug("Getting stereo elements.");
         return super.stereoElements();
@@ -533,8 +542,8 @@ public class DebugAtomContainer extends AtomContainer
 		return super.getFlags();
 	}
 
-	public Object clone() throws CloneNotSupportedException {
-        Object clone = null;
+	public IAtomContainer clone() throws CloneNotSupportedException {
+        IAtomContainer clone = null;
         try {
         	clone = super.clone();
         } catch (Exception exception) {
