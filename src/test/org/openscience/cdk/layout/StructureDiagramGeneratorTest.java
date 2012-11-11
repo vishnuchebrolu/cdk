@@ -39,6 +39,7 @@ import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.ChemObject;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.geometry.GeometryTools;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -865,7 +866,7 @@ public class StructureDiagramGeneratorTest extends CDKTestCase
 		// test completed, no timeout occured
 	}
 
-  /**
+	  /**
      * For the SMILES compound below (the largest molecule in Chembl) a
      * handful of atoms had invalid (NaN) Double coordinates.
      * 
@@ -910,6 +911,78 @@ public class StructureDiagramGeneratorTest extends CDKTestCase
         );
   }
 
+    /**
+     * The following SMILES compound gets null cordinates.
+     *
+     * @throws Exception if the test failed
+     * @cdk.bug 1234
+     */
+    @Test(timeout = 5000, expected = CDKException.class)
+    public void testBug1234() throws Exception {
+
+        SmilesParser sp =
+                new SmilesParser(SilentChemObjectBuilder.getInstance());
+        String smiles =
+                "C1C1";
+
+        IAtomContainer mol = sp.parseSmiles(smiles);
+        StructureDiagramGenerator sdg = new StructureDiagramGenerator();
+        sdg.setMolecule(mol);
+        sdg.generateCoordinates(new Vector2d(0, 1));
+        mol = sdg.getMolecule();
+
+        int invalidCoordCount = 0;
+        for (IAtom atom : mol.atoms()) {
+            if (atom.getPoint2d() == null) {
+                invalidCoordCount++;
+            }
+        }
+        Assert.assertEquals("No 2d coordinates should be null",
+                            0, invalidCoordCount);
+
+    }
+
+  /**
+   * Tests case where calling generateExperimentalCoordinates
+   * threw an NPE.
+   * 
+   * @throws Exception if the test failed
+   * @cdk.bug 1269
+  */
+@Test (timeout=5000, expected=CDKException.class)
+public void testBug1269() throws Exception {
+     
+     SmilesParser sp = 
+         new SmilesParser(SilentChemObjectBuilder.getInstance());
+     String smiles = "O=C(O)[C@H](N)C"; // L-alanine, but any [C@H] will do
+     IAtomContainer mol = sp.parseSmiles(smiles);
+
+     StructureDiagramGenerator sdg = new StructureDiagramGenerator();
+     sdg.setMolecule(mol);
+     sdg.generateExperimentalCoordinates(new Vector2d(0, 1));
+}
+
+  /**
+   * Does the SDG handle non-connected molecules?
+   * 
+   * @cdk.bug 1279
+   */
+  @Test (timeout=5000)
+  public void testBug1279() throws Exception {
+      
+      SmilesParser sp = 
+          new SmilesParser(SilentChemObjectBuilder.getInstance());
+      String smiles = 
+          "[NH4+].CP(=O)(O)CCC(N)C(=O)[O-]";
+        
+      IAtomContainer mol = sp.parseSmiles(smiles);
+
+      StructureDiagramGenerator sdg = new StructureDiagramGenerator();
+      sdg.setMolecule(mol);
+      sdg.generateCoordinates(new Vector2d(0, 1));
+      mol = sdg.getMolecule();
+      assertTrue(GeometryTools.has2DCoordinates(mol));
+  }
 
 }
 

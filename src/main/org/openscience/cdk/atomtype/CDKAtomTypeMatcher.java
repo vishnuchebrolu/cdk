@@ -43,6 +43,7 @@ import org.openscience.cdk.interfaces.IRing;
 import org.openscience.cdk.interfaces.IRingSet;
 import org.openscience.cdk.interfaces.ISingleElectron;
 import org.openscience.cdk.interfaces.IAtomType.Hybridization;
+import org.openscience.cdk.tools.manipulator.BondManipulator;
 
 /**
  * Atom Type matcher that perceives atom types as defined in the CDK atom type list
@@ -248,8 +249,13 @@ public class CDKAtomTypeMatcher implements IAtomTypeMatcher {
             if (atom.getFormalCharge() != CDKConstants.UNSET
                     && atom.getFormalCharge() == 0) {
                 if (atomContainer.getConnectedAtomsCount(atom) == 0) {
-                    IAtomType type = getAtomType("Se.3");
-                    if (isAcceptable(atom, atomContainer, type)) return type;
+                	if (atom.getImplicitHydrogenCount() != null && atom.getImplicitHydrogenCount() == 0 ) {
+                		IAtomType type = getAtomType("Se.2");
+                		if (isAcceptable(atom, atomContainer, type)) return type;
+                	} else {
+                		IAtomType type = getAtomType("Se.3");
+                		if (isAcceptable(atom, atomContainer, type)) return type;
+                	}
                 } else if (atomContainer.getConnectedAtomsCount(atom) == 1) {
 
                     if (doublebondcount == 1) {
@@ -392,6 +398,9 @@ public class CDKAtomTypeMatcher implements IAtomTypeMatcher {
 	    } else if (atom.getFlag(CDKConstants.ISAROMATIC)) {
 	        IAtomType type = getAtomType("C.sp2");
 	        if (isAcceptable(atom, atomContainer, type)) return type;
+	    } else if (hasOneOrMoreSingleOrDoubleBonds(atomContainer, atom)) {
+	        IAtomType type = getAtomType("C.sp2");
+	        if (isAcceptable(atom, atomContainer, type)) return type;
 	    } else if (isCharged(atom)) {
 	        if (atom.getFormalCharge() == 1) {
 	            if (atomContainer.getConnectedBondsCount(atom) == 0) {
@@ -464,7 +473,14 @@ public class CDKAtomTypeMatcher implements IAtomTypeMatcher {
     	return null;
     }
 
-    private boolean hasOneSingleElectron(IAtomContainer atomContainer, IAtom atom) {
+    private boolean hasOneOrMoreSingleOrDoubleBonds(IAtomContainer atomContainer, IAtom atom) {
+    	for (IBond bond : atomContainer.getConnectedBondsList(atom)) {
+    		if (bond.getFlag(CDKConstants.SINGLE_OR_DOUBLE)) return true;
+    	}
+		return false;
+	}
+
+	private boolean hasOneSingleElectron(IAtomContainer atomContainer, IAtom atom) {
 	    Iterator<ISingleElectron> singleElectrons = atomContainer.singleElectrons().iterator();
 	    while (singleElectrons.hasNext()) {
 	    	if (singleElectrons.next().contains(atom)) return true;
@@ -2569,8 +2585,19 @@ public class CDKAtomTypeMatcher implements IAtomTypeMatcher {
     	}
 
     	// confirm correct bond orders
-    	if (type.getProperty(CDKConstants.PI_BOND_COUNT) != null && container.getMaximumBondOrder(atom).ordinal() + 1 > (Integer) type.getProperty(CDKConstants.PI_BOND_COUNT) + 1)
-    		return false;
+		IBond.Order typeOrder = type.getMaxBondOrder(); 
+    	if (typeOrder != null) {
+    		for (IBond bond : container.getConnectedBondsList(atom)) {
+    			IBond.Order order = bond.getOrder();
+    			if (order != CDKConstants.UNSET) {
+    				if (BondManipulator.isHigherOrder(order, typeOrder)) return false;
+    			} else if (bond.getFlag(CDKConstants.SINGLE_OR_DOUBLE)) {
+    				if (BondManipulator.isHigherOrder(IBond.Order.DOUBLE, typeOrder)) return false;
+    			} else {
+    				return false;
+    			}
+    		}
+    	}
     		
     	// confirm correct valency
     	if (type.getValency() != CDKConstants.UNSET && container.getBondOrderSum(atom) > type.getValency())

@@ -2091,6 +2091,27 @@ public class CDKAtomTypeMatcherTest extends AbstractCDKAtomTypeTest {
         assertAtomTypes(testedAtomTypes, expectedTypes, molecule);
     }
 
+    @Test public void testBenzene_SingleOrDouble() throws Exception {
+        String[] expectedTypes = {
+            "C.sp2",
+            "C.sp2",
+            "C.sp2",
+            "C.sp2",
+            "C.sp2",
+            "C.sp2"
+        };
+        IAtomContainer molecule = new AtomContainer();
+        molecule.add(new Ring(6, "C"));
+        for (IBond bond : molecule.bonds()) {
+            bond.setOrder(IBond.Order.UNSET);
+            bond.setFlag(CDKConstants.SINGLE_OR_DOUBLE, true);
+        }
+        for (IAtom atom : molecule.atoms()) {
+            atom.setImplicitHydrogenCount(1);
+        }
+        assertAtomTypes(testedAtomTypes, expectedTypes, molecule);
+    }
+
     @Test public void testPyrrole() throws Exception {
 		String[] expectedTypes = {
 			"C.sp2",
@@ -4422,7 +4443,19 @@ public class CDKAtomTypeMatcherTest extends AbstractCDKAtomTypeTest {
         String[] expectedTypes8 = {"Se.5", "C.sp2", "C.sp3", "C.sp3", "C.sp3", "C.sp3"};
         assertAtomTypes(testedAtomTypes, expectedTypes8, mol);
     }
-  
+    
+    @Test
+    public void test_Se_2() throws Exception {
+        IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
+        IAtomContainer mol = builder.newInstance(IAtomContainer.class);
+        IAtom a1 = builder.newInstance(IAtom.class, "Se");
+        a1.setImplicitHydrogenCount(0);
+        a1.setFormalCharge(0);
+        mol.addAtom(a1);
+      
+        String[] expectedTypes = {"Se.2"};
+        assertAtomTypes(testedAtomTypes, expectedTypes, mol);
+    }
 
     /**
      * @cdk.inchi InChI=1S/H2Te/h1H2
