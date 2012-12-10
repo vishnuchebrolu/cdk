@@ -25,6 +25,7 @@ package org.openscience.cdk.group;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -284,19 +285,20 @@ public class Partition {
         return r;
     }
     
-    
     /**
-     * Fill the elements of the permutation from the first element of each
+     * Fill the elements of a permutation from the first element of each
      * cell, up to the point <code>upTo</code>.
      * 
-     * @param permutation the permutation to fill with elements
-     * @param upTo the point to stop at
+     * @param upTo take values from cells up to this one
+     * @return the permutation representing the first element of each cell
      */
     @TestMethod("setAsPermutationTest")
-    public void setAsPermutation(Permutation permutation, int upTo) {
+    public Permutation setAsPermutation(int upTo) {
+        int[] p = new int[upTo];
         for (int i = 0; i < upTo; i++) {
-            permutation.set(i, this.cells.get(i).first());
+            p[i] = this.cells.get(i).first();
         }
+        return new Permutation(p);
     }
     
     /**
@@ -407,6 +409,40 @@ public class Partition {
     public SortedSet<Integer> copyBlock(int cellIndex) {
         return new TreeSet<Integer>(this.cells.get(cellIndex));
     }
+    
+    /**
+     * Sort the cells in increasing order.
+     */
+    @TestMethod("orderTest")
+    public void order() {
+        Collections.sort(cells, new Comparator<SortedSet<Integer>>() {
+
+            @Override
+            public int compare(SortedSet<Integer> cellA, SortedSet<Integer> cellB) {
+                return cellA.first().compareTo(cellB.first());
+            }
+
+        });
+    }
+    
+    
+    /**
+     * Check that two elements are in the same cell of the partition.
+     * 
+     * @param elementI an element in the partition
+     * @param elementJ an element in the partition
+     * @return true if both elements are in the same cell
+     */
+    @TestMethod("inSameCellTest")
+    public boolean inSameCell(int elementI, int elementJ) {
+        for (int cellIndex = 0; cellIndex < size(); cellIndex++) {
+            SortedSet<Integer> cell = getCell(cellIndex); 
+            if (cell.contains(elementI) && cell.contains(elementJ)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * @inheritDoc
@@ -481,7 +517,12 @@ public class Partition {
             } else if (c == '|') {
                 int element = Integer.parseInt(
                         strForm.substring(numStart, index));
-                p.addToCell(currentCell, element);
+                if (currentCell == -1) {
+                    p.addCell(element);
+                    currentCell = 0;
+                } else {
+                    p.addToCell(currentCell, element);
+                }
                 currentCell++;
                 p.addCell();
                 numStart = -1;

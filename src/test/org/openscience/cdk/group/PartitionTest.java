@@ -176,8 +176,7 @@ public class PartitionTest extends CDKTestCase {
 		for (int i = 0; i < partitionSize; i++) {
 			partition.addSingletonCell(i);
 		}
-		Permutation permutation = new Permutation(permutationSize);
-		partition.setAsPermutation(permutation, permutationSize);
+		Permutation permutation =  partition.setAsPermutation(permutationSize);
 		for (int i = 0; i < permutationSize; i++) {
 			Assert.assertEquals(i, permutation.get(i));
 		}
@@ -272,6 +271,13 @@ public class PartitionTest extends CDKTestCase {
         Assert.assertEquals(2, p.size());
         Assert.assertEquals(4, p.numberOfElements());
     }
+	
+	@Test
+    public void fromStringTest2() {
+        Partition p = Partition.fromString("[0|1,2,3]");
+        Assert.assertEquals(2, p.size());
+        Assert.assertEquals(4, p.numberOfElements());
+    }
 
     @Test
     public void equalsTest_null() {
@@ -291,6 +297,22 @@ public class PartitionTest extends CDKTestCase {
         Partition p = new Partition(new int[][]{{0}, {1}});
         Partition o = new Partition(new int[][]{{0}, {1}});
         Assert.assertEquals(p, o);
+    }
+    
+    @Test
+    public void orderTest() {
+        Partition p = new Partition(new int[][]{{1, 3}, {0, 2}});
+        p.order();
+        SortedSet<Integer> cell0 = p.getCell(0);
+        SortedSet<Integer> cell1 = p.getCell(1);
+        Assert.assertTrue(cell0.first() < cell1.first());
+        Assert.assertTrue(cell0.last() < cell1.last());
+    }
+    
+    @Test
+    public void inSameCellTest() {
+        Partition p = new Partition(new int[][]{{0, 2}, {1, 3}});
+        Assert.assertTrue(p.inSameCell(1, 3));
     }
 
 }
