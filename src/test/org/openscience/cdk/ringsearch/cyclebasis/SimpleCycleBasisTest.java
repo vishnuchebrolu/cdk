@@ -28,11 +28,10 @@
  */
 package org.openscience.cdk.ringsearch.cyclebasis;
 
-import java.util.Arrays;
-
 import org._3pq.jgrapht.graph.SimpleGraph;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
+import org.junit.Test;
 import org.openscience.cdk.CDKTestCase;
 
 /**
@@ -47,7 +46,7 @@ public class SimpleCycleBasisTest extends CDKTestCase {
 	private static SimpleGraph g;
 	private static SimpleCycleBasis basis;
 
-	@BeforeClass public static void setUp() {
+	@Before public void setUp() {
 		g = new SimpleGraph();
 		g.addVertex( "a" );
 		g.addVertex( "b" );
@@ -78,10 +77,12 @@ public class SimpleCycleBasisTest extends CDKTestCase {
 
 	}
 	
+	@Test
 	public void testSimpleCycleBasis() {
 		Assert.assertTrue(basis.cycles().size() == g.edgeSet().size() - g.vertexSet().size() + 1);
 	}
 	
+	@Test
 	public void testSimpleCycleBasisCompleteGraph() {
 		g = new SimpleGraph();
 		g.addVertex( "a" );
@@ -109,22 +110,27 @@ public class SimpleCycleBasisTest extends CDKTestCase {
 		Assert.assertEquals(1, basis.equivalenceClasses().size());
 	}
 	
+	@Test
 	public void testWeightVector() {
 		Assert.assertArrayEquals(basis.weightVector(), new int[] {3,3,3,3,3,3,3,3});
 	}
 	
+	@Test
 	public void testRelevantCycles() {
 		Assert.assertEquals(10, basis.relevantCycles().size());
 	}
 	
+	@Test
 	public void testEssentialCycles() {
 		Assert.assertEquals(2, basis.essentialCycles().size());
 	}
 		
+	@Test
 	public void testEquivalenceClasses() {
 		Assert.assertEquals(4, basis.equivalenceClasses().size());
 	}
 
+	@Test
 	public void testEquivalenceClassesEmptyIntersection() {
 		SimpleGraph h = new SimpleGraph(  );
 		

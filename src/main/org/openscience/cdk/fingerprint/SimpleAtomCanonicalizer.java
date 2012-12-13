@@ -1,4 +1,5 @@
-/*
+/* $Revision$ $Author$ $Date$
+ *
  * Copyright (C) 2012   Syed Asad Rahman <asad@ebi.ac.uk>
  *           
  *
@@ -24,39 +25,40 @@
  */
 package org.openscience.cdk.fingerprint;
 
-import java.io.Serializable;
-import org.apache.commons.math3.random.MersenneTwister;
-import org.apache.commons.math3.random.RandomAdaptor;
-import org.apache.commons.math3.random.RandomGenerator;
+import java.util.*;
+
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
+import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IAtomContainer;
 
 /**
- * Generates pseudorandom numbers using the MersenneTwister method from commons-math.
+ * <P> This code returns a sorted set of atoms for a container according to its
+ * symbol and hybridization states. This will aid in finding a deterministic
+ * path rather than Stochastic one. </P>
  *
  * @author Syed Asad Rahman (2012) 
  * @cdk.keyword fingerprint 
  * @cdk.keyword similarity 
  * @cdk.module fingerprint
  * @cdk.githash
+ * 
  */
-@TestClass("org.openscience.cdk.fingerprint.RandomNumberTest")
-public class RandomNumber implements Serializable {
+@TestClass("org.openscience.cdk.fingerprint.SimpleAtomCanonicalizerTest")
+public class SimpleAtomCanonicalizer {
 
-    private static final long serialVersionUID = 23345464573453571L;
-
-    private transient final RandomGenerator rg = new RandomAdaptor(new MersenneTwister());
-
-    /**
-     * Mersenne Twister Random Number for a hashcode within a range between 0 to n.
-     *
-     * @param n the maximum value the
-     * @param seed the seed for the next pseudorandom number
-     * @return next pseudorandom number
-     */
-    @TestMethod("testGenerateMersenneTwisterRandomNumber")
-    public int generateMersenneTwisterRandomNumber(int n, long seed) {
-        rg.setSeed(seed);
-        return rg.nextInt(n);
-    }
+	/**
+	 * @param container the container
+	 * @return canonicalized atoms
+	 */
+    @TestMethod("testCanonicalizeAtoms")
+	public Collection<IAtom> canonicalizeAtoms(IAtomContainer container) {
+		
+		List<IAtom> canonicalizedVertexList = new ArrayList<IAtom>();
+        for (IAtom atom : container.atoms()) {
+            canonicalizedVertexList.add(atom);
+        }
+		Collections.sort(canonicalizedVertexList, new SimpleAtomComparator());
+		return canonicalizedVertexList;
+	}
 }

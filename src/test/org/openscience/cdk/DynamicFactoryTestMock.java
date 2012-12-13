@@ -1,7 +1,5 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2012   Syed Asad Rahman <asad@ebi.ac.uk>
- *           
+/*
+ * Copyright (C) 2000-2012  John May <jwmay@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -23,40 +21,37 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.openscience.cdk.fingerprint;
+package org.openscience.cdk;
 
-import java.util.*;
 import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.ICDKObject;
+import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
 /**
- * <P> This code returns a sorted set of atoms for a container according to its
- * symbol and hybridization states. This will aid in finding a deterministic
- * path rather than Stochastic one. </P>
+ * A simple mock ICDKObject so we can test private constructors. We can't test
+ * with an inner class as synthetic public constructors are made to bridge the
+ * inner class creation.
  *
- * @author Syed Asad Rahman (2012) 
- * @cdk.keyword fingerprint 
- * @cdk.keyword similarity 
- * @cdk.module standard 
- * @cdk.githash
- * 
+ * @author John May
+ * @cdk.module test-core
+ * @see DynamicFactoryTest
  */
-public class SimpleAtomCanonicalisation {
+public class DynamicFactoryTestMock implements ICDKObject {
 
-	/**
-	 * @param container the container
-	 * @return canonicalized atoms
-	 */
-	public Collection<IAtom> canonicalizeAtoms(IAtomContainer container) {
-		
-		List<IAtom> canonicalizedVertexList = new LinkedList<IAtom>();
-		int i = 0;
-		for (Iterator<IAtom> it = container.atoms().iterator(); it.hasNext();) {
-			IAtom atom = it.next();
-			canonicalizedVertexList.add(i, atom);
-			i++;
-		}
-		Collections.sort(canonicalizedVertexList, new SimpleAtomComparator());
-		return canonicalizedVertexList;
-	}
+    public DynamicFactoryTestMock(String ignored) {
+
+    }
+
+    public DynamicFactoryTestMock(IAtom[] atoms) {
+        System.out.println("IAtom[] constructor invoked");
+    }
+
+    private DynamicFactoryTestMock() {
+
+    }
+
+    @Override
+    public IChemObjectBuilder getBuilder() {
+        return null;
+    }
 }

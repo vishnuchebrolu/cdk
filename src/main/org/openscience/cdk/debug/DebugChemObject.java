@@ -23,6 +23,7 @@ package org.openscience.cdk.debug;
 import java.util.Map;
 
 import org.openscience.cdk.ChemObject;
+import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IChemObject;
 import org.openscience.cdk.interfaces.IChemObjectChangeEvent;
 import org.openscience.cdk.interfaces.IChemObjectListener;
@@ -90,10 +91,22 @@ public class DebugChemObject extends ChemObject
 		super.removeProperty(description);
 	}
 
-	public Object getProperty(Object description) {
+	public <T> T getProperty(Object description) {
 		logger.debug("Getting property: ", description + "=" + super.getProperty(description));
 		return super.getProperty(description);
 	}
+
+    /**
+     * @inheritDoc
+     */
+    @TestMethod("testGetProperty_Object_Class,testGetProperty_Object_ClassCast")
+    @Override
+    public <T> T getProperty(Object description, Class<T> c)
+    {
+        logger.debug("Getting property of description: ", description
+                     + " and type " + c.getSimpleName());
+        return super.getProperty(description, c);
+    }
 
 	public Map<Object,Object> getProperties() {
 		logger.debug("Getting properties");

@@ -40,11 +40,11 @@ import org.openscience.cdk.tools.periodictable.PeriodicTable;
  * @author Syed Asad Rahman (2012) 
  * @cdk.keyword fingerprint 
  * @cdk.keyword similarity 
- * @cdk.module standard 
+ * @cdk.module fingerprint
  * @cdk.githash
  *
  */
-class ShortestPathWalker {
+public class ShortestPathWalker {
 
     private static final long serialVersionUID = 0x3b728f46;
     private final IAtomContainer atomContainer;
@@ -86,15 +86,10 @@ class ShortestPathWalker {
         pseudoAtoms.clear();
         traverseShortestPaths();
 
-        for (Iterator<StringBuilder> it = allPaths.iterator(); it.hasNext();) {
-            StringBuilder s = it.next();
-            String s1 = s.toString().trim();
-            if (s1.equals("")) {
-                continue;
-            }
-            if (!cleanPath.contains(s1)) {
-                cleanPath.add(s1);
-            }
+        for (StringBuilder s : allPaths) {
+            String clean = s.toString().trim();
+            if (!clean.isEmpty())
+                cleanPath.add(clean);
         }
     }
 
@@ -105,7 +100,7 @@ class ShortestPathWalker {
         /*
          * Canonicalisation of atoms for reporting unique paths with consistency
          */
-        Collection<IAtom> canonicalizeAtoms = new SimpleAtomCanonicalisation().canonicalizeAtoms(atomContainer);
+        Collection<IAtom> canonicalizeAtoms = new SimpleAtomCanonicalizer().canonicalizeAtoms(atomContainer);
         for (IAtom sourceAtom : canonicalizeAtoms) {
             StringBuilder sb = new StringBuilder();
             setAtom(sourceAtom, sb);

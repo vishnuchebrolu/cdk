@@ -25,6 +25,7 @@
  */
 package org.openscience.cdk;
 
+import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.event.ChemObjectChangeEvent;
 import org.openscience.cdk.interfaces.IChemObject;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
@@ -268,16 +269,41 @@ public class ChemObject implements Serializable, IChemObject, Cloneable
 	 *@see                 #setProperty
 	 *@see                 #removeProperty
 	 */
-	public Object getProperty(Object description)
+	public <T> T getProperty(Object description)
 	{
-        if (properties != null) {
-            return lazyProperties().get(description);
+        // can't check the type
+        @SuppressWarnings("unchecked")
+        T value = (T) lazyProperties().get(description);
+        return value;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    @TestMethod("testGetProperty_Object_Class,testGetProperty_Object_ClassCast")
+    @Override
+    public <T> T getProperty(Object description, Class<T> c)
+    {
+        Object value = lazyProperties().get(description);
+
+        if(c.isInstance(value)) {
+
+            @SuppressWarnings("unchecked")
+            T typed = (T) value;
+            return typed;
+
+        } else if(value != null){
+            throw new IllegalArgumentException("attempted to access a property of incorrect type, expected " + c
+                    .getSimpleName() + " got " + value.getClass().getSimpleName());
         }
+
         return null;
-	}
+
+    }
 
 
-	/**
+
+    /**
 	 *  Returns a Map with the IChemObject's properties.
 	 *
 	 *@return    The object's properties as an Hashtable

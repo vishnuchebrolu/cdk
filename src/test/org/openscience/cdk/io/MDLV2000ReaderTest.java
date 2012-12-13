@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -57,6 +58,8 @@ import org.openscience.cdk.tools.LoggingToolFactory;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 
 /**
@@ -1005,5 +1008,61 @@ public class MDLV2000ReaderTest extends SimpleChemObjectReaderTest {
         Assert.assertTrue(chiralCentre);
         
     }
+
+	@Test
+	public void testSingleSingletRadical() throws Exception {
+
+		InputStream in = ClassLoader.getSystemResourceAsStream("data/mdl/singleSingletRadical.mol");
+		MDLV2000Reader reader = new MDLV2000Reader(in);
+		IAtomContainer molecule = DefaultChemObjectBuilder.getInstance().newInstance(IAtomContainer.class);
+		molecule = reader.read(molecule);
+		reader.close();
+
+        assertThat(molecule.getConnectedSingleElectronsCount(molecule.getAtom(1)), is(2));
+	}
+
+	@Test
+	public void testSingleDoubletRadical() throws Exception {
+
+		InputStream in = ClassLoader.getSystemResourceAsStream("data/mdl/singleDoubletRadical.mol");
+		MDLV2000Reader reader = new MDLV2000Reader(in);
+		IAtomContainer molecule = DefaultChemObjectBuilder.getInstance().newInstance(IAtomContainer.class);
+		molecule = reader.read(molecule);
+		reader.close();
+
+		assertThat(molecule.getConnectedSingleElectronsCount(molecule.getAtom(1)), is(1));
+	}
+
+	@Test
+	public void testSingleTripletRadical() throws Exception {
+
+		InputStream in = ClassLoader.getSystemResourceAsStream("data/mdl/singleTripletRadical.mol");
+		MDLV2000Reader reader = new MDLV2000Reader(in);
+		IAtomContainer molecule = DefaultChemObjectBuilder.getInstance().newInstance(IAtomContainer.class);
+		molecule = reader.read(molecule);
+		reader.close();
+
+		assertThat(molecule.getConnectedSingleElectronsCount(molecule.getAtom(1)), is(3));
+	}
+
+	@Test
+	public void testMultipleRadicals() throws Exception {
+
+		InputStream in = ClassLoader.getSystemResourceAsStream("data/mdl/multipleRadicals.mol");
+		MDLV2000Reader reader = new MDLV2000Reader(in);
+		IAtomContainer molecule = DefaultChemObjectBuilder.getInstance().newInstance(IAtomContainer.class);
+		molecule = reader.read(molecule);
+		reader.close();
+
+		assertThat(molecule.getConnectedSingleElectronsCount(molecule.getAtom(0)), is(1));
+		assertThat(molecule.getConnectedSingleElectronsCount(molecule.getAtom(1)), is(1));
+		assertThat(molecule.getConnectedSingleElectronsCount(molecule.getAtom(2)), is(1));
+		assertThat(molecule.getConnectedSingleElectronsCount(molecule.getAtom(3)), is(1));
+		assertThat(molecule.getConnectedSingleElectronsCount(molecule.getAtom(4)), is(1));
+		assertThat(molecule.getConnectedSingleElectronsCount(molecule.getAtom(5)), is(1));
+		assertThat(molecule.getConnectedSingleElectronsCount(molecule.getAtom(6)), is(1));
+		assertThat(molecule.getConnectedSingleElectronsCount(molecule.getAtom(7)), is(1));
+		assertThat(molecule.getConnectedSingleElectronsCount(molecule.getAtom(8)), is(1));
+	}
     
 }

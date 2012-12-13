@@ -172,8 +172,10 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
 			if (IChemFile.class.equals(interfaces[i])) return true;
 			if (IChemModel.class.equals(interfaces[i])) return true;
 			if (IAtomContainer.class.equals(interfaces[i])) return true;
-			if (IAtomContainer.class.equals(interfaces[i])) return true;
 		}
+		if (IAtomContainer.class.equals(classObject)) return true;
+		if (IChemFile.class.equals(classObject)) return true;
+		if (IChemModel.class.equals(classObject)) return true;
     Class superClass = classObject.getSuperclass();
     if (superClass != null) return this.accepts(superClass);
 		return false;
@@ -844,22 +846,36 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                         );
                     }
                 } else if (line.startsWith("M  RAD")) {
-                    try {
-                        String countString = line.substring(6,9).trim();
-                        int infoCount = Integer.parseInt(countString);
-                        StringTokenizer st = new StringTokenizer(line.substring(9));
-                        for (int i=1; i <= infoCount; i++) {
-                            int atomNumber = Integer.parseInt(st.nextToken().trim());
-                            int spinMultiplicity = Integer.parseInt(st.nextToken().trim());
-                            if (spinMultiplicity > 1) {
-                                IAtom radical = outputContainer.getAtom(atomNumber - 1);
-                                for (int j=2; j <= spinMultiplicity; j++) {
-                                    // 2 means doublet -> one unpaired electron
-                                    // 3 means triplet -> two unpaired electron
-                                    outputContainer.addSingleElectron(molecule.getBuilder().newInstance(ISingleElectron.class,radical));
-                                }
-                            }
-                        }
+					try {
+						String countString = line.substring(6, 9).trim();
+						int infoCount = Integer.parseInt(countString);
+						StringTokenizer st = new StringTokenizer(line.substring(9));
+						for (int i = 1; i <= infoCount; i++) {
+							int atomNumber = Integer.parseInt(st.nextToken().trim());
+							int spinMultiplicity = Integer.parseInt(st.nextToken().trim());
+							MDLV2000Writer.SPIN_MULTIPLICITY spin = MDLV2000Writer.SPIN_MULTIPLICITY.NONE;
+							if (spinMultiplicity > 0) {
+								IAtom radical = outputContainer.getAtom(atomNumber - 1);
+								switch (spinMultiplicity) {
+									case 1:
+										spin = MDLV2000Writer.SPIN_MULTIPLICITY.DOUBLET;
+										break;
+									case 2:
+										spin = MDLV2000Writer.SPIN_MULTIPLICITY.SINGLET;
+										break;
+									case 3:
+										spin = MDLV2000Writer.SPIN_MULTIPLICITY.TRIPLET;
+										break;
+									default:
+										logger.debug("Invalid spin multiplicity found: " + spinMultiplicity);
+										break;
+								}
+								for (int j = 0; j < spin.getSingleElectrons(); j++) {
+									outputContainer.addSingleElectron(
+											molecule.getBuilder().newInstance(ISingleElectron.class, radical));
+								}
+							}
+						}
                     } catch (NumberFormatException exception) {
                         String error = "Error (" + exception.getMessage() + ") while parsing line "
                                        + linecount + ": " + line + " in property block.";
@@ -945,7 +961,7 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
 		}
 		return  outputContainer;
 	}
-    
+
     private void fixHydrogenIsotopes(IAtomContainer molecule,IsotopeFactory isotopeFactory) {
 		Iterator<IAtom> atoms = molecule.atoms().iterator();
 		while (atoms.hasNext()) {

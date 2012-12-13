@@ -649,15 +649,19 @@ public class SmilesGenerator
 		if (v.size() > 1)
 		{
 			Collections.sort(v,
-				new Comparator()
+				new Comparator<IAtom>()
 				{
-					public int compare(Object o1, Object o2)
+					public int compare(IAtom o1, IAtom o2)
 					{
-						return (int) (
-						    (Long) ((IAtom) o1).getProperty(InvPair.CANONICAL_LABEL) -
-						    (Long) ((IAtom) o2).getProperty(InvPair.CANONICAL_LABEL)
-						);
+						return label(o1).compareTo(label(o2));
 					}
+
+                    private Long label(IAtom atom){
+                        // cast can be removed in master
+                        Long label = (Long) atom.getProperty(InvPair.CANONICAL_LABEL);
+                        return label != null ? label : Long.MIN_VALUE;
+                    }
+
 				});
 		}
 		return v;

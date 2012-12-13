@@ -25,9 +25,13 @@
  */
 package org.openscience.cdk.fingerprint;
 
-import java.util.*;
+import org.openscience.cdk.annotations.TestClass;
+import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IChemObject;
+
+import java.io.Serializable;
+import java.util.Comparator;
 
 /**
  * <P> This code returns a sorted set of atoms for a container according to its
@@ -37,16 +41,19 @@ import org.openscience.cdk.interfaces.IChemObject;
  * @author Syed Asad Rahman (2012) 
  * @cdk.keyword fingerprint 
  * @cdk.keyword similarity 
- * @cdk.module standard 
+ * @cdk.module fingerprint
  * @cdk.githash
  * 
  */
-class SimpleAtomComparator implements Comparator<IAtom> {
-	@Override
+@TestClass("org.openscience.cdk.fingerprint.SimpleAtomComparatorTest")
+public class SimpleAtomComparator implements Comparator<IAtom>, Serializable {
+
+    private static final long serialVersionUID = 2345252069991872083L;
+
+
+	@TestMethod("testCompare_NullHybridization,testCompare_SameHybridization,testCompare_DifferentHybridization,testCompare_DifferentSymbol")
+    @Override
 	public int compare(IAtom o1, IAtom o2) {
-		if (!(o1 instanceof IChemObject) || !(o2 instanceof IChemObject)) {
-			throw new ClassCastException();
-		}
 		if (o1.getSymbol().equalsIgnoreCase(o2.getSymbol())) {
 			if (o1.getHybridization() != null && o2.getHybridization() != null) {
 				return o1.getHybridization().compareTo(o2.getHybridization());
