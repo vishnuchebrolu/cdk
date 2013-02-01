@@ -23,9 +23,16 @@ package org.openscience.cdk.interfaces;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.openscience.cdk.tools.manipulator.AtomContainerComparator;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.verify;
 
 /**
  * Checks the functionality of {@link IAtomContainerSet} implementations.
@@ -57,6 +64,122 @@ public abstract class AbstractAtomContainerSetTest extends AbstractChemObjectTes
         Assert.assertEquals(1, som.getAtomContainer(0).getAtomCount());
         Assert.assertNotNull(som.getAtomContainer(1));
         Assert.assertEquals(2, som.getAtomContainer(1).getAtomCount());
+    }
+
+    /**
+     * ensure coefficients are sorted also
+     */
+    @Test public void testSort_Coefficients() {
+
+        IAtomContainerSet set = (IAtomContainerSet) newChemObject();
+
+        IChemObjectBuilder builder = set.getBuilder();
+
+        IAtomContainer a = builder.newInstance(IAtomContainer.class);
+        IAtomContainer b = builder.newInstance(IAtomContainer.class);
+
+        a.addAtom(builder.newInstance(IAtom.class, "C"));
+        a.addAtom(builder.newInstance(IAtom.class, "C"));
+
+        b.addAtom(builder.newInstance(IAtom.class, "C"));
+
+        set.addAtomContainer(a, 1);
+        set.addAtomContainer(b, 2);
+
+        assertThat(set.getAtomContainer(0), is(a));
+        assertThat(set.getMultiplier(0),    is(1D));
+        assertThat(set.getAtomContainer(1), is(b));
+        assertThat(set.getMultiplier(1),    is(2D));
+
+
+        // sort by atom container count
+        set.sortAtomContainers(new Comparator<IAtomContainer>() {
+            @Override public int compare(IAtomContainer o1, IAtomContainer o2) {
+                int n = o1.getAtomCount();
+                int m = o2.getAtomCount();
+                if(n > m)
+                    return +1;
+                if(n < m)
+                    return -1;
+                return 0;
+            }
+        });
+
+        assertThat(set.getAtomContainer(0), is(b));
+        assertThat(set.getMultiplier(0),    is(2D));
+        assertThat(set.getAtomContainer(1), is(a));
+        assertThat(set.getMultiplier(1),    is(1D));
+
+    }
+
+    /**
+     * Ensures that sort method of the AtomContainerSet does not include nulls
+     * in the comparator. This is tested using a comparator which sorts null
+     * values as low and thus to the start of an array. By adding two (non-null)
+     * values and sorting we should see that the first two values are not null
+     * despite giving a comparator which sorts null as low.
+     *
+     * @cdk.bug 1291
+     */
+    @Test public void testSort_BrokenComparator() {
+
+        IAtomContainerSet set = (IAtomContainerSet) newChemObject();
+
+        IChemObjectBuilder builder = set.getBuilder();
+
+        IAtomContainer a = builder.newInstance(IAtomContainer.class);
+        IAtomContainer b = builder.newInstance(IAtomContainer.class);
+
+        a.addAtom(builder.newInstance(IAtom.class, "C"));
+        a.addAtom(builder.newInstance(IAtom.class, "C"));
+
+        b.addAtom(builder.newInstance(IAtom.class, "C"));
+
+        set.addAtomContainer(a);
+        set.addAtomContainer(b);
+
+        // this comparator is deliberately broken but serves for the test
+        //  - null should be a high value (Interger.MAX)
+        //  - also, avoid boxed primitives in comparators
+        set.sortAtomContainers(new Comparator<IAtomContainer>() {
+
+            @Override public int compare(IAtomContainer o1, IAtomContainer o2) {
+                return size(o1).compareTo(size(o2));
+            }
+
+            public Integer size(IAtomContainer container) {
+                return container == null ? Integer.MIN_VALUE
+                                         : container.getAtomCount();
+            }
+
+        });
+
+        // despite null being low, the two atom containers should
+        // still be in the first slot
+        Assert.assertNotNull(set.getAtomContainer(0));
+        Assert.assertNotNull(set.getAtomContainer(1));
+        Assert.assertNull(set.getAtomContainer(2));
+
+    }
+
+    /**
+     * Ensure that sort is not called on an empty set. We mock the comparator
+     * and verify the compare method is never called
+     */
+    @Test public void testSort_empty() {
+
+        IAtomContainerSet set = (IAtomContainerSet) newChemObject();
+
+        @SuppressWarnings("unchecked")
+        Comparator<IAtomContainer> comparator = Mockito.mock(Comparator.class);
+
+        set.sortAtomContainers(comparator);
+
+        // verify the comparator was called 0 times
+        verify(comparator,
+               Mockito.times(0)).compare(any(IAtomContainer.class),
+                                         any(IAtomContainer.class));
+
     }
 
     @Test public void testGetAtomContainerCount() {
