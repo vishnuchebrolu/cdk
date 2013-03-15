@@ -1055,12 +1055,18 @@ public class CDKAtomTypeMatcher implements IAtomTypeMatcher {
                     return type;
                 }
                 int neighbors = atomContainer.getConnectedAtomsCount(atom);
-                if (neighbors == 2) {
-                    IAtomType type5 = getAtomType("Fe.2");
-                    if (isAcceptable(atom, atomContainer, type5)) {
-                        return type5;
-                    }
-                } else if (neighbors == 3) {
+                
+				if (neighbors == 0) {
+					IAtomType typeFe = getAtomType("Fe.Neutral");
+					if (isAcceptable(atom, atomContainer, typeFe)) {
+						return typeFe;
+					}
+				} else if (neighbors == 2) {
+					IAtomType type5 = getAtomType("Fe.2");
+					if (isAcceptable(atom, atomContainer, type5)) {
+						return type5;
+					}
+				} else if (neighbors == 3) {
                     IAtomType type6 = getAtomType("Fe.3");
                     if (isAcceptable(atom, atomContainer, type6)) {
                         return type6;
