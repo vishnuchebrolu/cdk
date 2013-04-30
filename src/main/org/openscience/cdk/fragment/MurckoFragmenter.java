@@ -309,6 +309,7 @@ public class MurckoFragmenter implements IFragmenter {
      *
      * @return An array of structures representing frameworks and ring systems
      */
+    @TestMethod("testGetFragmentsAsContainers")
     public IAtomContainer[] getFragmentsAsContainers() {
         List<IAtomContainer> allfrags = new ArrayList<IAtomContainer>();
         allfrags.addAll(frameMap.values());
@@ -351,6 +352,7 @@ public class MurckoFragmenter implements IFragmenter {
      *
      * @return an array of frameworks.
      */
+    @TestMethod("testMF1_Container,testMF3_Container")
     public IAtomContainer[] getFrameworksAsContainers() {
         return frameMap.values().toArray(new IAtomContainer[0]);
     }

@@ -46,7 +46,6 @@ public class SignatureFingerprinter implements IFingerprinter {
     /**
      * Initialize the fingerprinter with a defult signature depth of 1.
      */
-    @TestMethod("testFingerprint")
     public SignatureFingerprinter() {
     	this(1);
     }
@@ -56,7 +55,6 @@ public class SignatureFingerprinter implements IFingerprinter {
      *
      * @param depth The depth of the signatures to calculate.
      */
-    @TestMethod("testFingerprint")
     public SignatureFingerprinter(int depth) {
         this.signatureDepth = depth;
     }
@@ -66,7 +64,7 @@ public class SignatureFingerprinter implements IFingerprinter {
     		return new IntArrayFingerprint(getRawFingerprint(atomContainer));
     }
 
-    @TestMethod("testFingerprint")
+    @TestMethod("testGetRawFingerprint")
     public Map<String, Integer> getRawFingerprint(IAtomContainer atomContainer) throws CDKException {
     	Map<String, Integer> map = new HashMap<String,Integer>();
     	for (IAtom atom : atomContainer.atoms()) {
@@ -88,7 +86,7 @@ public class SignatureFingerprinter implements IFingerprinter {
     }
 
 	@Override
-	@TestMethod("testCountFingerprint")
+	@TestMethod("testGetCountFingerprint")
 	public ICountFingerprint getCountFingerprint(IAtomContainer container)
 			throws CDKException {
 		return new IntArrayCountFingerprint(getRawFingerprint(container));

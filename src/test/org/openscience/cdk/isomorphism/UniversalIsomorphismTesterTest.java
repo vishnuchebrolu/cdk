@@ -113,18 +113,18 @@ public class UniversalIsomorphismTesterTest extends CDKTestCase
         atomContainer.addAtom(builder.newInstance(IAtom.class,"N"));
         atomContainer.addBond(0, 1, IBond.Order.SINGLE);
         atomContainer.addBond(1, 2, IBond.Order.SINGLE);
-        IQueryAtomContainer query = new QueryAtomContainer();
-        IQueryAtom a1 = new SymbolQueryAtom();
+        IQueryAtomContainer query = new QueryAtomContainer(DefaultChemObjectBuilder.getInstance());
+        IQueryAtom a1 = new SymbolQueryAtom(DefaultChemObjectBuilder.getInstance());
         a1.setSymbol("C");
 
-        AnyAtom a2 = new AnyAtom();
+        AnyAtom a2 = new AnyAtom(DefaultChemObjectBuilder.getInstance());
 
-        IBond b1 = new OrderQueryBond(a1, a2, IBond.Order.SINGLE);
+        IBond b1 = new OrderQueryBond(a1, a2, IBond.Order.SINGLE, DefaultChemObjectBuilder.getInstance());
 
-        IQueryAtom a3 = new SymbolQueryAtom();
+        IQueryAtom a3 = new SymbolQueryAtom(DefaultChemObjectBuilder.getInstance());
         a3.setSymbol("C");
 
-        IBond b2 = new OrderQueryBond(a2, a3, IBond.Order.SINGLE);
+        IBond b2 = new OrderQueryBond(a2, a3, IBond.Order.SINGLE, DefaultChemObjectBuilder.getInstance());
         query.addAtom(a1);
         query.addAtom(a2);
         query.addAtom(a3);
@@ -495,6 +495,34 @@ public class UniversalIsomorphismTesterTest extends CDKTestCase
 		}
     }
 
+    @Test
+    public void testSingleAtomMatching() throws Exception {
+
+        SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
+
+        IAtomContainer target = sp.parseSmiles("C");
+        IAtomContainer query = sp.parseSmiles("C");
+
+        UniversalIsomorphismTester tester = new UniversalIsomorphismTester();
+        Assert.assertTrue(tester.isIsomorph(target, query));
+        Assert.assertTrue(tester.isIsomorph(query, target));
+    }
+
+    @Test
+    public void testSingleAtomMismatching() throws Exception {
+
+        SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
+
+        IAtomContainer target = sp.parseSmiles("C");
+        IAtomContainer query = sp.parseSmiles("N");
+
+        UniversalIsomorphismTester tester = new UniversalIsomorphismTester();
+        Assert.assertFalse("Single carbon and nitrogen should not match",
+                           tester.isIsomorph(target, query));
+        Assert.assertFalse("Single nitrogen and carbon should not match",
+                           tester.isIsomorph(query, target));
+    }
+
     /**
      * @cdk.bug 2888845
      * @throws Exception
@@ -610,24 +638,24 @@ public class UniversalIsomorphismTesterTest extends CDKTestCase
      */
     @Test
     public void testUITSymmetricMatch() throws Exception {
-        QueryAtomContainer q = new QueryAtomContainer();
+        QueryAtomContainer q = new QueryAtomContainer(DefaultChemObjectBuilder.getInstance());
         //setting atoms
-        IQueryAtom a0 = new AliphaticSymbolAtom("C");
+        IQueryAtom a0 = new AliphaticSymbolAtom("C", DefaultChemObjectBuilder.getInstance());
         q.addAtom(a0);
-        IQueryAtom a1 = new AnyAtom();
+        IQueryAtom a1 = new AnyAtom(DefaultChemObjectBuilder.getInstance());
         q.addAtom(a1);
-        IQueryAtom a2 = new AnyAtom();
+        IQueryAtom a2 = new AnyAtom(DefaultChemObjectBuilder.getInstance());
         q.addAtom(a2);
-        IQueryAtom a3 = new AliphaticSymbolAtom("C");
+        IQueryAtom a3 = new AliphaticSymbolAtom("C", DefaultChemObjectBuilder.getInstance());
         q.addAtom(a3);
         //setting bonds
-        org.openscience.cdk.isomorphism.matchers.smarts.OrderQueryBond b0 = new org.openscience.cdk.isomorphism.matchers.smarts.OrderQueryBond(IBond.Order.SINGLE);
+        org.openscience.cdk.isomorphism.matchers.smarts.OrderQueryBond b0 = new org.openscience.cdk.isomorphism.matchers.smarts.OrderQueryBond(IBond.Order.SINGLE, DefaultChemObjectBuilder.getInstance());
         b0.setAtoms(new IAtom[]{a0, a1});
         q.addBond(b0);
-        org.openscience.cdk.isomorphism.matchers.smarts.OrderQueryBond b1 = new org.openscience.cdk.isomorphism.matchers.smarts.OrderQueryBond(IBond.Order.SINGLE);
+        org.openscience.cdk.isomorphism.matchers.smarts.OrderQueryBond b1 = new org.openscience.cdk.isomorphism.matchers.smarts.OrderQueryBond(IBond.Order.SINGLE, DefaultChemObjectBuilder.getInstance());
         b1.setAtoms(new IAtom[]{a1, a2});
         q.addBond(b1);
-        org.openscience.cdk.isomorphism.matchers.smarts.OrderQueryBond b2 = new org.openscience.cdk.isomorphism.matchers.smarts.OrderQueryBond(IBond.Order.SINGLE);
+        org.openscience.cdk.isomorphism.matchers.smarts.OrderQueryBond b2 = new org.openscience.cdk.isomorphism.matchers.smarts.OrderQueryBond(IBond.Order.SINGLE, DefaultChemObjectBuilder.getInstance());
         b2.setAtoms(new IAtom[]{a2, a3});
         q.addBond(b2);
 

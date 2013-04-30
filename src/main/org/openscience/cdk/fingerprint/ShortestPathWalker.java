@@ -1,6 +1,6 @@
-/* $Revision$ $Author$ $Date$
- *
+/*
  * Copyright (C) 2012   Syed Asad Rahman <asad@ebi.ac.uk>
+ *               2013   John May         <jwmay@users.sf.net>
  *           
  *
  * Contact: cdk-devel@lists.sourceforge.net
@@ -27,127 +27,157 @@ package org.openscience.cdk.fingerprint;
 
 import java.util.*;
 import org.openscience.cdk.CDKConstants;
-import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.graph.PathTools;
+import org.openscience.cdk.annotations.TestClass;
+import org.openscience.cdk.annotations.TestMethod;
+import org.openscience.cdk.graph.AllPairsShortestPaths;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IPseudoAtom;
-import org.openscience.cdk.tools.periodictable.PeriodicTable;
 
 /**
  *
- * @author Syed Asad Rahman (2012) 
- * @cdk.keyword fingerprint 
- * @cdk.keyword similarity 
+ * @author Syed Asad Rahman (2012)
+ * @author John May (2013)
+ * @cdk.keyword fingerprint
+ * @cdk.keyword similarity
  * @cdk.module fingerprint
  * @cdk.githash
  *
  */
-public class ShortestPathWalker {
+@TestClass("org.openscience.cdk.fingerprint.ShortestPathWalkerTest")
+public final class ShortestPathWalker {
 
-    private static final long serialVersionUID = 0x3b728f46;
-    private final IAtomContainer atomContainer;
-    private final Set<String> cleanPath;
+    /* container which is being traversed */
+    private final IAtomContainer container;
+
+    /* set of encoded atom paths */
+    private final Set<String> paths;
+
+    /* list of encoded pseudo atoms */
     private final List<String> pseudoAtoms;
-    private int pseduoAtomCounter;
-    private final Set<StringBuilder> allPaths;
+
+    /* maximum number of shortest paths, when there is more then one path */
+    private static final int MAX_SHORTEST_PATHS = 5;
 
     /**
+     * Create a new shortest path walker for a given container.
+     * @param container the molecule to encode the shortest paths
+     */
+    public ShortestPathWalker(IAtomContainer container) {
+        this.container   = container;
+        this.pseudoAtoms = new ArrayList<String>(5);
+        this.paths       = Collections.unmodifiableSet(traverse());
+    }
+
+    /**
+     * Access a set of all shortest paths.
+     * @return the paths
+     */
+    @TestMethod("testPaths")
+    public Set<String> paths() {
+        return Collections.unmodifiableSet(paths);
+    }
+
+    /**
+     * Traverse all-pairs of shortest-paths within a chemical graph.
+     */
+    private Set<String> traverse() {
+
+        Set<String> paths = new TreeSet<String>();
+
+        // All-Pairs Shortest-Paths (APSP)
+        AllPairsShortestPaths apsp = new AllPairsShortestPaths(container);
+
+        for (int i = 0, n = container.getAtomCount(); i < n; i++) {
+
+            paths.add(toAtomPattern(container.getAtom(i)));
+
+            // only do the comparison for i,j then reverse the path for j,i
+            for (int j = i + 1; j < n; j++) {
+
+                int nPaths = apsp.from(i).nPathsTo(j);
+
+                // only encode when there is a manageable number of paths
+                if (nPaths > 0 && nPaths < MAX_SHORTEST_PATHS) {
+
+                    for(int[] path : apsp.from(i).pathsTo(j)){
+                        paths.add(encode(path));
+                        paths.add(encode(reverse(path)));
+                    }
+
+                }
+
+            }
+        }
+
+        return paths;
+
+    }
+
+    /**
+     * Reverse an array of integers.
      *
-     * @param atomContainer
-     * @throws CloneNotSupportedException
-     * @throws CDKException
+     * @param src array to reverse
+     * @return reversed copy of <i>src</i>
      */
-    public ShortestPathWalker(IAtomContainer atomContainer) {
-        this.cleanPath = new HashSet<String>();
-        this.atomContainer = atomContainer;
-        this.pseudoAtoms = new ArrayList<String>();
-        this.pseduoAtomCounter = 0;
-        this.allPaths = new HashSet<StringBuilder>();
-        findPaths();
+    private int[] reverse(int[] src) {
+        int[] dest = Arrays.copyOf(src, src.length);
+        int left = 0;
+        int right = src.length - 1;
+
+        while (left < right) {
+            // swap the values at the left and right indices
+            dest[left] = src[right];
+            dest[right] = src[left];
+
+            // move the left and right index pointers in toward the center
+            left++; right--;
+        }
+        return dest;
     }
 
     /**
-     * @return the cleanPath
+     * Encode the provided path of atoms to a string.
+     *
+     * @param path inclusive array of vertex indices
+     * @return encoded path
      */
-    public Set<String> getPaths() {
-        return Collections.unmodifiableSet(cleanPath);
+    private String encode(int[] path) {
+
+        StringBuilder sb = new StringBuilder(path.length * 3);
+
+        for (int i = 0, n = path.length - 1; i <= n; i++) {
+
+            IAtom atom = container.getAtom(path[i]);
+
+            sb.append(toAtomPattern(atom));
+
+            if(atom instanceof IPseudoAtom) {
+                pseudoAtoms.add(atom.getSymbol());
+                // potential bug, although the atoms are canonical we cannot guarantee the order we will visit them.
+                // sb.append(PeriodicTable.getElementCount() + pseudoAtoms.size());
+            }
+
+            // if we are not at the last index, add the connecting bond
+            if(i < n){
+                IBond bond = container.getBond(container.getAtom(path[i]),
+                                               container.getAtom(path[i + 1]));
+                sb.append(getBondSymbol(bond));
+            }
+
+        }
+
+        return sb.toString();
     }
 
     /**
-     * @return the cleanPath
+     * Convert an atom to a string representation. Currently this method just
+     * returns the symbol but in future may include other properties, such as, stereo
+     * descriptor and charge.
+     * @param atom The atom to encode
+     * @return encoded atom
      */
-    public int getPathCount() {
-        return cleanPath.size();
-    }
-
-    private void findPaths() {
-        pseudoAtoms.clear();
-        traverseShortestPaths();
-
-        for (StringBuilder s : allPaths) {
-            String clean = s.toString().trim();
-            if (!clean.isEmpty())
-                cleanPath.add(clean);
-        }
-    }
-
-    /*
-     * This module generates shortest path between two atoms
-     */
-    private void traverseShortestPaths() {
-        /*
-         * Canonicalisation of atoms for reporting unique paths with consistency
-         */
-        Collection<IAtom> canonicalizeAtoms = new SimpleAtomCanonicalizer().canonicalizeAtoms(atomContainer);
-        for (IAtom sourceAtom : canonicalizeAtoms) {
-            StringBuilder sb = new StringBuilder();
-            setAtom(sourceAtom, sb);
-            if (!allPaths.contains(sb)) {
-                allPaths.add(sb);
-            }
-            for (IAtom sinkAtom : canonicalizeAtoms) {
-                sb = new StringBuilder();
-                if (sourceAtom == sinkAtom) {
-                    continue;
-                }
-                List<IAtom> shortestPath = PathTools.getShortestPath(atomContainer, sourceAtom, sinkAtom);
-                if (shortestPath == null || shortestPath.isEmpty() || shortestPath.size() < 2) {
-                    continue;
-                }
-                //System.out.println("Path length " + shortestPath.size());
-                IAtom atomCurrent = shortestPath.get(0);
-                for (int i = 1; i < shortestPath.size(); i++) {
-                    IAtom atomNext = shortestPath.get(i);
-                    setAtom(atomCurrent, sb);
-                    sb.append(getBondSymbol(atomContainer.getBond(atomCurrent, atomNext)));
-                    atomCurrent = atomNext;
-                }
-                setAtom(atomCurrent, sb);
-                allPaths.add(sb);
-            }
-        }
-    }
-
-    private void setAtom(IAtom atomCurrent, StringBuilder sb) {
-        if (atomCurrent instanceof IPseudoAtom) {
-            if (!pseudoAtoms.contains(atomCurrent.getSymbol())) {
-                pseudoAtoms.add(pseduoAtomCounter, atomCurrent.getSymbol());
-                pseduoAtomCounter += 1;
-            }
-            sb.append((char) (PeriodicTable.getElementCount()
-                    + pseudoAtoms.indexOf(atomCurrent.getSymbol()) + 1));
-        } else {
-            Integer atnum = PeriodicTable.getAtomicNumber(atomCurrent.getSymbol());
-            if (atnum != null) {
-                sb.append(toAtomPattern(atomCurrent));
-            } else {
-                sb.append((char) PeriodicTable.getElementCount() + 1);
-            }
-        }
-    }
-
     private String toAtomPattern(IAtom atom) {
         return atom.getSymbol();
     }
@@ -157,7 +187,7 @@ public class ShortestPathWalker {
      *
      * @param bond Description of the Parameter
      * @return The bondSymbol value
-     */
+     *]\     */
     private char getBondSymbol(IBond bond) {
         if (isSP2Bond(bond)) {
             return '@';
@@ -184,12 +214,22 @@ public class ShortestPathWalker {
         return bond.getFlag(CDKConstants.ISAROMATIC);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
+    @TestMethod("testToString")
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        for (String path : cleanPath) {
-            sb.append(path).append("->");
+        int      n       = this.paths.size();
+        String[] paths   = this.paths.toArray(new String[n]);
+        StringBuilder sb = new StringBuilder(n * 5);
+
+        for(int i = 0, last = n - 1; i < n; i++){
+            sb.append(paths[i]);
+            if(i != last)
+                sb.append("->");
         }
+
         return sb.toString();
     }
 }

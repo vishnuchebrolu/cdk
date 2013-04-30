@@ -109,6 +109,7 @@ public class Tanimoto
      * @return The Tanimoto coefficient
      * @throws IllegalArgumentException if bitsets are not of the same length
      */
+    @TestMethod("testCalculate_BitFingerprint")
     public static double calculate( IBitFingerprint fingerprint1, 
                                    IBitFingerprint fingerprint2 ) {
         if (fingerprint1.size() != fingerprint2.size()) {
@@ -225,6 +226,7 @@ public class Tanimoto
      * @param fp2 count fingerprint 2
      * @return a Tanimoto distance
      */
+    @TestMethod("testCountMethod1and2")
     public static double method1( ICountFingerprint fp1, 
                                   ICountFingerprint fp2) {
     	return calculate(fp1, fp2);
@@ -237,6 +239,7 @@ public class Tanimoto
      * @param fp2 count fingerprint 2
      * @return a Tanimoto distance
      */
+    @TestMethod("testCountMethod1and2")
     public static double method2( ICountFingerprint fp1,
                                   ICountFingerprint fp2) {
     	

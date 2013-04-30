@@ -29,9 +29,13 @@ import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smiles.SmilesGenerator;
 import org.openscience.cdk.smiles.SmilesParser;
+import org.openscience.cdk.templates.MoleculeFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Test Murcko fragmenter.
@@ -76,6 +80,14 @@ public class MurckoFragmenterTest extends CDKTestCase {
     }
 
     @Test
+    public void testMF3_Container() throws Exception {
+        IAtomContainer mol = smilesParser.parseSmiles("C(CC1=C2C=CC=CC2=CC2=C1C=CC=C2)C1CCCCC1");
+        fragmenter.generateFragments(mol);
+        IAtomContainer[] frameworks = fragmenter.getFrameworksAsContainers();
+        Assert.assertEquals(1, frameworks.length);
+    }
+
+    @Test
     public void testMF1() throws Exception {
         IAtomContainer mol = smilesParser.parseSmiles("c1ccccc1PP(B)c1cccc(N(N)N)c1SC1CCC1");
         MurckoFragmenter fragmenter = new MurckoFragmenter(false, 2);
@@ -87,6 +99,20 @@ public class MurckoFragmenterTest extends CDKTestCase {
         String[] rings = fragmenter.getRingSystems();
         Assert.assertEquals(2, rings.length);
     }
+
+    @Test
+    public void testMF1_Container() throws Exception {
+        IAtomContainer mol = smilesParser.parseSmiles("c1ccccc1PP(B)c1cccc(N(N)N)c1SC1CCC1");
+        MurckoFragmenter fragmenter = new MurckoFragmenter(false, 2);
+
+        fragmenter.generateFragments(mol);
+        IAtomContainer[] frameworks = fragmenter.getFrameworksAsContainers();
+        Assert.assertEquals(3, frameworks.length);
+
+        IAtomContainer[] rings = fragmenter.getRingSystemsAsContainers();
+        Assert.assertEquals(2, rings.length);
+    }
+
 
     @Test
     public void testMF2() throws Exception {
@@ -259,6 +285,20 @@ public class MurckoFragmenterTest extends CDKTestCase {
             String newsmiles = sg.createSMILES(fc[i]);
             Assert.assertTrue(f[i] + " did not match the container, " + newsmiles, f[i].equals(newsmiles));
         }
+    }
+
+    @Test public void testGetFragmentsAsContainers() throws Exception {
+
+        IAtomContainer biphenyl = MoleculeFactory.makeBiphenyl();
+        CDKHueckelAromaticityDetector.detectAromaticity(biphenyl);
+
+        MurckoFragmenter fragmenter = new MurckoFragmenter(true, 6);
+        fragmenter.generateFragments(biphenyl);
+        IAtomContainer[] fragments = fragmenter.getFragmentsAsContainers();
+
+        assertThat(fragments.length, is(2));
+        assertThat(fragments[0].getAtomCount(), is(12));
+        assertThat(fragments[1].getAtomCount(), is(6));
     }
 
 }

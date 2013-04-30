@@ -25,6 +25,7 @@
 package org.openscience.cdk.fingerprint;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -53,7 +54,7 @@ public class PubchemFingerprinterTest extends AbstractFixedLengthFingerprinterTe
     SmilesParser parser;
 
     public IFingerprinter getBitFingerprinter() {
-        return new PubchemFingerprinter();
+        return new PubchemFingerprinter(DefaultChemObjectBuilder.getInstance());
     }
 
     @Before
@@ -62,14 +63,14 @@ public class PubchemFingerprinterTest extends AbstractFixedLengthFingerprinterTe
     }
 
     @Test
-    public void getsize() throws Exception {
-        IFingerprinter printer = new PubchemFingerprinter();
+    public void testGetSize() throws Exception {
+        IFingerprinter printer = new PubchemFingerprinter(DefaultChemObjectBuilder.getInstance());
         Assert.assertEquals(881, printer.getSize());
     }
 
     @Test
     public void testFingerprint() throws Exception {
-        IFingerprinter printer = new PubchemFingerprinter();
+        IFingerprinter printer = new PubchemFingerprinter(DefaultChemObjectBuilder.getInstance());
         CDKHydrogenAdder adder = CDKHydrogenAdder.getInstance(DefaultChemObjectBuilder.getInstance());
 
         IAtomContainer mol1 = parser.parseSmiles("c1ccccc1CCc1ccccc1");
@@ -98,7 +99,7 @@ public class PubchemFingerprinterTest extends AbstractFixedLengthFingerprinterTe
 
     @Test
     public void testfp2() throws Exception {
-        IFingerprinter printer = new PubchemFingerprinter();
+        IFingerprinter printer = new PubchemFingerprinter(DefaultChemObjectBuilder.getInstance());
 
         IAtomContainer mol1 = parser.parseSmiles("CC(N)CCCN");
         IAtomContainer mol2 = parser.parseSmiles("CC(N)CCC");
@@ -135,7 +136,7 @@ public class PubchemFingerprinterTest extends AbstractFixedLengthFingerprinterTe
         AtomContainerManipulator.convertImplicitToExplicitHydrogens(mol);
         CDKHueckelAromaticityDetector.detectAromaticity(mol);
 
-        IFingerprinter printer = new PubchemFingerprinter();
+        IFingerprinter printer = new PubchemFingerprinter(DefaultChemObjectBuilder.getInstance());
         BitSet fp = printer.getBitFingerprint(mol).asBitSet();
         BitSet ref = PubchemFingerprinter.decode("AAADceBwPABAAAAAAAAAAAAAAAAAAAAAAAAkSAAAAAAAAAAAAAAAGgQACAAACBS0wAOCCAAABgQAAAAAAAAAAAAAAAAAAAAAAAAREAIAAAAiQAAFAAAHAAHAYAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==");
 
@@ -157,7 +158,7 @@ public class PubchemFingerprinterTest extends AbstractFixedLengthFingerprinterTe
         AtomContainerManipulator.convertImplicitToExplicitHydrogens(mol);
         CDKHueckelAromaticityDetector.detectAromaticity(mol);
 
-        IFingerprinter printer = new PubchemFingerprinter();
+        IFingerprinter printer = new PubchemFingerprinter(DefaultChemObjectBuilder.getInstance());
         BitSet fp = printer.getBitFingerprint(mol).asBitSet();
         BitSet ref = PubchemFingerprinter.decode("AAADceB+AAAAAAAAAAAAAAAAAAAAAAAAAAA8YMGCAAAAAAAB1AAAHAAAAAAADAjBHgQwgJMMEACgAyRiRACCgCAhAiAI2CA4ZJgIIOLAkZGEIAhggADIyAcQgMAOgAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==");
 
@@ -179,13 +180,61 @@ public class PubchemFingerprinterTest extends AbstractFixedLengthFingerprinterTe
           AtomContainerManipulator.convertImplicitToExplicitHydrogens(mol);
           CDKHueckelAromaticityDetector.detectAromaticity(mol);
 
-          IFingerprinter printer = new PubchemFingerprinter();
+          IFingerprinter printer = new PubchemFingerprinter(DefaultChemObjectBuilder.getInstance());
           BitSet fp = printer.getBitFingerprint(mol).asBitSet();
           BitSet ref = PubchemFingerprinter.decode("AAADccBzMAAGAAAAAAAAAAAAAAAAAAAAAAA8QAAAAAAAAAABwAAAHgIYCAAADA6BniAwzpJqEgCoAyTyTASChCAnJiIYumGmTtgKJnLD1/PEdQhkwBHY3Qe82AAOIAAAAAAAAABAAAAAAAAAAAAAAAAAAA==");
 
           Assert.assertEquals(ref, fp);
       }
-    
+
+    @Test
+    public void testGetFingerprintAsBytes() throws CDKException {
+
+        IAtomContainer mol = parser.parseSmiles("C=C(C1=CC=C(C=C1)O)NNC2=C(C(=NC(=C2Cl)Cl)C(=O)O)Cl");
+
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+        CDKHydrogenAdder adder = CDKHydrogenAdder.getInstance(mol.getBuilder());
+        adder.addImplicitHydrogens(mol);
+        AtomContainerManipulator.convertImplicitToExplicitHydrogens(mol);
+        CDKHueckelAromaticityDetector.detectAromaticity(mol);
+
+        PubchemFingerprinter printer = new PubchemFingerprinter(mol.getBuilder());
+        BitSet fp = printer.getBitFingerprint(mol).asBitSet();
+
+        byte[] actual   = printer.getFingerprintAsBytes();
+        byte[] expected = Arrays.copyOf(toByteArray(fp), actual.length);
+
+        Assert.assertArrayEquals(expected, actual);
+
+    }
+
+    // adapted from: http://stackoverflow.com/questions/6197411/converting-from-bitset-to-byte-array
+    public static byte[] toByteArray(BitSet bits) {
+        byte[] bytes = new byte[bits.length() / 8 + 1];
+        for (int i = 0; i < bits.length(); i++) {
+            if (bits.get(i)) {
+                bytes[i/8] |= 1<<(7-i%8);
+            }
+        }
+        return bytes;
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDecode_invalid(){
+        PubchemFingerprinter.decode("a");
+    }
+
+    @Test
+    public void testDecode(){
+        BitSet bitSet = PubchemFingerprinter.decode("AAADcYBgAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAABAAAAGAAAAAAACACAEAAwAIAAAACAACBCAAACAAAgAAAIiAAAAIgIICKAERCAIAAggAAIiAcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==");
+        int[] setBits = new int[]{ 0,   9,   10,  178, 179, 255, 283, 284, 332, 344, 355, 370,
+                                   371, 384, 416, 434, 441, 446, 470, 490, 516, 520, 524, 552,
+                                   556, 564, 570, 578, 582, 584, 595, 599, 603, 608, 618, 634,
+                                   640, 660, 664, 668, 677, 678, 679};
+        for(int set : setBits ){
+            Assert.assertTrue("bit " + set + " was not set", bitSet.get(set));
+        }
+    }
 
     @Test
     public void testBenzene() throws CDKException {
@@ -196,7 +245,7 @@ public class PubchemFingerprinterTest extends AbstractFixedLengthFingerprinterTe
         AtomContainerManipulator.convertImplicitToExplicitHydrogens(mol);
 
         CDKHueckelAromaticityDetector.detectAromaticity(mol);
-        IFingerprinter printer = new PubchemFingerprinter();
+        IFingerprinter printer = new PubchemFingerprinter(DefaultChemObjectBuilder.getInstance());
         BitSet fp = printer.getBitFingerprint(mol).asBitSet();
         BitSet ref = PubchemFingerprinter.decode("AAADcYBgAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAABAAAAGAAAAAAACACAEAAwAIAAAACAACBCAAACAAAgAAAIiAAAAIgIICKAERCAIAAggAAIiAcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==");
 
@@ -223,7 +272,7 @@ public class PubchemFingerprinterTest extends AbstractFixedLengthFingerprinterTe
         CDKHueckelAromaticityDetector.detectAromaticity(mol2);
 
 
-        IFingerprinter fp = new PubchemFingerprinter();
+        IFingerprinter fp = new PubchemFingerprinter(DefaultChemObjectBuilder.getInstance());
         BitSet bs1 = fp.getBitFingerprint(mol1).asBitSet();
         BitSet bs2 = fp.getBitFingerprint(mol2).asBitSet();
 
@@ -234,7 +283,7 @@ public class PubchemFingerprinterTest extends AbstractFixedLengthFingerprinterTe
             }
             public BitSet call() throws Exception {
                 BitSet fp = null;
-                IFingerprinter fpr = new PubchemFingerprinter();
+                IFingerprinter fpr = new PubchemFingerprinter(DefaultChemObjectBuilder.getInstance());
                 try {
                     fp = fpr.getBitFingerprint(mol).asBitSet();
                 } catch (CDKException e) {

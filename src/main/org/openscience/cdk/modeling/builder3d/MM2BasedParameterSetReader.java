@@ -33,6 +33,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +41,12 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.openscience.cdk.AtomType;
+import org.openscience.cdk.DefaultChemObjectBuilder;
+import org.openscience.cdk.config.IsotopeFactory;
 import org.openscience.cdk.interfaces.IAtomType;
+import org.openscience.cdk.interfaces.IChemObjectBuilder;
+import org.openscience.cdk.interfaces.IIsotope;
+import org.openscience.cdk.tools.periodictable.PeriodicTable;
 
 /**
  * AtomType list configurator that uses the ParameterSet originally
@@ -67,7 +73,7 @@ public class MM2BasedParameterSetReader {
 	 */
 	public MM2BasedParameterSetReader() {
 		parameterSet = new Hashtable<String,Object>();
-		atomTypes = new Vector<IAtomType>();
+		atomTypes = new ArrayList<IAtomType>();
 	}
 
 	public Map<String,Object> getParamterSet(){
@@ -291,6 +297,7 @@ public class MM2BasedParameterSetReader {
 		IAtomType atomType = new AtomType(name, rootType);
 		atomType.setAtomicNumber(an);
 		atomType.setExactMass(mass);
+		atomType.setMassNumber(massNumber(an, mass));
 		atomType.setFormalNeighbourCount(maxbond);
 		atomType.setSymbol(rootType);
 		Color co = new Color(rl, gl, bl);
@@ -810,7 +817,7 @@ public class MM2BasedParameterSetReader {
 		//logger.debug("------ ReadParameterSets ------");
 
 		if (ins == null) {
-			ins = getClass().getResourceAsStream(configFile);
+			ins = getClass().getClassLoader().getResourceAsStream(configFile);
 		}
 		if (ins == null) {
 			throw new IOException("There was a problem getting the default stream: " + configFile);
@@ -892,6 +899,23 @@ public class MM2BasedParameterSetReader {
 			throw new IOException("There was a problem parsing the mm2 forcefield due to:"+e.toString());
 		}
 	}
+
+    /**
+     * Mass number for a atom with a given atomic number and exact mass.
+     * @param atomicNumber atomic number
+     * @param exactMass exact mass
+     * @return the mass number (or null) if no mass number was found
+     * @throws IOException isotope configuration could not be loaded
+     */
+    private Integer massNumber(int atomicNumber, double exactMass) throws IOException {
+        String symbol = PeriodicTable.getSymbol(atomicNumber);
+        IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
+        IIsotope isotope = IsotopeFactory.getInstance(builder)
+                                         .getIsotope(symbol,
+                                                     exactMass,
+                                                     0.001);
+        return isotope != null ? isotope.getMassNumber() : null;
+    }
 }
 
 

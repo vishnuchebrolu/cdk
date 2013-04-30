@@ -94,7 +94,6 @@ public class ShortestPathFingerprinter extends RandomNumber implements IFingerpr
      * Creates a fingerprint generator of length
      * <code>DEFAULT_SIZE</code>
      */
-    @TestMethod("testFingerprint")
     public ShortestPathFingerprinter() {
         this(DEFAULT_SIZE);
     }
@@ -146,27 +145,12 @@ public class ShortestPathFingerprinter extends RandomNumber implements IFingerpr
      *
      * @param ac The AtomContainer for which a fingerprint is generated
      * @return Map of raw fingerprint paths/features
-     * @exception CDKException if there error in aromaticity perception or other CDK functions
+     * @throws UnsupportedOperationException method is not supported
      */
     @Override
+    @TestMethod("testGetRawFingerprint")
     public Map<String, Integer> getRawFingerprint(IAtomContainer ac) throws CDKException {
-        IAtomContainer atomContainer = null;
-        try {
-            atomContainer = (IAtomContainer) ac.clone();
-        } catch (CloneNotSupportedException ex) {
-            logger.error("Failed to clone the molecule:", ex);
-        }
-        CDKHueckelAromaticityDetector.detectAromaticity(atomContainer);
-        Map<String, Integer> uniquePaths = new TreeMap<String, Integer>();
-        if (!ConnectivityChecker.isConnected(atomContainer)) {
-            IAtomContainerSet partitionedMolecules = ConnectivityChecker.partitionIntoMolecules(atomContainer);
-            for (IAtomContainer container : partitionedMolecules.atomContainers()) {
-                addUniquePath(container, uniquePaths);
-            }
-        } else {
-            addUniquePath(atomContainer, uniquePaths);
-        }
-        return uniquePaths;
+        throw new UnsupportedOperationException();
     }
 
     private void addUniquePath(IAtomContainer container, BitSet bitSet) {
@@ -202,7 +186,7 @@ public class ShortestPathFingerprinter extends RandomNumber implements IFingerpr
         List<Integer> paths = new ArrayList<Integer>();
         int patternIndex = 0;
 
-        for (String s : walker.getPaths()) {
+        for (String s : walker.paths()) {
             int toHashCode = s.hashCode();
             paths.add(patternIndex, toHashCode);
             patternIndex++;
@@ -268,12 +252,13 @@ public class ShortestPathFingerprinter extends RandomNumber implements IFingerpr
     }
 
     @Override
-    @TestMethod("testSize")
+    @TestMethod("testGetSize")
     public int getSize() {
         return fingerprintLength;
     }
 
     @Override
+    @TestMethod("testGetCountFingerprint")
     public ICountFingerprint getCountFingerprint(IAtomContainer iac) throws CDKException {
         throw new UnsupportedOperationException("Not supported yet.");
     }

@@ -40,6 +40,7 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IChemObject;
+import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.interfaces.IPseudoAtom;
 import org.openscience.cdk.tools.ILoggingTool;
 import org.openscience.cdk.tools.LoggingToolFactory;
@@ -61,7 +62,7 @@ import org.openscience.cdk.tools.LoggingToolFactory;
  * including a root plus a bunch of substituents, which are all atom containers.
  * So that would be a lot of sample code here. <br>
  * The best way to get a feel for the way the RGroup objects are populated is to
- * run the {@link org.openscience.cdk.io.RGroupQueryReaderTest} and look at the sample
+ * run the RGroupQueryReaderTest and look at the sample
  * input RGroup query files contained in the CDK and how they translate into
  * RGroupXX objects. The JChempaint application can visualize the input files for you. 
  *
@@ -95,6 +96,9 @@ public class RGroupQuery extends QueryChemObject implements IChemObject, Seriali
      */
     private Map<IAtom, Map<Integer, IBond>> rootAttachmentPoints;
 
+    public RGroupQuery(IChemObjectBuilder builder){
+        super(builder);
+    }
 
     /**
      * Returns all R# type atoms (pseudo atoms) found in the root structure

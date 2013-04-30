@@ -48,13 +48,20 @@ import org.openscience.cdk.interfaces.IAtomType;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.interfaces.IElement;
+import org.openscience.cdk.interfaces.ITetrahedralChirality;
 import org.openscience.cdk.io.ISimpleChemObjectReader;
 import org.openscience.cdk.io.MDLV2000Reader;
 import org.openscience.cdk.isomorphism.UniversalIsomorphismTester;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
+import org.openscience.cdk.stereo.TetrahedralChirality;
 import org.openscience.cdk.templates.MoleculeFactory;
 import org.openscience.cdk.tools.CDKHydrogenAdder;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * @cdk.module test-standard
@@ -206,6 +213,86 @@ public class AtomContainerManipulatorTest extends CDKTestCase {
         IAtomContainer ac = AtomContainerManipulator.removeHydrogens(mol);
         Assert.assertEquals(2, ac.getAtomCount());
         Assert.assertTrue(ac.getFlag(CDKConstants.ISAROMATIC));
+    }
+
+    private IAtomContainer getChiralMolTemplate() {
+        IAtomContainer molecule = new AtomContainer();
+        molecule.addAtom(new Atom("Cl"));
+        molecule.addAtom(new Atom("C"));
+        molecule.addAtom(new Atom("Br"));
+        molecule.addAtom(new Atom("H"));
+        molecule.addAtom(new Atom("C"));
+        molecule.addAtom(new Atom("H"));
+        molecule.addAtom(new Atom("H"));
+        molecule.addAtom(new Atom("Cl"));
+        molecule.addBond(0, 1, IBond.Order.SINGLE);
+        molecule.addBond(1, 2, IBond.Order.SINGLE);
+        molecule.addBond(1, 3, IBond.Order.SINGLE);
+        molecule.addBond(1, 4, IBond.Order.SINGLE);
+        molecule.addBond(4, 5, IBond.Order.SINGLE);
+        molecule.addBond(4, 6, IBond.Order.SINGLE);
+        molecule.addBond(4, 7, IBond.Order.SINGLE);
+
+        return molecule;
+    }
+
+    @Test public void testRemoveNonChiralHydrogens_StereoElement() throws Exception {
+
+        IAtomContainer molecule = getChiralMolTemplate();
+        IAtom[] ligands = new IAtom[] {
+                molecule.getAtom(4),
+                molecule.getAtom(3),
+                molecule.getAtom(2),
+                molecule.getAtom(0)
+        };
+
+        TetrahedralChirality chirality = new TetrahedralChirality(
+                molecule.getAtom(1), ligands, ITetrahedralChirality.Stereo.CLOCKWISE
+        );
+        molecule.addStereoElement(chirality);
+
+        Assert.assertEquals(8, molecule.getAtomCount());
+        IAtomContainer ac = AtomContainerManipulator.removeNonChiralHydrogens(molecule);
+        Assert.assertEquals(6, ac.getAtomCount());
+    }
+
+    @Test public void testRemoveNonChiralHydrogens_StereoParity() throws Exception {
+
+        IAtomContainer molecule = getChiralMolTemplate();
+        molecule.getAtom(1).setStereoParity(CDKConstants.STEREO_ATOM_PARITY_MINUS);
+
+        Assert.assertEquals(8, molecule.getAtomCount());
+        IAtomContainer ac = AtomContainerManipulator.removeNonChiralHydrogens(molecule);
+        Assert.assertEquals(6, ac.getAtomCount());
+    }
+
+    @Test public void testRemoveNonChiralHydrogens_StereoBond() throws Exception {
+
+        IAtomContainer molecule = getChiralMolTemplate();
+        molecule.getBond(2).setStereo(IBond.Stereo.UP);
+
+        Assert.assertEquals(8, molecule.getAtomCount());
+        IAtomContainer ac = AtomContainerManipulator.removeNonChiralHydrogens(molecule);
+        Assert.assertEquals(6, ac.getAtomCount());
+    }
+
+    @Test public void testRemoveNonChiralHydrogens_StereoBondHeteroAtom() throws Exception {
+
+        IAtomContainer molecule = getChiralMolTemplate();
+        molecule.getBond(3).setStereo(IBond.Stereo.UP);
+
+        Assert.assertEquals(8, molecule.getAtomCount());
+        IAtomContainer ac = AtomContainerManipulator.removeNonChiralHydrogens(molecule);
+        Assert.assertEquals(6, ac.getAtomCount());
+    }
+
+    @Test public void testRemoveNonChiralHydrogens_IAtomContainer() throws Exception {
+
+        IAtomContainer molecule = getChiralMolTemplate();
+
+        Assert.assertEquals(8, molecule.getAtomCount());
+        IAtomContainer ac = AtomContainerManipulator.removeNonChiralHydrogens(molecule);
+        Assert.assertEquals(5, ac.getAtomCount());
     }
 
     @Test public void testRemoveHydrogensZeroHydrogenCounts() throws IOException, ClassNotFoundException, CDKException{
@@ -791,6 +878,33 @@ public class AtomContainerManipulatorTest extends CDKTestCase {
         String smiles2 = "C1CCCCC1";
         IAtomContainer mol2 = sp.parseSmiles(smiles2);
         Assert.assertTrue(new UniversalIsomorphismTester().isIsomorph(mol, mol2));
+    }
+
+    @Test public void testAnonymise() throws Exception {
+
+        IAtomContainer cyclohexane = MoleculeFactory.makeCyclohexane();
+
+        cyclohexane.getAtom(0).setSymbol("O");
+        cyclohexane.getAtom(2).setSymbol("O");
+        cyclohexane.getAtom(1).setAtomTypeName("remove me");
+        cyclohexane.getAtom(3).setFlag(CDKConstants.ISAROMATIC, true);
+        cyclohexane.getAtom(4).setImplicitHydrogenCount(2);
+        cyclohexane.getBond(0).setFlag(CDKConstants.SINGLE_OR_DOUBLE, true);
+        cyclohexane.getBond(1).setFlag(CDKConstants.ISAROMATIC, true);
+
+        IAtomContainer anonymous = AtomContainerManipulator.anonymise(cyclohexane);
+
+        Assert.assertTrue(new UniversalIsomorphismTester().isIsomorph(anonymous,
+                                                                      MoleculeFactory.makeCyclohexane()));
+
+        assertThat(anonymous.getAtom(0).getSymbol(), is("C"));
+        assertThat(anonymous.getAtom(2).getSymbol(), is("C"));
+        assertNull(anonymous.getAtom(1).getAtomTypeName());
+        assertNull(anonymous.getAtom(4).getImplicitHydrogenCount());
+        assertFalse(anonymous.getAtom(3).getFlag(CDKConstants.ISAROMATIC));
+
+        assertFalse(anonymous.getBond(1).getFlag(CDKConstants.ISAROMATIC));
+        assertFalse(anonymous.getBond(1).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
     }
 
     /**

@@ -94,24 +94,24 @@ public class CDKMCSTest extends CDKTestCase {
     @Test
     public void testSFBug1708336() throws Exception {
         IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
-        IAtomContainer atomContainer = builder.newInstance(AtomContainer.class);
-        atomContainer.addAtom(builder.newInstance(Atom.class, "C"));
-        atomContainer.addAtom(builder.newInstance(Atom.class, "C"));
-        atomContainer.addAtom(builder.newInstance(Atom.class, "N"));
+        IAtomContainer atomContainer = builder.newInstance(IAtomContainer.class);
+        atomContainer.addAtom(builder.newInstance(IAtom.class, "C"));
+        atomContainer.addAtom(builder.newInstance(IAtom.class, "C"));
+        atomContainer.addAtom(builder.newInstance(IAtom.class, "N"));
         atomContainer.addBond(0, 1, IBond.Order.SINGLE);
         atomContainer.addBond(1, 2, IBond.Order.SINGLE);
-        IQueryAtomContainer query = new QueryAtomContainer();
-        IQueryAtom a1 = new SymbolQueryAtom();
+        IQueryAtomContainer query = new QueryAtomContainer(DefaultChemObjectBuilder.getInstance());
+        IQueryAtom a1 = new SymbolQueryAtom(DefaultChemObjectBuilder.getInstance());
         a1.setSymbol("C");
 
-        AnyAtom a2 = new AnyAtom();
+        AnyAtom a2 = new AnyAtom(DefaultChemObjectBuilder.getInstance());
 
-        IBond b1 = new OrderQueryBond(a1, a2, IBond.Order.SINGLE);
+        IBond b1 = new OrderQueryBond(a1, a2, IBond.Order.SINGLE, DefaultChemObjectBuilder.getInstance());
 
-        IQueryAtom a3 = new SymbolQueryAtom();
+        IQueryAtom a3 = new SymbolQueryAtom(DefaultChemObjectBuilder.getInstance());
         a3.setSymbol("C");
 
-        IBond b2 = new OrderQueryBond(a2, a3, IBond.Order.SINGLE);
+        IBond b2 = new OrderQueryBond(a2, a3, IBond.Order.SINGLE,DefaultChemObjectBuilder.getInstance());
         query.addAtom(a1);
         query.addAtom(a2);
         query.addAtom(a3);

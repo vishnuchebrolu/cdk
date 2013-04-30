@@ -723,7 +723,7 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                 }
                 else {
                     queryBondCount++;
-                    newBond = new CTFileQueryBond();
+                    newBond = new CTFileQueryBond(molecule.getBuilder());
                     IAtom[] bondAtoms = {a1,a2};
                     newBond.setAtoms(bondAtoms);
                     newBond.setOrder(null);
@@ -743,7 +743,7 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
             if(queryBondCount==0)          
                 outputContainer = molecule;
             else {
-                outputContainer = new QueryAtomContainer();
+                outputContainer = new QueryAtomContainer(molecule.getBuilder());
             }
 
             outputContainer.setProperty(CDKConstants.TITLE, title);
@@ -971,14 +971,14 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                 if ("D".equals(pseudo.getLabel())) {
 					IAtom newAtom = molecule.getBuilder().newInstance(IAtom.class,atom);
 					newAtom.setSymbol("H");
-                    IIsotope isotope = molecule.getBuilder().newInstance(IIsotope.class,"H", 2);
-                    isotopeFactory.configure(newAtom, isotope);               
+                    IIsotope isotope = molecule.getBuilder().newInstance(IIsotope.class, 1, "H", 2, 2.014101778, 0.0115);
+					isotopeFactory.configure(newAtom, isotope);
 					AtomContainerManipulator.replaceAtomByAtom(molecule, atom, newAtom);
                 } else if ("T".equals(pseudo.getLabel())) {
                     IAtom newAtom = molecule.getBuilder().newInstance(IAtom.class,atom);
 					newAtom.setSymbol("H");
-				    IIsotope isotope = molecule.getBuilder().newInstance(IIsotope.class,"H", 3);
-				    isotopeFactory.configure(newAtom, isotope);               
+				    IIsotope isotope = molecule.getBuilder().newInstance(IIsotope.class, 1, "H", 3, 3.016049278, 0d);
+				    isotopeFactory.configure(newAtom, isotope);
 					AtomContainerManipulator.replaceAtomByAtom(molecule, atom, newAtom);
 				}
 			}

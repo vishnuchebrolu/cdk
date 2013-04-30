@@ -48,6 +48,17 @@
     </bibtex:article>
   </bibtex:entry>
 
+  <bibtex:entry id="Cieplak2001">
+    <bibtex:article>
+      <bibtex:author>Cieplak, T and Wisniewski J. L.</bibtex:author>
+      <bibtex:title>A New Effective Algorithm for the Unambiguous Identification of the Stereochemical Characteristics of Compounds During Their Registration in Databases</bibtex:title>
+      <bibtex:journal>Molecules</bibtex:journal>
+      <bibtex:year>2001</bibtex:year>
+      <bibtex:volume>6</bibtex:volume>      
+      <bibtex:pages>915-926</bibtex:pages>
+    </bibtex:article>
+  </bibtex:entry>
+
   <bibtex:entry id="Moreau1980">
     <bibtex:article>
       <bibtex:author>Moreau G. and Broto P.</bibtex:author>
@@ -397,6 +408,17 @@
     </bibtex:article>
   </bibtex:entry>
   
+  <bibtex:entry id="Ihlenfeldt93">
+    <bibtex:article>
+        <bibtex:author>Wolf Dietrich Ihlenfeldt and Johann Gasteiger</bibtex:author>
+        <bibtex:title>Hash Codes for the Identification and Classification of Molecular Structure Elements</bibtex:title>
+        <bibtex:journal>Journal of Computational Chemistry</bibtex:journal>
+        <bibtex:year>1993</bibtex:year>
+        <bibtex:volume>15</bibtex:volume>
+        <bibtex:pages>793-813</bibtex:pages>
+    </bibtex:article>
+  </bibtex:entry>
+
   <bibtex:entry id="KAB76">
     <bibtex:article>
       <bibtex:author>Kabsch, W.</bibtex:author>
@@ -465,6 +487,15 @@ obtained by accurate mass spectrometry</bibtex:title>
       <bibtex:volume>5</bibtex:volume>
       <bibtex:pages>93-98</bibtex:pages>
     </bibtex:article>
+  </bibtex:entry>
+
+  <bibtex:entry id="Kreher98">
+      <bibtex:book>
+          <bibtex:title>Combinatorial Algorithms Generation Enumeration and Search</bibtex:title>
+          <bibtex:author>Kreher, Donald and Stinson, Douglas</bibtex:author>
+          <bibtex:publisher>CRC Press</bibtex:publisher>
+          <bibtex:year>1998</bibtex:year>
+      </bibtex:book>
   </bibtex:entry>
 
   <bibtex:entry id="MAR89">
@@ -1200,4 +1231,14 @@ Method </bibtex:title>
   	</bibtex:article>
   </bibtex:entry>
 
+  <bibtex:entry id="Vismara97">
+    <bibtex:article>
+      <bibtex:author>Vismara, Philippe</bibtex:author>
+      <bibtex:title>Union of all the minimum cycle bases of a graph</bibtex:title>
+      <bibtex:year>1997</bibtex:year> 
+      <bibtex:doi>10.1.1.47.3674</bibtex:doi>
+      <bibtex:url>http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.47.3674</bibtex:url>
+      <bibtex:journal>Combinatorics</bibtex:journal>
+    </bibtex:article>
+  </bibtex:entry>
 </bibtex:file>

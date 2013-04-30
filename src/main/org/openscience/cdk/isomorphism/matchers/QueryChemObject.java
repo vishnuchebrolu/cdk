@@ -65,10 +65,13 @@ public class QueryChemObject implements IChemObject {
      */
     private short flags; // flags are currently stored as a single short value MAX_FLAG_INDEX < 16
 
-    public QueryChemObject() {
+    private final IChemObjectBuilder builder;
+
+    public QueryChemObject(IChemObjectBuilder builder) {
         chemObjectListeners = null;
         properties = null;
         identifier = null;
+        this.builder = builder;
     }
 
     /**
@@ -299,7 +302,6 @@ public class QueryChemObject implements IChemObject {
     /**
      * @inheritDoc
      */
-    @Override
     public void setFlag(int mask, boolean value)
     {
         // set/unset a bit in the flags value
@@ -313,7 +315,6 @@ public class QueryChemObject implements IChemObject {
     /**
      * @inheritDoc
      */
-    @Override
     public boolean getFlag(int mask)
     {
         return (flags & mask) != 0;
@@ -341,7 +342,6 @@ public class QueryChemObject implements IChemObject {
     /**
      * @inheritDoc
      */
-    @Override
     public void setFlags(boolean[] flagsNew){
         for(int i = 0; i < flagsNew.length ; i++)
             setFlag(CDKConstants.FLAG_MASKS[i], flagsNew[i]);
@@ -350,7 +350,6 @@ public class QueryChemObject implements IChemObject {
     /**
      * @inheritDoc
      */
-    @Override
     public boolean[] getFlags(){
         // could use a list a invoke .toArray() on the return
         boolean[] flagArray = new boolean[CDKConstants.MAX_FLAG_INDEX + 1];
@@ -365,7 +364,6 @@ public class QueryChemObject implements IChemObject {
     /**
      * @inheritDoc
      */
-    @Override
     public Short getFlagValue(){
         return flags;
     }
@@ -379,8 +377,7 @@ public class QueryChemObject implements IChemObject {
     }
 
      public IChemObjectBuilder getBuilder() {
-         //throw new IllegalAccessError();
-		 return DefaultChemObjectBuilder.getInstance();
+         return builder;
      }
 
      public boolean matches(IAtom atom) {
