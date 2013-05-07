@@ -1348,7 +1348,7 @@ public class CDKAtomTypeMatcher implements IAtomTypeMatcher {
             }
         } else if (neighborcount == 3) {
         	int doubleBonds = countAttachedDoubleBonds(atomContainer, atom);
-            if (atom.getFormalCharge() != null &
+            if (atom.getFormalCharge() != null &&
                 atom.getFormalCharge().intValue() == 1) {
                 IAtomType type = getAtomType("P.anium");
                 if (isAcceptable(atom, atomContainer, type)) return type;
@@ -1361,7 +1361,7 @@ public class CDKAtomTypeMatcher implements IAtomTypeMatcher {
             }
         } else if (neighborcount == 2) {
             if (maxBondOrder == CDKConstants.BONDORDER_DOUBLE) {
-                if (atom.getFormalCharge() != null &
+                if (atom.getFormalCharge() != null &&
                     atom.getFormalCharge().intValue() == 1) {
                     IAtomType type = getAtomType("P.sp1.plus");
                     if (isAcceptable(atom, atomContainer, type)) return type;
