@@ -27,7 +27,7 @@ package org.openscience.cdk.hash;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.hash.stereo.StereoEncoder;
-import org.openscience.cdk.hash.stereo.factory.StereoEncoderFactory;
+import org.openscience.cdk.hash.stereo.StereoEncoderFactory;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 /**
@@ -71,7 +71,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
  * @cdk.githash
  */
 @TestClass("org.openscience.cdk.hash.BasicAtomHashGeneratorTest")
-public final class BasicAtomHashGenerator extends AbstractHashGenerator
+final class BasicAtomHashGenerator extends AbstractHashGenerator
         implements AtomHashGenerator {
 
     /* a generator for the initial atom seeds */
@@ -209,7 +209,7 @@ public final class BasicAtomHashGenerator extends AbstractHashGenerator
 
             long adjInv = current[w];
 
-            // find index of already include neighbor
+            // find index of already included neighbor
             int i = 0;
             while (i < nUnique && unique[i] != adjInv) {
                 ++i;

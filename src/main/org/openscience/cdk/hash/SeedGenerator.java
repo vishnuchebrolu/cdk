@@ -26,7 +26,6 @@ package org.openscience.cdk.hash;
 
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.hash.seed.AtomEncoder;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 /**
@@ -53,10 +52,10 @@ import org.openscience.cdk.interfaces.IAtomContainer;
  * @cdk.module hash
  * @cdk.githash
  * @see BasicAtomHashGenerator
- * @see org.openscience.cdk.hash.seed.ConjugatedAtomEncoder
+ * @see ConjugatedAtomEncoder
  */
 @TestClass("org.openscience.cdk.hash.SeedGeneratorTest")
-public final class SeedGenerator extends AbstractHashGenerator
+final class SeedGenerator extends AbstractHashGenerator
         implements AtomHashGenerator {
 
     /* used to encode atom attributes */
@@ -67,7 +66,7 @@ public final class SeedGenerator extends AbstractHashGenerator
      *
      * @param encoder a method for encoding atom invariant properties
      * @throws NullPointerException encoder was null
-     * @see org.openscience.cdk.hash.seed.ConjugatedAtomEncoder
+     * @see ConjugatedAtomEncoder
      */
     @TestMethod("testConstruct_Null")
     public SeedGenerator(AtomEncoder encoder) {

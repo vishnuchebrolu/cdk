@@ -26,10 +26,8 @@ package org.openscience.cdk.hash;
 
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.hash.equivalent.EquivalentSetFinder;
-import org.openscience.cdk.hash.equivalent.MinimumEquivalentCyclicSet;
 import org.openscience.cdk.hash.stereo.StereoEncoder;
-import org.openscience.cdk.hash.stereo.factory.StereoEncoderFactory;
+import org.openscience.cdk.hash.stereo.StereoEncoderFactory;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import java.util.Arrays;
@@ -66,7 +64,7 @@ import java.util.Set;
  * @see HashGeneratorMaker
  */
 @TestClass("org.openscience.cdk.hash.PerturbedAtomHashGeneratorTest")
-public final class PerturbedAtomHashGenerator extends AbstractHashGenerator
+final class PerturbedAtomHashGenerator extends AbstractHashGenerator
         implements AtomHashGenerator {
 
     /* creates stereo encoders for IAtomContainers */

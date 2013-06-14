@@ -837,7 +837,37 @@ public class SmilesGeneratorTest extends CDKTestCase {
         String smiles = smilesGenerator.createSMILES(mol);
         Assert.assertTrue(smiles.indexOf("[nH]") >= 0);
     }
+
+    /**
+     * @cdk.bug 1300
+     */
+    @Test public void testDoubleBracketProblem() throws Exception {
+        IAtomContainer mol = MoleculeFactory.makePyrrole();
+        mol.getAtom(1).setFormalCharge(-1);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+        CDKHueckelAromaticityDetector.detectAromaticity(mol);
+
+        SmilesGenerator smilesGenerator = new SmilesGenerator();
+        smilesGenerator.setUseAromaticityFlag(true);
+        String smiles = smilesGenerator.createSMILES(mol);
+        Assert.assertFalse(smiles.contains("[[nH]-]"));
+    }
     
+    /**
+     * @cdk.bug 1300
+     */
+    @Test public void testHydrogenOnChargedNitrogen() throws Exception {
+        IAtomContainer mol = MoleculeFactory.makePyrrole();
+        mol.getAtom(1).setFormalCharge(-1);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+        CDKHueckelAromaticityDetector.detectAromaticity(mol);
+
+        SmilesGenerator smilesGenerator = new SmilesGenerator();
+        smilesGenerator.setUseAromaticityFlag(true);
+        String smiles = smilesGenerator.createSMILES(mol);
+        Assert.assertTrue(smiles.contains("[n-]"));
+    }
+
     /**
      * @cdk.bug 2051597
      */
@@ -912,7 +942,7 @@ public class SmilesGeneratorTest extends CDKTestCase {
         String o1 = sg.createSMILES(m1);
         String o2 = sg.createSMILES(m2);
 
-        Assert.assertFalse("The two canonical SMILES should not match",o1.equals(o2));
+        Assert.assertTrue("The two canonical SMILES should match",o1.equals(o2));
     }
 
     /**

@@ -26,28 +26,16 @@ package org.openscience.cdk.hash;
 
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.hash.equivalent.EquivalentSetFinder;
-import org.openscience.cdk.hash.equivalent.MinimumEquivalentCyclicSet;
-import org.openscience.cdk.hash.equivalent.MinimumEquivalentCyclicSetUnion;
-import org.openscience.cdk.hash.seed.AtomEncoder;
-import org.openscience.cdk.hash.seed.BasicAtomEncoder;
-import org.openscience.cdk.hash.seed.ConjugatedAtomEncoder;
 import org.openscience.cdk.hash.stereo.StereoEncoder;
-import org.openscience.cdk.hash.stereo.factory.GeometricCumulativeDoubleBondFactory;
-import org.openscience.cdk.hash.stereo.factory.GeometricDoubleBondEncoderFactory;
-import org.openscience.cdk.hash.stereo.factory.GeometricTetrahedralEncoderFactory;
-import org.openscience.cdk.hash.stereo.factory.StereoEncoderFactory;
+import org.openscience.cdk.hash.stereo.GeometricCumulativeDoubleBondFactory;
+import org.openscience.cdk.hash.stereo.GeometricDoubleBondEncoderFactory;
+import org.openscience.cdk.hash.stereo.GeometricTetrahedralEncoderFactory;
+import org.openscience.cdk.hash.stereo.StereoEncoderFactory;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-
-import static org.openscience.cdk.hash.seed.BasicAtomEncoder.ATOMIC_NUMBER;
-import static org.openscience.cdk.hash.seed.BasicAtomEncoder.FORMAL_CHARGE;
-import static org.openscience.cdk.hash.seed.BasicAtomEncoder.FREE_RADICALS;
-import static org.openscience.cdk.hash.seed.BasicAtomEncoder.MASS_NUMBER;
-import static org.openscience.cdk.hash.seed.BasicAtomEncoder.ORBITAL_HYBRIDIZATION;
 
 /**
  * Fluent API for creating hash generators. The maker is first configured with
@@ -87,7 +75,7 @@ import static org.openscience.cdk.hash.seed.BasicAtomEncoder.ORBITAL_HYBRIDIZATI
  * @cdk.githash
  */
 @TestClass("org.openscience.cdk.hash.HashGeneratorMakerTest")
-public class HashGeneratorMaker {
+public final class HashGeneratorMaker {
 
     /* no default depth */
     private int depth = -1;
@@ -129,7 +117,7 @@ public class HashGeneratorMaker {
      */
     @TestMethod("testElemental")
     public HashGeneratorMaker elemental() {
-        encoderSet.add(ATOMIC_NUMBER);
+        encoderSet.add(BasicAtomEncoder.ATOMIC_NUMBER);
         return this;
     }
 
@@ -141,7 +129,7 @@ public class HashGeneratorMaker {
      */
     @TestMethod("testIsotopic")
     public HashGeneratorMaker isotopic() {
-        encoderSet.add(MASS_NUMBER);
+        encoderSet.add(BasicAtomEncoder.MASS_NUMBER);
         return this;
     }
 
@@ -153,7 +141,7 @@ public class HashGeneratorMaker {
      */
     @TestMethod("testCharged")
     public HashGeneratorMaker charged() {
-        encoderSet.add(FORMAL_CHARGE);
+        encoderSet.add(BasicAtomEncoder.FORMAL_CHARGE);
         return this;
     }
 
@@ -165,7 +153,7 @@ public class HashGeneratorMaker {
      */
     @TestMethod("testOrbital")
     public HashGeneratorMaker orbital() {
-        encoderSet.add(ORBITAL_HYBRIDIZATION);
+        encoderSet.add(BasicAtomEncoder.ORBITAL_HYBRIDIZATION);
         return this;
     }
 
@@ -177,7 +165,7 @@ public class HashGeneratorMaker {
      */
     @TestMethod("testRadical")
     public HashGeneratorMaker radical() {
-        encoderSet.add(FREE_RADICALS);
+        encoderSet.add(BasicAtomEncoder.FREE_RADICALS);
         return this;
     }
 
@@ -225,7 +213,7 @@ public class HashGeneratorMaker {
      * collisions may be due to an insufficiency in the algorithm opposed to a
      * random chance of collision. Currently there are three strategies but one
      * should choose either to use the fast, but good, heuristic {@link
-     * MinimumEquivalentCyclicSet} or the exact {@link org.openscience.cdk.hash.equivalent.AllEquivalentCyclicSet}.
+     * MinimumEquivalentCyclicSet} or the exact {@link AllEquivalentCyclicSet}.
      * In practice {@link MinimumEquivalentCyclicSet} is good enough for most
      * applications but it is important to understand the potential trade off.
      * The {@link MinimumEquivalentCyclicSetUnion} is provided for demonstration
@@ -250,12 +238,12 @@ public class HashGeneratorMaker {
      * @param equivSetFinder equivalent set finder, used to determine which
      *                       atoms will be perturbed to try and break symmetry.
      * @return fluent API reference (self)
-     * @see org.openscience.cdk.hash.equivalent.AllEquivalentCyclicSet
+     * @see AllEquivalentCyclicSet
      * @see MinimumEquivalentCyclicSet
      * @see MinimumEquivalentCyclicSetUnion
      */
     @TestMethod("testPerturbedWith")
-    public HashGeneratorMaker perturbWith(EquivalentSetFinder equivSetFinder) {
+    HashGeneratorMaker perturbWith(EquivalentSetFinder equivSetFinder) {
         this.equivSetFinder = equivSetFinder;
         return this;
     }
