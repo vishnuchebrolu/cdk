@@ -1,9 +1,5 @@
-/*  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2005-2007  The Chemistry Development Kit (CDK) project
+/*  Copyright (C) 2005-2007  The Chemistry Development Kit (CDK) project
+ *                     2013  Egon Willighagen <egonw@users.sf.net>
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -40,8 +36,8 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
 /**
- * Customizer for the libio-cml Convertor to be able to export details for
- * PDBAtom's.
+ * {@link ICMLCustomizer} for the libio-cml {@link Convertor} to be able to export details for
+ * {@link IPDBAtom}'s.
  *
  * @author        egonw
  * @cdk.created   2005-05-04
@@ -59,14 +55,14 @@ public class PDBAtomCustomizer implements ICMLCustomizer {
     	Element element = (Element)nodeToAdd;
         if (atom instanceof IPDBAtom) {
             IPDBAtom pdbAtom = (IPDBAtom)atom;
-            if (pdbAtom.getAltLoc() != null) {
+            if (hasContent(pdbAtom.getAltLoc())) {
             	CMLScalar scalar = new CMLScalar();
                 scalar.addAttribute(new Attribute("dictRef", "pdb:altLoc"));
                 scalar.appendChild(pdbAtom.getAltLoc());
                 element.appendChild(scalar);
             }
             
-            if (pdbAtom.getChainID() != null) {
+            if (hasContent(pdbAtom.getChainID())) {
                 Element scalar = new CMLScalar();
                 scalar.addAttribute(new Attribute("dictRef", "pdb:chainID"));
                 scalar.appendChild(pdbAtom.getChainID());
@@ -80,14 +76,14 @@ public class PDBAtomCustomizer implements ICMLCustomizer {
                 element.appendChild(scalar);
             }
             
-            if (pdbAtom.getICode() != null) {
+            if (hasContent(pdbAtom.getICode())) {
                 Element scalar = new CMLScalar();
                 scalar.addAttribute(new Attribute("dictRef", "pdb:iCode"));
                 scalar.appendChild(pdbAtom.getICode());
                 element.appendChild(scalar);
             }
             
-            if (pdbAtom.getName() != null) {
+            if (hasContent(pdbAtom.getName())) {
                 Element scalar = new Element("label");
                 scalar.addAttribute(new Attribute("dictRef", "pdb:name"));
                 scalar.appendChild(pdbAtom.getName());
@@ -101,28 +97,28 @@ public class PDBAtomCustomizer implements ICMLCustomizer {
                 element.appendChild(scalar);
             }
             
-            if (pdbAtom.getRecord() != null) {
+            if (hasContent(pdbAtom.getRecord())) {
                 Element scalar = new CMLScalar();
                 scalar.addAttribute(new Attribute("dictRef", "pdb:record"));
                 scalar.appendChild(pdbAtom.getRecord());
                 element.appendChild(scalar);
             }
             
-            if (pdbAtom.getResName() != null) {
+            if (hasContent(pdbAtom.getResName())) {
                 Element scalar = new CMLScalar();
                 scalar.addAttribute(new Attribute("dictRef", "pdb:resName"));
                 scalar.appendChild(pdbAtom.getResName());
                 element.appendChild(scalar);
             }
             
-            if (pdbAtom.getResSeq() != null) {
+            if (hasContent(pdbAtom.getResSeq())) {
                 Element scalar = new CMLScalar();
                 scalar.addAttribute(new Attribute("dictRef", "pdb:resSeq"));
                 scalar.appendChild(pdbAtom.getResSeq());
                 element.appendChild(scalar);
             }
             
-            if (pdbAtom.getSegID() != null) {
+            if (hasContent(pdbAtom.getSegID())) {
                 Element scalar = new CMLScalar();
                 scalar.addAttribute(new Attribute("dictRef", "pdb:segID"));
                 scalar.appendChild(pdbAtom.getSegID());
@@ -144,10 +140,18 @@ public class PDBAtomCustomizer implements ICMLCustomizer {
             }
             
             element.addAttribute(new Attribute("occupancy", "" + pdbAtom.getOccupancy()));
+
+            // remove isotope info
+            Attribute isotopeInfo = element.getAttribute("isotopeNumber");
+            if (isotopeInfo != null) element.removeAttribute(isotopeInfo);
         }
     }
 
-    public void customize(IAtomContainer molecule, Object nodeToAdd) throws Exception {
+    private boolean hasContent(String string) {
+		return string != null && string.trim().length() > 0;
+	}
+
+	public void customize(IAtomContainer molecule, Object nodeToAdd) throws Exception {
         // nothing to do at this moment
     }
 

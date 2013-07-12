@@ -66,10 +66,11 @@ public class RadicalGenerator implements IGenerator<IAtomContainer> {
         // XXX : is this the best option?
         final double ATOM_RADIUS =
             ((AtomRadius)model.getParameter(AtomRadius.class)).
-            getValue();
+            getValue()/ model.getParameter(Scale.class).getValue();
         
         double modelRadius = SCREEN_RADIUS /
             model.getParameter(Scale.class).getValue();
+        double modelSpacing = modelRadius * 2.5;
         Map<IAtom,Integer> singleElectronsPerAtom = new HashMap<IAtom, Integer>();
         for (ISingleElectron electron : container.singleElectrons()) {
             IAtom atom = electron.getAtom();
@@ -80,13 +81,13 @@ public class RadicalGenerator implements IGenerator<IAtomContainer> {
             double xRadius = point.x;
             double yRadius = point.y;
             if (align == 1) {
-                xRadius += ATOM_RADIUS+singleElectronsPerAtom.get(atom)*ATOM_RADIUS;
+                xRadius += ATOM_RADIUS*4+singleElectronsPerAtom.get(atom)*modelSpacing;
             } else if (align == -1) {
-                xRadius -= ATOM_RADIUS+singleElectronsPerAtom.get(atom)*ATOM_RADIUS;
+                xRadius -= ATOM_RADIUS*4+singleElectronsPerAtom.get(atom)*modelSpacing;
             } else if (align == 2) {
-                yRadius += ATOM_RADIUS+singleElectronsPerAtom.get(atom)*ATOM_RADIUS;
+                yRadius += ATOM_RADIUS*4+singleElectronsPerAtom.get(atom)*modelSpacing;
             } else if (align == -2) {
-                yRadius -= ATOM_RADIUS+singleElectronsPerAtom.get(atom)*ATOM_RADIUS;
+                yRadius -= ATOM_RADIUS*4+singleElectronsPerAtom.get(atom)*modelSpacing;
             }
             singleElectronsPerAtom.put(atom, singleElectronsPerAtom.get(atom)+1);
             group.add(
