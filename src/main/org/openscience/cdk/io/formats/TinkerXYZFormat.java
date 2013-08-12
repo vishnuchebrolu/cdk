@@ -37,11 +37,11 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.set    io-formats
  */
 @TestClass("org.openscience.cdk.io.formats.TinkerXYZFormatTest")
-public class TinkerXYZFormat implements IChemFormat {
+public class TinkerXYZFormat extends AbstractResourceFormat implements IChemFormat {
 
 	private static IResourceFormat myself = null;
 	
-    private TinkerXYZFormat() {}
+    public TinkerXYZFormat() {}
     
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {

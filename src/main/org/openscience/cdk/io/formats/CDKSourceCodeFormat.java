@@ -33,11 +33,11 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.set    io-formats
  */
 @TestClass("org.openscience.cdk.io.formats.CDKSourceCodeFormatTest")
-public class CDKSourceCodeFormat implements IChemFormat {
+public class CDKSourceCodeFormat extends AbstractResourceFormat implements IChemFormat {
 
 	private static IResourceFormat myself = null;
 	
-    private CDKSourceCodeFormat() {}
+    public CDKSourceCodeFormat() {}
     
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {

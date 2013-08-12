@@ -35,11 +35,11 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.set    io-formats
  */
 @TestClass("org.openscience.cdk.io.formats.SMILESFormatTest")
-public class SMILESFormat implements IChemFormat {
+public class SMILESFormat extends AbstractResourceFormat implements IChemFormat {
 
 	private static IResourceFormat myself = null;
 	
-    private SMILESFormat() {}
+    public SMILESFormat() {}
     
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {

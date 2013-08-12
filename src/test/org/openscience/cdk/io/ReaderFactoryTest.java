@@ -32,27 +32,18 @@ import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.ChemFile;
-import org.openscience.cdk.ChemModel;
-import org.openscience.cdk.Reaction;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IChemFile;
-import org.openscience.cdk.interfaces.IChemModel;
-import org.openscience.cdk.interfaces.IChemObject;
-import org.openscience.cdk.interfaces.IReaction;
 import org.openscience.cdk.io.formats.CMLFormat;
 import org.openscience.cdk.io.formats.CTXFormat;
-import org.openscience.cdk.io.formats.GamessFormat;
 import org.openscience.cdk.io.formats.Gaussian98Format;
 import org.openscience.cdk.io.formats.GhemicalSPMFormat;
 import org.openscience.cdk.io.formats.IChemFormat;
 import org.openscience.cdk.io.formats.IChemFormatMatcher;
-import org.openscience.cdk.io.formats.INChIFormat;
-import org.openscience.cdk.io.formats.INChIPlainTextFormat;
-import org.openscience.cdk.io.formats.IResourceFormat;
 import org.openscience.cdk.io.formats.MDLFormat;
 import org.openscience.cdk.io.formats.MDLV2000Format;
 import org.openscience.cdk.io.formats.MDLV3000Format;
@@ -62,18 +53,15 @@ import org.openscience.cdk.io.formats.PubChemASNFormat;
 import org.openscience.cdk.io.formats.PubChemCompoundXMLFormat;
 import org.openscience.cdk.io.formats.PubChemSubstanceXMLFormat;
 import org.openscience.cdk.io.formats.ShelXFormat;
-import org.openscience.cdk.io.formats.VASPFormat;
 import org.openscience.cdk.io.formats.XYZFormat;
 import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
-import org.openscience.cdk.tools.manipulator.ChemModelManipulator;
-import org.openscience.cdk.tools.manipulator.ReactionManipulator;
 
 /**
  * TestCase for the instantiation and functionality of the {@link ReaderFactory}.
  *
  * @cdk.module test-io
  */
-public class ReaderFactoryTest extends CDKTestCase {
+public class ReaderFactoryTest extends AbstractReaderFactoryTest {
 
     private ReaderFactory factory = new ReaderFactory();
     
@@ -83,28 +71,13 @@ public class ReaderFactoryTest extends CDKTestCase {
         Assert.assertNotNull(reader);
         Assert.assertEquals(format.getFormatName(), reader.getFormat().getFormatName());
     }
+
     @Test public void testGaussian98() throws Exception {
         expectReader("data/gaussian/g98.out", Gaussian98Format.getInstance(), -1, -1);
     }
 
     @Test public void testGhemical() throws Exception {
         expectReader("data/ghemical/ethene.mm1gp", GhemicalSPMFormat.getInstance(), 6, 5);
-    }
-
-    @Test public void testINChI() throws Exception {
-        expectReader("data/inchi/guanine.inchi.xml", INChIFormat.getInstance(), -1, -1);
-    }
-
-    @Test public void testINChIPlainText() throws Exception {
-        expectReader("data/inchi/guanine.inchi", INChIPlainTextFormat.getInstance(), -1, -1);
-    }
-
-    @Test public void testVASP() throws Exception {
-        expectReader("data/vasp/LiMoS2_optimisation_ISIF3.vasp", VASPFormat.getInstance(), -1, -1);
-    }
-
-    @Test public void testGamess() throws Exception {
-        expectReader("data/gamess/ch3oh_gam.out", GamessFormat.getInstance(), -1, -1);
     }
 
     @Test public void testCML() throws Exception {
@@ -135,10 +108,11 @@ public class ReaderFactoryTest extends CDKTestCase {
         expectReader("data/mdl/molV3000.mol", MDLV3000Format.getInstance(), -1, -1);
     }
 
-    @Test public void testPDB() throws Exception {
+    @Ignore("test moved to cdk-test-pdb/PDBReaderFactoryTest")
+    public void testPDB() throws Exception {
         expectReader("data/pdb/coffeine.pdb", PDBFormat.getInstance(), -1, -1);
     }
-    
+
     @Test public void testMol2() throws Exception {
     	expectReader("data/mol2/fromWebsite.mol2", Mol2Format.getInstance(), -1, -1);
     }
@@ -163,95 +137,6 @@ public class ReaderFactoryTest extends CDKTestCase {
     	InputStream is=this.getClass().getClassLoader().getResourceAsStream("data/smiles/drugs.smi");
         Object reader = factory.createReader( is );
         Assert.assertNull(reader);
-    }
-
-    private void expectReader(String filename, IResourceFormat expectedFormat, int expectedAtomCount, int expectedBondCount) throws Exception {
-        InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
-        Assert.assertNotNull("Cannot find file: " + filename, ins);
-        if (expectedFormat instanceof IChemFormatMatcher) {
-        	factory.registerFormat((IChemFormatMatcher)expectedFormat);
-        }
-        ISimpleChemObjectReader reader = factory.createReader(ins);
-        Assert.assertNotNull(reader);
-        Assert.assertEquals(
-            ((IChemFormat)expectedFormat).getReaderClassName(),
-            reader.getClass().getName()
-        );
-        // now try reading something from it
-        IChemObject[] objects = { 
-        		new ChemFile(), new ChemModel(), new AtomContainer(),
-        		new Reaction()
-        };
-        boolean read = false;
-        for (int i=0; (i<objects.length && !read); i++) {
-        	if (reader.accepts(objects[i].getClass())) {
-                IChemObject chemObject = reader.read(objects[i]);
-                Assert.assertNotNull("Reader accepted a " +
-                    objects[i].getClass().getName() + " but failed to read it",
-                    chemObject
-                );
-                assertAtomCount(expectedAtomCount, chemObject);
-                assertBondCount(expectedBondCount, chemObject);
-        		read = true;
-        	}
-        }
-        if (read) {
-        	// ok, reseting worked
-        } else {
-        	Assert.fail("Reading an IChemObject from the Reader did not work properly.");
-        }
-    }
-    
-    private void assertBondCount(int expectedBondCount, IChemObject chemObject) {
-        if (expectedBondCount != -1) {
-            if (chemObject instanceof IChemFile) {
-                Assert.assertEquals(
-                    expectedBondCount,
-                    ChemFileManipulator.getBondCount((IChemFile)chemObject)
-                );
-            } else if (chemObject instanceof IChemModel) {
-                Assert.assertEquals(
-                    expectedBondCount,
-                    ChemModelManipulator.getBondCount((IChemModel)chemObject)
-                );
-            } else if (chemObject instanceof IAtomContainer) {
-                Assert.assertEquals(
-                    expectedBondCount,
-                    ((IAtomContainer)chemObject).getBondCount()
-                );
-            } else if (chemObject instanceof IReaction) {
-                Assert.assertEquals(
-                    expectedBondCount,
-                    ReactionManipulator.getBondCount((IReaction)chemObject)
-                );
-            }
-        }
-    }
-
-    private void assertAtomCount(int expectedAtomCount, IChemObject chemObject) {
-        if (expectedAtomCount != -1) {
-            if (chemObject instanceof IChemFile) {
-                Assert.assertEquals(
-                    expectedAtomCount,
-                    ChemFileManipulator.getAtomCount((IChemFile)chemObject)
-                );
-            } else if (chemObject instanceof IChemModel) {
-                Assert.assertEquals(
-                    expectedAtomCount,
-                    ChemModelManipulator.getAtomCount((IChemModel)chemObject)
-                );
-            } else if (chemObject instanceof IAtomContainer) {
-                Assert.assertEquals(
-                    expectedAtomCount,
-                    ((IAtomContainer)chemObject).getAtomCount()
-                );
-            } else if (chemObject instanceof IReaction) {
-                Assert.assertEquals(
-                    expectedAtomCount,
-                    ReactionManipulator.getAtomCount((IReaction)chemObject)
-                );
-            }
-        }
     }
 
     /**

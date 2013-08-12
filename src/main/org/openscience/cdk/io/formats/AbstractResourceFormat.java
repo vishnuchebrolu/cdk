@@ -1,5 +1,5 @@
-
-/* Copyright (C) 2009-2010 Syed Asad Rahman <asad@ebi.ac.uk>
+/*
+ * Copyright (c) 2013. John May <jwmay@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -19,47 +19,32 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 U
  */
-package org.openscience.cdk.smsd.algorithm.mcgregor;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+package org.openscience.cdk.io.formats;
+
+import org.openscience.cdk.annotations.TestMethod;
 
 /**
- * @author Syed Asad Rahman <asad@ebi.ac.uk>
+ * An abstract class providing {@link #hashCode()} and {@link #equals} for
+ * {@link org.openscience.cdk.io.formats.IResourceFormat}s. As {@link
+ * IResourceFormat}s are stateless this implementation uses the class for
+ * equality testing.
  *
- * @cdk.module test-smsd
- * @cdk.require java1.6+
+ * @author John May
+ * @cdk.module ioformats
+ * @cdk.githash
  */
-public class QueryProcessorTest {
+public abstract class AbstractResourceFormat implements IResourceFormat {
 
-    public QueryProcessorTest() {
+    @TestMethod("testHashCode")
+    @Override public int hashCode() {
+        return getClass().hashCode();
     }
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
-
-    @Test
-    public void testSomeMethod() {
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    @TestMethod("testEquals,testEquals_null")
+    @Override public boolean equals(Object that) {
+        return that != null && this.getClass().equals(that.getClass());
     }
 }

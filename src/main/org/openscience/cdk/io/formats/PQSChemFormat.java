@@ -37,11 +37,11 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.set    io-formats
  */
 @TestClass("org.openscience.cdk.io.formats.PQSChemFormatTest")
-public class PQSChemFormat implements IChemFormat {
+public class PQSChemFormat extends AbstractResourceFormat implements IChemFormat {
 
 	private static IResourceFormat myself = null;
 	
-    private PQSChemFormat() {}
+    public PQSChemFormat() {}
     
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {

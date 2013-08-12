@@ -27,6 +27,7 @@ import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
+import org.openscience.cdk.qsar.AbstractMolecularDescriptor;
 import org.openscience.cdk.qsar.DescriptorSpecification;
 import org.openscience.cdk.qsar.DescriptorValue;
 import org.openscience.cdk.qsar.IMolecularDescriptor;
@@ -49,7 +50,7 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
  * @cdk.dictref qsar-descriptors:acidicGroupCount
  */
 @TestClass("org.openscience.cdk.qsar.descriptors.molecular.AcidicGroupCountDescriptorTest")
-public class AcidicGroupCountDescriptor implements IMolecularDescriptor {
+public class AcidicGroupCountDescriptor extends AbstractMolecularDescriptor implements IMolecularDescriptor {
 
     private final static String[] SMARTS_STRINGS = {
         "[$([O;H1]-[C,S,P]=O)]",
@@ -66,11 +67,14 @@ public class AcidicGroupCountDescriptor implements IMolecularDescriptor {
      * Creates a new {@link AcidicGroupCountDescriptor}.
      */
     @TestMethod("testConstructor")
-    public AcidicGroupCountDescriptor(IChemObjectBuilder builder) throws CDKException {
+    public AcidicGroupCountDescriptor() {
+        this.checkAromaticity = true;
+    }
+
+    @Override public void initialise(IChemObjectBuilder builder) {
         for (String smarts : SMARTS_STRINGS) {
             tools.add(new SMARTSQueryTool(smarts, builder));
         }
-        this.checkAromaticity = true;
     }
 
     /** {@inheritDoc} */
@@ -116,6 +120,11 @@ public class AcidicGroupCountDescriptor implements IMolecularDescriptor {
     /** {@inheritDoc} */
     @TestMethod("testCalculate_IAtomContainer")
     public DescriptorValue calculate(IAtomContainer atomContainer) {
+
+        if(tools.isEmpty()) {
+            throw new IllegalStateException("descriptor is not initalised, invoke 'initalise' first");
+        }
+
         // do aromaticity detection
         if (this.checkAromaticity) {
             try {

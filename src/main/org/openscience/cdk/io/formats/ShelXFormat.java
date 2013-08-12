@@ -35,11 +35,11 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.set    io-formats
  */
 @TestClass("org.openscience.cdk.io.formats.ShelXFormatTest")
-public class ShelXFormat implements IChemFormatMatcher {
+public class ShelXFormat extends AbstractResourceFormat implements IChemFormatMatcher {
 
 	private static IResourceFormat myself = null;
 	
-    private ShelXFormat() {}
+    public ShelXFormat() {}
     
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {

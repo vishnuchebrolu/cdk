@@ -26,6 +26,7 @@ package org.openscience.cdk.io;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.DefaultChemObjectBuilder;
@@ -35,7 +36,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IChemFile;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.silent.AtomContainer;
-import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
 
@@ -44,11 +44,14 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.List;
 
+import static org.mockito.Mockito.mock;
+
 /**
  * TestCase for the writer MOL2 writer.
  *
  * @cdk.module test-io
  * @see Mol2Writer
+ * @see SMILES2Mol2WriterTest
  */
 public class Mol2WriterTest extends ChemObjectIOTest {
 
@@ -71,10 +74,9 @@ public class Mol2WriterTest extends ChemObjectIOTest {
      * @throws IOException
      * @cdk.bug 2675188
      */
-    @Test
+    @Ignore("moved to SMILES2Mol2WriterTest")
     public void testWriter1() throws Exception {
-        SmilesParser sp = new SmilesParser(builder);
-        IAtomContainer molecule = sp.parseSmiles("C([H])([H])([H])([H])");
+        IAtomContainer molecule = mock(IAtomContainer.class);
 
         StringWriter swriter = new StringWriter();
         Mol2Writer writer = new Mol2Writer(swriter);
@@ -84,10 +86,9 @@ public class Mol2WriterTest extends ChemObjectIOTest {
         Assert.assertTrue(swriter.getBuffer().toString().indexOf("1 2 1 1") > 0);
     }
 
-    @Test
+    @Ignore("moved to SMILES2Mol2WriterTest")
     public void testWriter2() throws Exception {
-        SmilesParser sp = new SmilesParser(builder);
-        IAtomContainer molecule = sp.parseSmiles("c1ccccc1C=O");
+        IAtomContainer molecule = mock(IAtomContainer.class);
         CDKHueckelAromaticityDetector.detectAromaticity(molecule);
 
         StringWriter swriter = new StringWriter();
@@ -104,10 +105,9 @@ public class Mol2WriterTest extends ChemObjectIOTest {
         Assert.assertTrue(swriter.getBuffer().toString().indexOf("8 8 7 2") > 0);
     }
 
-    @Test
+    @Ignore("moved to SMILES2Mol2WriterTest")
     public void testWriterForAmide() throws Exception {
-        SmilesParser sp = new SmilesParser(builder);
-        IAtomContainer molecule = sp.parseSmiles("CC(=O)NC");
+        IAtomContainer molecule = mock(IAtomContainer.class);
         CDKHueckelAromaticityDetector.detectAromaticity(molecule);
 
         StringWriter swriter = new StringWriter();

@@ -21,7 +21,10 @@
  */
 package org.openscience.cdk.modeling.builder3d;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -37,6 +40,8 @@ import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.ChemObject;
 import org.openscience.cdk.DefaultChemObjectBuilder;
+import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.geometry.GeometryTools;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -294,7 +299,7 @@ public class ModelBuilder3DTest extends CDKTestCase {
         Assume.assumeTrue(runSlowTests());
 
 		boolean notCalculatedResults = false;
-		List inputList = new ArrayList();
+		List<IAtomContainer> inputList = new ArrayList<IAtomContainer>();
 
 		////////////////////////////////////////////////////////////////////////////////////////////
 		//generate the input molecules. This are molecules without x, y, z coordinats 
@@ -307,12 +312,11 @@ public class ModelBuilder3DTest extends CDKTestCase {
 
 			inputList.add(atomContainer[i]);
 		}
-		System.out.println(inputList.size());
 		///////////////////////////////////////////////////////////////////////////////////////////
 		// Generate 2D coordinats for the input molecules with the Structure Diagram Generator
 
 		StructureDiagramGenerator str;
-		List resultList = new ArrayList();
+		List<IAtomContainer> resultList = new ArrayList<IAtomContainer>();
 		for (Iterator iter = inputList.iterator(); iter.hasNext();) {
 			IAtomContainer molecules = (IAtomContainer) iter.next();
 			str = new StructureDiagramGenerator();
@@ -334,25 +338,25 @@ public class ModelBuilder3DTest extends CDKTestCase {
 		}
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////
-		// Test for the method Model3DBuildersWithMM2ForceField 
+		// Test for the method Model3DBuildersWithMM2ForceField
+        IChemObjectBuilder builder = SilentChemObjectBuilder.getInstance();
 
 		ModelBuilder3D mb3d=ModelBuilder3D.getInstance();
-		for (Iterator iter = inputList.iterator(); iter.hasNext();) {
-			IAtomContainer molecules = (IAtomContainer) iter.next();
-			IAtomContainer mol = molecules.getBuilder().newInstance(IAtomContainer.class,molecules);
-			mol = mb3d.generate3DCoordinates(mol, false);
-			System.out.println("Calculation done");
+		for (int i = 0; i < inputList.size(); i++) {
+            // shallow copy
+			IAtomContainer mol = builder.newInstance(IAtomContainer.class, inputList.get(i));
+            try {
+			    mol = mb3d.generate3DCoordinates(mol, false);
+                for (IAtom a : mol.atoms())
+                    Assert.assertNotNull(smiles[0] + " has unplaced atom",
+                                         a.getPoint3d());
+                checkAverageBondLength(mol);
+            } catch (Exception e) {
+                StringWriter stackTrace = new StringWriter();
+                e.printStackTrace(new PrintWriter(stackTrace));
+                Assert.fail("3D coordinated could not be generator for " + smiles[i]  + ": " + stackTrace);
+            }
 		}
-		
-		for (Iterator iter = inputList.iterator(); iter.hasNext();) {
-			IAtomContainer molecule = (IAtomContainer) iter.next();
-	    	checkAverageBondLength(molecule);
-			for (Iterator atom = molecule.atoms().iterator(); atom.hasNext();){
-				Atom last = (Atom) atom.next();
-				if (last.getPoint3d() == null) notCalculatedResults = true;
-			}
-		}
-		Assert.assertFalse(notCalculatedResults);
 	}
 	
     /*
@@ -386,4 +390,17 @@ public class ModelBuilder3DTest extends CDKTestCase {
 		}
 		checkAverageBondLength(ac);
 	}
+
+    @Test
+    public void testAlkanes() throws CDKException, IOException,
+                                     CloneNotSupportedException {
+        String smiles1 = "CCCCCCCCCCCCCCCCCC";
+        String smiles2 = "CCCCCC(CCCC)CCCC";
+        SmilesParser parser = new SmilesParser(DefaultChemObjectBuilder.getInstance());
+        IAtomContainer nonBranchedAlkane = parser.parseSmiles(smiles1);
+        IAtomContainer branchedAlkane    = parser.parseSmiles(smiles2);
+        ModelBuilder3D.getInstance().generate3DCoordinates(nonBranchedAlkane, false);
+        ModelBuilder3D.getInstance().generate3DCoordinates(branchedAlkane, false);
+    }
+
 }

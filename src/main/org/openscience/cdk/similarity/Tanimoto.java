@@ -71,7 +71,7 @@ import java.util.TreeSet;
  *@cdk.keyword    similarity, tanimoto
  * @cdk.module fingerprint
  */
-@TestClass("org.openscience.cdk.similarity.TanimotoTest")
+@TestClass("org.openscience.cdk.similarity.TanimotoTest") // see also SignatureFingerprintTanimotoTest
 public class Tanimoto 
 {
 
@@ -226,7 +226,7 @@ public class Tanimoto
      * @param fp2 count fingerprint 2
      * @return a Tanimoto distance
      */
-    @TestMethod("testCountMethod1and2")
+    @TestMethod("method1")
     public static double method1( ICountFingerprint fp1, 
                                   ICountFingerprint fp2) {
     	return calculate(fp1, fp2);
@@ -239,7 +239,7 @@ public class Tanimoto
      * @param fp2 count fingerprint 2
      * @return a Tanimoto distance
      */
-    @TestMethod("testCountMethod1and2")
+    @TestMethod("method2")
     public static double method2( ICountFingerprint fp1,
                                   ICountFingerprint fp2) {
     	

@@ -31,11 +31,11 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.set    io-formats
  */
 @TestClass("org.openscience.cdk.io.formats.MoSSOutputFormatTest")
-public class MoSSOutputFormat implements IChemFormatMatcher {
+public class MoSSOutputFormat extends AbstractResourceFormat implements IChemFormatMatcher {
 
     private static IResourceFormat myself = null;
 
-    private MoSSOutputFormat() {}
+    public MoSSOutputFormat() {}
 
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {

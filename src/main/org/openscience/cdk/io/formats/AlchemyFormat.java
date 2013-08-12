@@ -35,11 +35,11 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.set    io-formats
  */
 @TestClass("org.openscience.cdk.io.formats.AlchemyFormatTest")
-public class AlchemyFormat implements IChemFormat {
+public class AlchemyFormat extends AbstractResourceFormat implements IChemFormat {
 
 	private static IResourceFormat myself = null;
 	
-    private AlchemyFormat() {}
+    public AlchemyFormat() {}
     
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {

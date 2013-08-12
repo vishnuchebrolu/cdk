@@ -36,11 +36,11 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.set    io-formats
  */
 @TestClass("org.openscience.cdk.io.formats.SMILESFIXFormatTest")
-public class SMILESFIXFormat implements IChemFormat {
+public class SMILESFIXFormat extends AbstractResourceFormat implements IChemFormat {
 
 	private static IResourceFormat myself = null;
 	
-    private SMILESFIXFormat() {}
+    public SMILESFIXFormat() {}
     
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {

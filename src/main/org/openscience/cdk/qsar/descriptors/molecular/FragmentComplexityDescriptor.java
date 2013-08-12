@@ -22,11 +22,13 @@ import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.qsar.AbstractMolecularDescriptor;
 import org.openscience.cdk.qsar.DescriptorSpecification;
 import org.openscience.cdk.qsar.DescriptorValue;
 import org.openscience.cdk.qsar.IMolecularDescriptor;
 import org.openscience.cdk.qsar.result.DoubleResult;
 import org.openscience.cdk.qsar.result.IDescriptorResult;
+import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 /**
  *  Class that returns the complexity of a system. The complexity is defined as {@cdk.cite Nilakantan06}:
@@ -45,7 +47,7 @@ import org.openscience.cdk.qsar.result.IDescriptorResult;
  * @cdk.dictref qsar-descriptors:NilaComplexity
  */
 @TestClass("org.openscience.cdk.qsar.descriptors.molecular.FragmentComplexityDescriptorTest")
-public class FragmentComplexityDescriptor implements IMolecularDescriptor {
+public class FragmentComplexityDescriptor extends AbstractMolecularDescriptor implements IMolecularDescriptor {
     private static final String[] names = {"fragC"};
 
 
@@ -104,7 +106,7 @@ public class FragmentComplexityDescriptor implements IMolecularDescriptor {
      */
     @TestMethod("testGetParameters")
     public Object[] getParameters() {
-        return null;
+        return new Object[0];
         // return the parameters as used for the descriptor calculation
     }
 
@@ -133,7 +135,7 @@ public class FragmentComplexityDescriptor implements IMolecularDescriptor {
                 H++;
             }
         }
-        int B = container.getBondCount();
+        int B = container.getBondCount() + AtomContainerManipulator.getImplicitHydrogenCount(container);
         double C = Math.abs(B * B - A * A + A) + (H / 100);
         return new DescriptorValue(getSpecification(), getParameterNames(),
                 getParameters(), new DoubleResult(C),

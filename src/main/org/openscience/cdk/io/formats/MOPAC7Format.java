@@ -34,11 +34,11 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.set    io-formats
  */
 @TestClass("org.openscience.cdk.io.formats.MOPAC7FormatTest")
-public class MOPAC7Format implements IChemFormatMatcher {
+public class MOPAC7Format extends AbstractResourceFormat implements IChemFormatMatcher {
 
 	private static IResourceFormat myself = null;
 	
-    private MOPAC7Format() {}
+    public MOPAC7Format() {}
     
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {

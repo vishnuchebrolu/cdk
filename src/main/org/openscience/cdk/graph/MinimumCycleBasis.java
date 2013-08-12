@@ -26,6 +26,7 @@ package org.openscience.cdk.graph;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.openscience.cdk.graph.InitialCycles.Cycle;
 
 /**
@@ -59,6 +60,7 @@ import static org.openscience.cdk.graph.InitialCycles.Cycle;
  *
  * @author John May
  * @cdk.module core
+ * @cdk.githash
  * @cdk.keyword sssr
  * @cdk.keyword smallest set of smallest rings
  * @cdk.keyword mcb
@@ -98,8 +100,7 @@ public final class MinimumCycleBasis {
     @TestMethod("noInitialCycles")
     MinimumCycleBasis(final InitialCycles initial) {
 
-        if (initial == null)
-            throw new NullPointerException("no InitialCycles provided");
+        checkNotNull(initial, "No InitialCycles provided");
 
         this.basis = new GreedyBasis(initial.numberOfCycles(),
                                      initial.numberOfEdges());

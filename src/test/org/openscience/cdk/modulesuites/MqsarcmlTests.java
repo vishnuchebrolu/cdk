@@ -1,5 +1,5 @@
-
-/* Copyright (C) 2009-2010 Syed Asad Rahman <asad@ebi.ac.uk>
+/*
+ * Copyright (c) 2013. John May <jwmay@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -19,47 +19,22 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 U
  */
-package org.openscience.cdk.smsd.algorithm.mcgregor;
+package org.openscience.cdk.modulesuites;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
+import org.openscience.cdk.io.cml.QSARCMLRoundTripTest;
 
 /**
- * @author Syed Asad Rahman <asad@ebi.ac.uk>
+ * test suite for qsarcml module
  *
- * @cdk.module test-smsd
- * @cdk.require java1.6+
+ * @cdk.module test-qsarcml
  */
-public class McGregorChecksTest {
-
-    public McGregorChecksTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
-
-    @Test
-    public void testSomeMethod() {
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-}
+@RunWith(value=Suite.class)
+@SuiteClasses(value={
+    QSARCMLRoundTripTest.class
+})
+public class MqsarcmlTests {}

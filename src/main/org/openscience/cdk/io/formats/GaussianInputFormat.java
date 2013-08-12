@@ -35,11 +35,11 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.set    io-formats
  */
 @TestClass("org.openscience.cdk.io.formats.GaussianInputFormatTest")
-public class GaussianInputFormat implements IChemFormat {
+public class GaussianInputFormat extends AbstractResourceFormat implements IChemFormat {
 
 	private static IResourceFormat myself = null;
 	
-    private GaussianInputFormat() {}
+    public GaussianInputFormat() {}
     
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {

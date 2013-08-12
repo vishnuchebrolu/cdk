@@ -33,11 +33,11 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.set    io-formats
  */
 @TestClass("org.openscience.cdk.io.formats.MOPAC93FormatTest")
-public class MOPAC93Format implements IChemFormatMatcher {
+public class MOPAC93Format extends AbstractResourceFormat implements IChemFormatMatcher {
 
 	private static IResourceFormat myself = null;
 	
-    private MOPAC93Format() {}
+    public MOPAC93Format() {}
     
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {

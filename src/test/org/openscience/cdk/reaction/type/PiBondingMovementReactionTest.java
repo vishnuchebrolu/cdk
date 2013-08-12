@@ -201,6 +201,12 @@ public class PiBondingMovementReactionTest extends ReactionProcessTest {
         Assert.assertTrue(new UniversalIsomorphismTester().isIsomorph(molecule2,queryAtom));
        
 	}
+
+    static boolean matches(IAtomContainer a, IAtomContainer b) throws CDKException {
+        IQueryAtomContainer query = QueryAtomContainerCreator.createSymbolAndChargeQueryContainer(b);
+        return new UniversalIsomorphismTester().isIsomorph(a, query);
+    }
+
 	/**
 	 * A unit test suite for JUnit with 2-methylnaphthalene. 
 	 * Reaction: C1=CC(=CC2=C1C=CC=C2)C 
@@ -229,8 +235,6 @@ public class PiBondingMovementReactionTest extends ReactionProcessTest {
         IAtomContainer product1 = setOfReactions.getReaction(0).getProducts().getAtomContainer(0);
         IAtomContainer molecule1 = getExpectedProducts().getAtomContainer(0);
 
-		IQueryAtomContainer queryAtom = QueryAtomContainerCreator.createSymbolAndChargeQueryContainer(product1);
-        Assert.assertTrue(new UniversalIsomorphismTester().isIsomorph(molecule1,queryAtom));
 
         Assert.assertEquals(1, setOfReactions.getReaction(1).getProductCount());
 
@@ -264,9 +268,12 @@ public class PiBondingMovementReactionTest extends ReactionProcessTest {
 		addExplicitHydrogens(molecule2);
 		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule2);
 		makeSureAtomTypesAreRecognized(molecule2);
-		
-		queryAtom = QueryAtomContainerCreator.createSymbolAndChargeQueryContainer(product2);
-        Assert.assertTrue(new UniversalIsomorphismTester().isIsomorph(molecule2,queryAtom));
+
+        // order depends on ring perception order (may change between versions) we check both
+        // combinations just in case
+        Assert.assertTrue((matches(molecule2, product1) && matches(molecule1, product2))
+                           || (matches(molecule1, product1) && matches(molecule2, product2)));
+
        
 	}
 	/**

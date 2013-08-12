@@ -33,11 +33,11 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.set    io-formats
  */
 @TestClass("org.openscience.cdk.io.formats.ZMatrixFormatTest")
-public class ZMatrixFormat implements IChemFormatMatcher {
+public class ZMatrixFormat extends AbstractResourceFormat implements IChemFormatMatcher {
 
 	private static IResourceFormat myself = null;
 	
-    private ZMatrixFormat() {}
+    public ZMatrixFormat() {}
     
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {

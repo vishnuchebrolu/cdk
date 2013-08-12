@@ -32,11 +32,11 @@ import org.openscience.cdk.annotations.TestMethod;
  * @cdk.set    io-formats
  */
 @TestClass("org.openscience.cdk.io.formats.SVGFormatTest")
-public class SVGFormat implements IResourceFormat {
+public class SVGFormat extends AbstractResourceFormat implements IResourceFormat {
 
 	private static IResourceFormat myself = null;
 	
-    private SVGFormat() {}
+    public SVGFormat() {}
     
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {

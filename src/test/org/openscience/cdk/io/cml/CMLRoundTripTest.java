@@ -53,12 +53,7 @@ import org.openscience.cdk.interfaces.IChemModel;
 import org.openscience.cdk.interfaces.IReaction;
 import org.openscience.cdk.io.CMLReader;
 import org.openscience.cdk.libio.cml.Convertor;
-import org.openscience.cdk.libio.cml.QSARCustomizer;
-import org.openscience.cdk.qsar.DescriptorSpecification;
-import org.openscience.cdk.qsar.DescriptorValue;
-import org.openscience.cdk.qsar.IMolecularDescriptor;
-import org.openscience.cdk.qsar.descriptors.molecular.WeightDescriptor;
-import org.openscience.cdk.templates.MoleculeFactory;
+import org.openscience.cdk.templates.TestMoleculeFactory;
 import org.openscience.cdk.tools.ILoggingTool;
 import org.openscience.cdk.tools.LoggingToolFactory;
 import org.openscience.cdk.tools.manipulator.BondManipulator;
@@ -80,7 +75,6 @@ public class CMLRoundTripTest extends CDKTestCase {
 
     @BeforeClass public static void setup() {
         convertor = new Convertor(false, "");
-        convertor.registerCustomizer(new QSARCustomizer());
     }
 
     @Test public void testAtom() throws Exception {
@@ -304,6 +298,8 @@ public class CMLRoundTripTest extends CDKTestCase {
 
         Assert.assertEquals(1, roundTrippedMol.getAtomCount());
         IAtom roundTrippedAtom = roundTrippedMol.getAtom(0);
+        Assert.assertNotNull(atom.getExactMass());
+        Assert.assertNotNull(roundTrippedAtom.getExactMass());
         Assert.assertEquals(atom.getExactMass(), roundTrippedAtom.getExactMass(), 0.01);
     }
 
@@ -319,6 +315,8 @@ public class CMLRoundTripTest extends CDKTestCase {
 
         Assert.assertEquals(1, roundTrippedMol.getAtomCount());
         IAtom roundTrippedAtom = roundTrippedMol.getAtom(0);
+        Assert.assertNotNull(atom.getNaturalAbundance());
+        Assert.assertNotNull(roundTrippedAtom.getNaturalAbundance());
         Assert.assertEquals(atom.getNaturalAbundance(), roundTrippedAtom.getNaturalAbundance(), 0.01);
     }
     
@@ -526,42 +524,10 @@ public class CMLRoundTripTest extends CDKTestCase {
         Assert.assertEquals(1, roundTrippedAgent.getAtomCount());
     }
 
-    @Test public void testDescriptorValue_QSAR() throws Exception {
-        IAtomContainer molecule = MoleculeFactory.makeBenzene();
-        IMolecularDescriptor descriptor = new WeightDescriptor();
 
-        DescriptorValue originalValue = null;
-        originalValue = descriptor.calculate(molecule);
-        molecule.setProperty(originalValue.getSpecification(), originalValue);
-        IAtomContainer roundTrippedMol = CMLRoundTripTool.roundTripMolecule(convertor, molecule);
-
-        Assert.assertEquals(1, roundTrippedMol.getProperties().size());
-        System.out.println("" + roundTrippedMol.getProperties().keySet());
-        Object object = roundTrippedMol.getProperties().keySet().toArray()[0];
-        System.out.println("" + object);
-        Assert.assertTrue(object instanceof DescriptorSpecification);
-        DescriptorSpecification spec = (DescriptorSpecification)object;
-        Assert.assertEquals(descriptor.getSpecification().getSpecificationReference(),
-        		     spec.getSpecificationReference());
-        Assert.assertEquals(descriptor.getSpecification().getImplementationIdentifier(),
-   		     spec.getImplementationIdentifier());
-        Assert.assertEquals(descriptor.getSpecification().getImplementationTitle(),
-   		     spec.getImplementationTitle());
-        Assert.assertEquals(descriptor.getSpecification().getImplementationVendor(),
-   		     spec.getImplementationVendor());
-        
-        Object value = roundTrippedMol.getProperty(spec);
-        Assert.assertNotNull(value);
-        Assert.assertTrue(value instanceof DescriptorValue);
-        DescriptorValue descriptorResult = (DescriptorValue)value;
-        Assert.assertEquals(originalValue.getClass().getName(),
-        	descriptorResult.getClass().getName());
-        Assert.assertEquals(originalValue.getValue().toString(),
-            	descriptorResult.getValue().toString());
-    }
 
     @Test public void testDescriptorValue() throws Exception {
-        IAtomContainer molecule = MoleculeFactory.makeBenzene();
+        IAtomContainer molecule = TestMoleculeFactory.makeBenzene();
 
     	String[] propertyName = {"testKey1","testKey2"};
     	String[] propertyValue = {"testValue1","testValue2"};
@@ -582,7 +548,7 @@ public class CMLRoundTripTest extends CDKTestCase {
      * @throws Exception
      */
     @Test public void testAromaticity() throws Exception {
-        IAtomContainer molecule = MoleculeFactory.makeBenzene();
+        IAtomContainer molecule = TestMoleculeFactory.makeBenzene();
     	for (IBond bond : molecule.bonds()) {
     		bond.setFlag(CDKConstants.ISAROMATIC, true);
     	}
@@ -597,7 +563,7 @@ public class CMLRoundTripTest extends CDKTestCase {
     }
 
     @Test public void testAtomAromaticity() throws Exception {
-        IAtomContainer molecule = MoleculeFactory.makeBenzene();
+        IAtomContainer molecule = TestMoleculeFactory.makeBenzene();
     	for (IAtom atom : molecule.atoms()) {
     		atom.setFlag(CDKConstants.ISAROMATIC, true);
     	}
@@ -618,7 +584,7 @@ public class CMLRoundTripTest extends CDKTestCase {
     	String[] key = {"customAtomProperty1","customAtomProperty2"};
     	String[] value = {"true","false"};
  	   
-    	IAtomContainer mol = MoleculeFactory.makeBenzene();
+    	IAtomContainer mol = TestMoleculeFactory.makeBenzene();
         for (Iterator<IAtom> it = mol.atoms().iterator(); it.hasNext();) {
            IAtom a = it.next();
            for (int i=0; i < key.length;i++)
@@ -648,7 +614,7 @@ public class CMLRoundTripTest extends CDKTestCase {
     @Test public void testBondProperty() throws Exception {
     	String[] key = {"customBondProperty1","customBondProperty2"};
     	String[] value = {"true","false"};
-    	IAtomContainer mol = MoleculeFactory.makeBenzene();
+    	IAtomContainer mol = TestMoleculeFactory.makeBenzene();
         for (Iterator<IBond> it = mol.bonds().iterator(); it.hasNext();) {
            IBond b = it.next();
            for (int i=0; i < key.length;i++)
@@ -679,7 +645,7 @@ public class CMLRoundTripTest extends CDKTestCase {
     	String[] key = {"customMoleculeProperty1","customMoleculeProperty2"};
     	String[] value = {"true","false"};
 
-    	IAtomContainer mol = MoleculeFactory.makeAdenine();
+    	IAtomContainer mol = TestMoleculeFactory.makeAdenine();
     	for (int i=0; i < key.length;i++) {
     		mol.setProperty(key[i], value[i]);
     	}

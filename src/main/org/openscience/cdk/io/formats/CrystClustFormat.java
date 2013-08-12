@@ -33,11 +33,11 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.set    io-formats
  */
 @TestClass("org.openscience.cdk.io.formats.CrystClustFormatTest")
-public class CrystClustFormat implements IChemFormatMatcher {
+public class CrystClustFormat extends AbstractResourceFormat implements IChemFormatMatcher {
 
 	private static IResourceFormat myself = null;
 	
-    private CrystClustFormat() {}
+    public CrystClustFormat() {}
     
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {

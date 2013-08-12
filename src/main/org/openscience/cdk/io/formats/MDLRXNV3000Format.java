@@ -35,14 +35,14 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.set    io-formats
  */
 @TestClass("org.openscience.cdk.io.formats.MDLRXNV3000FormatTest")
-public class MDLRXNV3000Format implements IChemFormatMatcher {
+public class MDLRXNV3000Format extends AbstractResourceFormat implements IChemFormatMatcher {
 
 	private static IResourceFormat myself = null;
 	
 	// OK, add some state info
 	boolean isRXN = false;
 	
-    private MDLRXNV3000Format() {}
+    public MDLRXNV3000Format() {}
     
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {

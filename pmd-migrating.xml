@@ -11,7 +11,7 @@
         <fileset dir="${lib}">
           <include name="asm-3.2.jar"/>
           <include name="junit-4.4.jar"/>
-          <include name="pmd-5.0.1.jar"/>
+          <include name="pmd-5.0.4.jar"/>
           <include name="jaxen-1.1.1.jar"/>
         </fileset>
     </path>
@@ -110,7 +110,7 @@
           <includesfile name="${build}/${module}.javafiles"/>
         </fileset>
       </pmd>
-      <xslt basedir="${reports.tests}/pmd-migrating" destdir="${reports.tests}/pmd"
+      <xslt basedir="${reports.tests}/pmd-migrating" destdir="${reports.tests}/pmd-migrating"
             includes="${module}.xml"
             extension=".html" style="pmd/wz-pmd-report.xslt"/>
     </target>

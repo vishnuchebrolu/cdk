@@ -36,11 +36,11 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.set    io-formats
  */
 @TestClass("org.openscience.cdk.io.formats.FenskeHall_ZMatrixFormatTest")
-public class FenskeHall_ZMatrixFormat implements IChemFormat {
+public class FenskeHall_ZMatrixFormat extends AbstractResourceFormat implements IChemFormat {
 
 	private static IResourceFormat myself = null;
 	
-    private FenskeHall_ZMatrixFormat() {}
+    public FenskeHall_ZMatrixFormat() {}
     
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {

@@ -35,11 +35,11 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.set    io-formats
  */
 @TestClass("org.openscience.cdk.io.formats.SybylDescriptorFormatTest")
-public class SybylDescriptorFormat implements IChemFormat {
+public class SybylDescriptorFormat extends AbstractResourceFormat implements IChemFormat {
 
 	private static IResourceFormat myself = null;
 	
-    private SybylDescriptorFormat() {}
+    public SybylDescriptorFormat() {}
     
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {

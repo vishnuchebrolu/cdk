@@ -35,13 +35,12 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.set    io-formats
  */
 @TestClass("org.openscience.cdk.io.formats.RGroupQueryFormatTest")
-public class RGroupQueryFormat implements IChemFormatMatcher {
+public class RGroupQueryFormat extends AbstractResourceFormat implements IChemFormatMatcher {
 
 
     private static IResourceFormat myself = null;
 
-    private RGroupQueryFormat() {
-    }
+    public RGroupQueryFormat() {}
 
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {

@@ -34,11 +34,11 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.set    io-formats
  */
 @TestClass("org.openscience.cdk.io.formats.Gaussian92FormatTest")
-public class Gaussian92Format implements IChemFormatMatcher {
+public class Gaussian92Format extends AbstractResourceFormat implements IChemFormatMatcher {
 
 	private static IResourceFormat myself = null;
 	
-    private Gaussian92Format() {}
+    public Gaussian92Format() {}
     
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {

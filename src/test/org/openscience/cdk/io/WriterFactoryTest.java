@@ -27,7 +27,6 @@ package org.openscience.cdk.io;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openscience.cdk.CDKTestCase;
-import org.openscience.cdk.io.formats.CMLFormat;
 import org.openscience.cdk.io.formats.IChemFormat;
 import org.openscience.cdk.io.formats.XYZFormat;
 import org.openscience.cdk.tools.DataFeatures;
@@ -68,17 +67,4 @@ public class WriterFactoryTest extends CDKTestCase {
             writer.getClass().getName()
         );
     }
-
-    @Test public void testCMLWriter() {
-        WriterFactory factory = new WriterFactory();
-        factory.registerWriter(CMLWriter.class);
-        IChemObjectWriter writer =
-            factory.createWriter((IChemFormat)CMLFormat.getInstance());
-        Assert.assertNotNull(writer);
-        Assert.assertEquals(
-            new CMLWriter().getClass().getName(),
-            writer.getClass().getName()
-        );
-    }
-
 }

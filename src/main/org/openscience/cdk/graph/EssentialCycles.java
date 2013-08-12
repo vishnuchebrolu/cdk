@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.openscience.cdk.graph.InitialCycles.Cycle;
 
 /**
@@ -44,6 +45,7 @@ import static org.openscience.cdk.graph.InitialCycles.Cycle;
  *
  * @author John May
  * @cdk.module core
+ * @cdk.githash
  * @cdk.keyword essential rings
  * @cdk.keyword essential cycles
  * @cdk.keyword graph
@@ -96,10 +98,10 @@ public final class EssentialCycles {
      * @param initial a molecule graph
      */
     EssentialCycles(final RelevantCycles relevant, final InitialCycles initial) {
-
-        this.initial = initial;
-        this.basis = new GreedyBasis(initial.numberOfCycles(),
-                                     initial.numberOfEdges());
+        checkNotNull(relevant, "No RelevantCycles provided");
+        this.initial = checkNotNull(initial, "No InitialCycles provided");
+        this.basis   = new GreedyBasis(initial.numberOfCycles(),
+                                       initial.numberOfEdges());
         this.essential = new ArrayList<Cycle>();
 
         // for each cycle added to the basis, if it can be
@@ -148,7 +150,7 @@ public final class EssentialCycles {
         for (int[] path : relevant.paths()) {
             if (cyclesByLength.isEmpty()
                     || path.length > cyclesByLength.getLast().get(0)
-                                                   .length()) {
+                                                   .path().length) {
                 cyclesByLength.add(new ArrayList<Cycle>());
             }
             cyclesByLength.getLast().add(new MyCycle(path));

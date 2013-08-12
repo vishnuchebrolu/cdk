@@ -59,10 +59,11 @@ import org.openscience.cdk.io.IChemObjectReader.Mode;
 import org.openscience.cdk.io.MDLReader;
 import org.openscience.cdk.io.MDLV2000Reader;
 import org.openscience.cdk.isomorphism.UniversalIsomorphismTester;
-import org.openscience.cdk.layout.HydrogenPlacer;
-import org.openscience.cdk.layout.StructureDiagramGenerator;
-import org.openscience.cdk.templates.MoleculeFactory;
+import org.openscience.cdk.templates.TestMoleculeFactory;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 
 /**
  * @author         steinbeck
@@ -78,7 +79,7 @@ public class SmilesGeneratorTest extends CDKTestCase {
 	@Test
     public void testSmilesGenerator()
 	{
-	    IAtomContainer mol2 = MoleculeFactory.makeAlphaPinene();
+	    IAtomContainer mol2 = TestMoleculeFactory.makeAlphaPinene();
 		SmilesGenerator sg = new SmilesGenerator();
 		fixCarbonHCount(mol2);
 		String smiles2 = sg.createSMILES(mol2);
@@ -92,7 +93,7 @@ public class SmilesGeneratorTest extends CDKTestCase {
 	 */
 	@Test public void testEthylPropylPhenantren()
 	{
-	    IAtomContainer mol1 = MoleculeFactory.makeEthylPropylPhenantren();
+	    IAtomContainer mol1 = TestMoleculeFactory.makeEthylPropylPhenantren();
         SmilesGenerator sg = new SmilesGenerator();
 		fixCarbonHCount(mol1);
 		String smiles1 = sg.createSMILES(mol1);
@@ -107,7 +108,7 @@ public class SmilesGeneratorTest extends CDKTestCase {
 	 */
 	@Test public void testPropylCycloPropane()
 	{
-	    IAtomContainer mol1 = MoleculeFactory.makePropylCycloPropane();
+	    IAtomContainer mol1 = TestMoleculeFactory.makePropylCycloPropane();
         SmilesGenerator sg = new SmilesGenerator();
 		fixCarbonHCount(mol1);
 		String smiles1 = sg.createSMILES(mol1);
@@ -115,7 +116,7 @@ public class SmilesGeneratorTest extends CDKTestCase {
 		Assert.assertEquals("CCCC1CC1", smiles1);
 	}
 	
-	
+
 
 	/**
 	 *  A unit test for JUnit
@@ -123,7 +124,6 @@ public class SmilesGeneratorTest extends CDKTestCase {
 	 */
 	@Test public void testAlanin() throws Exception
 	{
-		HydrogenPlacer hydrogenPlacer = new HydrogenPlacer();
         IAtomContainer mol1 = new AtomContainer();
 		SmilesGenerator sg = new SmilesGenerator();
 		mol1.addAtom(new Atom("N", new Point2d(1, 0)));
@@ -152,8 +152,20 @@ public class SmilesGeneratorTest extends CDKTestCase {
 		// 5
 		mol1.addBond(4, 6, IBond.Order.DOUBLE);
 		// 6
-		addExplicitHydrogens(mol1);
-		hydrogenPlacer.placeHydrogens2D(mol1, 1.0);
+        // hydrogens in-lined from hydrogen adder/placer
+        mol1.addAtom(new Atom("H", new Point2d(0.13, -0.50)));
+        mol1.addBond(0, 7, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(1.87, -0.50)));
+        mol1.addBond(0, 8, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(-0.89, 0.45)));
+        mol1.addBond(3, 9, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(-0.45, -0.89)));
+        mol1.addBond(3, 10, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(0.89, -0.45)));
+        mol1.addBond(3, 11, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(1.00, 6.00)));
+        mol1.addBond(5, 12, IBond.Order.SINGLE);
+
 		IsotopeFactory ifac = IsotopeFactory.getInstance(mol1.getBuilder());
 		ifac.configureAtoms(mol1);
 
@@ -177,7 +189,6 @@ public class SmilesGeneratorTest extends CDKTestCase {
 	 */
 	@Test public void testCisResorcinol() throws Exception
 	{
-		HydrogenPlacer hydrogenPlacer = new HydrogenPlacer();
         IAtomContainer mol1 = DefaultChemObjectBuilder.getInstance().newInstance(IAtomContainer.class);
 		SmilesGenerator sg = new SmilesGenerator();
 		mol1.addAtom(new Atom("O", new Point2d(3, 1)));
@@ -220,9 +231,30 @@ public class SmilesGeneratorTest extends CDKTestCase {
 		// 5
 		mol1.addBond(7, 2, IBond.Order.SINGLE);
 		// 6
-		addExplicitHydrogens(mol1);
-		hydrogenPlacer.placeHydrogens2D(mol1, 1.0);
-		IsotopeFactory ifac = IsotopeFactory.getInstance(mol1.getBuilder());
+
+        // hydrogens in-lined from hydrogen adder/placer
+        mol1.addAtom(new Atom("H", new Point2d(4.00, 1.00)));
+        mol1.addBond(0, 10, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(0.00, 1.00)));
+        mol1.addBond(3, 11, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(1.00, 0.00)));
+        mol1.addBond(3, 12, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(0.13, 4.50)));
+        mol1.addBond(4, 13, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(0.13, 3.50)));
+        mol1.addBond(4, 14, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(1.87, 5.50)));
+        mol1.addBond(5, 15, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(0.13, 5.50)));
+        mol1.addBond(5, 16, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(0.00, 2.00)));
+        mol1.addBond(6, 17, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(1.00, 1.00)));
+        mol1.addBond(6, 18, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(4.00, 2.00)));
+        mol1.addBond(8, 19, IBond.Order.SINGLE);
+
+        IsotopeFactory ifac = IsotopeFactory.getInstance(mol1.getBuilder());
 		ifac.configureAtoms(mol1);
 		String smiles1 = sg.createSMILES(mol1, true, new boolean[mol1.getBondCount()]);
 		Assert.assertNotNull(smiles1);
@@ -241,70 +273,82 @@ public class SmilesGeneratorTest extends CDKTestCase {
 	 */
 	@Test public void testCisTransDecalin() throws Exception
 	{
-		HydrogenPlacer hydrogenPlacer = new HydrogenPlacer();
         IAtomContainer mol1 = new AtomContainer();
 		SmilesGenerator sg = new SmilesGenerator();
-		mol1.addAtom(new Atom("H", new Point2d(1, 0)));
-		// 1
-		mol1.addAtom(new Atom("C", new Point2d(1, 2)));
-		// 2
-		mol1.addAtom(new Atom("C", new Point2d(1, 2)));
-		// 3
-		mol1.addAtom(new Atom("C", new Point2d(0, 0)));
-		// 4
-		mol1.addAtom(new Atom("C", new Point2d(1, 4)));
-		// 5
-		mol1.addAtom(new Atom("C", new Point2d(1, 5)));
-		// 6
-		mol1.addAtom(new Atom("C", new Point2d(1, 6)));
-		// 7
-		mol1.addAtom(new Atom("H", new Point2d(1, 0)));
-		// 1
-		mol1.addAtom(new Atom("C", new Point2d(1, 2)));
-		// 2
-		mol1.addAtom(new Atom("C", new Point2d(1, 2)));
-		// 3
-		mol1.addAtom(new Atom("C", new Point2d(1, 2)));
-		// 2
-		mol1.addAtom(new Atom("C", new Point2d(1, 2)));
-		// 3
-		mol1.addBond(0, 1, IBond.Order.SINGLE, IBond.Stereo.DOWN);
-		// 1
-		mol1.addBond(1, 2, IBond.Order.SINGLE);
-		// 2
-		mol1.addBond(2, 3, IBond.Order.SINGLE);
-		// 3
-		mol1.addBond(3, 4, IBond.Order.SINGLE);
-		// 4
-		mol1.addBond(4, 5, IBond.Order.SINGLE);
-		// 5
-		mol1.addBond(5, 6, IBond.Order.SINGLE);
-		// 6
-		mol1.addBond(6, 7, IBond.Order.SINGLE, IBond.Stereo.DOWN);
-		// 3
-		mol1.addBond(6, 8, IBond.Order.SINGLE);
-		// 4
-		mol1.addBond(8, 9, IBond.Order.SINGLE);
-		// 5
-		mol1.addBond(9, 10, IBond.Order.SINGLE);
-		// 6
-		mol1.addBond(10, 11, IBond.Order.SINGLE);
-		// 6
-		mol1.addBond(11, 1, IBond.Order.SINGLE);
-		// 6
-		mol1.addBond(1, 6, IBond.Order.SINGLE);
-		// 6
 
-		addExplicitHydrogens(mol1);
-		hydrogenPlacer.placeHydrogens2D(mol1, 1.0);
+        mol1.addAtom(new Atom("H", new Point2d(0,  3)));    // 0
+        mol1.addAtom(new Atom("C", new Point2d(0,  1)));    // 1
+        mol1.addAtom(new Atom("C", new Point2d(0, -1)));    // 2
+        mol1.addAtom(new Atom("H", new Point2d(0, -3)));    // 3
+
+        mol1.addAtom(new Atom("C", new Point2d(1.5,  2)));  // 4
+        mol1.addAtom(new Atom("C", new Point2d(3,    1)));  // 5
+        mol1.addAtom(new Atom("C", new Point2d(3,   -1)));  // 6
+        mol1.addAtom(new Atom("C", new Point2d(1.5, -2)));  // 7
+
+        mol1.addAtom(new Atom("C", new Point2d(-1.5,  2))); // 8
+        mol1.addAtom(new Atom("C", new Point2d(-3,    1))); // 9
+        mol1.addAtom(new Atom("C", new Point2d(-3,   -1))); // 10
+        mol1.addAtom(new Atom("C", new Point2d(-1.5, -2))); // 11
+
+        mol1.addBond(1, 0, IBond.Order.SINGLE, IBond.Stereo.DOWN);
+        mol1.addBond(1, 2, IBond.Order.SINGLE);
+        mol1.addBond(2, 3, IBond.Order.SINGLE, IBond.Stereo.DOWN);
+
+        mol1.addBond(1, 4, IBond.Order.SINGLE);
+        mol1.addBond(4, 5, IBond.Order.SINGLE);
+        mol1.addBond(5, 6, IBond.Order.SINGLE);
+        mol1.addBond(6, 7, IBond.Order.SINGLE);
+        mol1.addBond(7, 2, IBond.Order.SINGLE);
+
+        mol1.addBond(1, 8, IBond.Order.SINGLE);
+        mol1.addBond(8, 9, IBond.Order.SINGLE);
+        mol1.addBond(9, 10, IBond.Order.SINGLE);
+        mol1.addBond(10, 11, IBond.Order.SINGLE);
+        mol1.addBond(11, 2, IBond.Order.SINGLE);
+
+        // hydrogens in-lined from hydrogen adder/placer
+        mol1.addAtom(new Atom("H", new Point2d(2.16, 2.75)));
+        mol1.addBond(4, 12, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(0.84, 2.75)));
+        mol1.addBond(4, 13, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(3.98, 0.81)));
+        mol1.addBond(5, 14, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(3.38, 1.92)));
+        mol1.addBond(5, 15, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(3.38, -1.92)));
+        mol1.addBond(6, 16, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(3.98, -0.81)));
+        mol1.addBond(6, 17, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(0.84, -2.75)));
+        mol1.addBond(7, 18, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(2.16, -2.75)));
+        mol1.addBond(7, 19, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(-0.84, 2.75)));
+        mol1.addBond(8, 20, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(-2.16, 2.75)));
+        mol1.addBond(8, 21, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(-3.38, 1.92)));
+        mol1.addBond(9, 22, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(-3.98, 0.81)));
+        mol1.addBond(9, 23, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(-3.98, -0.81)));
+        mol1.addBond(10, 24, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(-3.38, -1.92)));
+        mol1.addBond(10, 25, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(-2.16, -2.75)));
+        mol1.addBond(11, 26, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(-0.84, -2.75)));
+        mol1.addBond(11, 27, IBond.Order.SINGLE);
+
 		IsotopeFactory ifac = IsotopeFactory.getInstance(mol1.getBuilder());
 		ifac.configureAtoms(mol1);
 		String smiles1 = sg.createSMILES(mol1, true, new boolean[mol1.getBondCount()]);
 		Assert.assertNotNull(smiles1);
 		Assert.assertEquals("[H]C1([H])(C([H])([H])C([H])([H])C\\2([H])(C([H])([H])C([H])([H])C([H])([H])C([H])([H])C\\2([H])(C1([H])([H]))))", smiles1);
-		mol1.getBond(6).setStereo(IBond.Stereo.UP);
+		mol1.getBond(2).setStereo(IBond.Stereo.UP);
 		String smiles3 = sg.createSMILES(mol1, true, new boolean[mol1.getBondCount()]);
-		Assert.assertNotSame(smiles1, smiles3);
+        Assert.assertThat(smiles1, is(not(smiles3)));
 	}
 
 
@@ -315,7 +359,6 @@ public class SmilesGeneratorTest extends CDKTestCase {
 	 */
 	@Test public void testDoubleBondConfiguration() throws Exception
 	{
-		HydrogenPlacer hydrogenPlacer = new HydrogenPlacer();
 		IAtomContainer mol1 = new AtomContainer();
         SmilesGenerator sg = new SmilesGenerator();
 		mol1.addAtom(new Atom("S", new Point2d(0, 0)));
@@ -355,8 +398,12 @@ public class SmilesGeneratorTest extends CDKTestCase {
 		Assert.assertNotNull(smiles1);
 		Assert.assertEquals("F/C(=C\\(F)S)S", smiles1);
 
-		addExplicitHydrogens(mol1);
-		hydrogenPlacer.placeHydrogens2D(mol1, 1.0);
+        // hydrogens in-lined from hydrogen adder/placer
+        mol1.addAtom(new Atom("H", new Point2d(-0.71, -0.71)));
+        mol1.addBond(0, 6, IBond.Order.SINGLE);
+        mol1.addAtom(new Atom("H", new Point2d(2.71, 3.71)));
+        mol1.addBond(5, 7, IBond.Order.SINGLE);
+
 		bool = new boolean[mol1.getBondCount()];
 		bool[2] = true;
 		smiles1 = sg.createSMILES(mol1, true, bool);
@@ -597,18 +644,14 @@ public class SmilesGeneratorTest extends CDKTestCase {
 		InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
 		MDLV2000Reader reader = new MDLV2000Reader(ins, Mode.STRICT);
 		IAtomContainer mol1 = reader.read(DefaultChemObjectBuilder.getInstance().newInstance(IAtomContainer.class));
-		addExplicitHydrogens(mol1);
-		new HydrogenPlacer().placeHydrogens2D(mol1, 1.0);
 		filename = "data/mdl/d-ala.mol";
 		ins = this.getClass().getClassLoader().getResourceAsStream(filename);
 		reader = new MDLV2000Reader(ins, Mode.STRICT);
 		IAtomContainer mol2 = reader.read(DefaultChemObjectBuilder.getInstance().newInstance(IAtomContainer.class));
-		addExplicitHydrogens(mol2);
-		new HydrogenPlacer().placeHydrogens2D(mol2, 1.0);
 		SmilesGenerator sg = new SmilesGenerator();
 		String smiles1 = sg.createChiralSMILES(mol1, new boolean[20]);
 		String smiles2 = sg.createChiralSMILES(mol2, new boolean[20]);
-		Assert.assertNotSame(smiles1, smiles2);
+		Assert.assertThat(smiles1, is(not(smiles2)));
 	}
 
 
@@ -620,16 +663,14 @@ public class SmilesGeneratorTest extends CDKTestCase {
 		InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
 		MDLV2000Reader reader = new MDLV2000Reader(ins, Mode.STRICT);
 		IAtomContainer mol1 = reader.read(new AtomContainer());
-		new HydrogenPlacer().placeHydrogens2D(mol1, 1.0);
 		filename = "data/mdl/D+-glucose.mol";
 		ins = this.getClass().getClassLoader().getResourceAsStream(filename);
 		reader = new MDLV2000Reader(ins, Mode.STRICT);
 		IAtomContainer mol2 = reader.read(new AtomContainer());
-		new HydrogenPlacer().placeHydrogens2D(mol2, 1.0);
 		SmilesGenerator sg = new SmilesGenerator();
 		String smiles1 = sg.createChiralSMILES(mol1, new boolean[20]);
 		String smiles2 = sg.createChiralSMILES(mol2, new boolean[20]);
-		Assert.assertNotSame(smiles1, smiles2);
+        Assert.assertThat(smiles1, is(not(smiles2)));
 	}
 
 	/**
@@ -727,27 +768,21 @@ public class SmilesGeneratorTest extends CDKTestCase {
 	 * @cdk.bug 1014344
 	 */
 	@Test public void testTest() throws Exception {
-		String filename_cml = "data/mdl/9554.mol";
-		String filename_mol = "data/mdl/9553.mol";
+		String filename_cml = "data/mdl/9554-with-exp-hyd.mol";
+		String filename_mol = "data/mdl/9553-with-exp-hyd.mol";
 		InputStream ins1 = this.getClass().getClassLoader().getResourceAsStream(filename_cml);
 		InputStream ins2 = this.getClass().getClassLoader().getResourceAsStream(filename_mol);
 		MDLV2000Reader reader1 = new MDLV2000Reader(ins1, Mode.STRICT);
         IAtomContainer mol1 = reader1.read(new AtomContainer());
-        addExplicitHydrogens(mol1);
-        StructureDiagramGenerator sdg=new StructureDiagramGenerator(mol1);
-        sdg.generateCoordinates();
 		
         MDLV2000Reader reader2 = new MDLV2000Reader(ins2, Mode.STRICT);		
 		IAtomContainer mol2 = reader2.read(new AtomContainer());
-		addExplicitHydrogens(mol2);
-        sdg=new StructureDiagramGenerator(mol2);
-        sdg.generateCoordinates();
 		
 		SmilesGenerator sg = new SmilesGenerator();
 		
 		String moleculeSmile1 = sg.createChiralSMILES(mol1, new boolean[mol1.getBondCount()]);
 		String moleculeSmile2 = sg.createChiralSMILES(mol2, new boolean[mol2.getBondCount()]);
-		Assert.assertNotSame(moleculeSmile2, moleculeSmile1);
+        Assert.assertThat(moleculeSmile1, is(not(moleculeSmile2)));
 	}
 	
   /**
@@ -817,7 +852,7 @@ public class SmilesGeneratorTest extends CDKTestCase {
 	}
 
     @Test public void testIndole() throws Exception {
-        IAtomContainer mol = MoleculeFactory.makeIndole();
+        IAtomContainer mol = TestMoleculeFactory.makeIndole();
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
         CDKHueckelAromaticityDetector.detectAromaticity(mol);
 
@@ -828,7 +863,7 @@ public class SmilesGeneratorTest extends CDKTestCase {
     }
 
     @Test public void testPyrrole() throws Exception {
-        IAtomContainer mol = MoleculeFactory.makePyrrole();
+        IAtomContainer mol = TestMoleculeFactory.makePyrrole();
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
         CDKHueckelAromaticityDetector.detectAromaticity(mol);
 
@@ -842,7 +877,7 @@ public class SmilesGeneratorTest extends CDKTestCase {
      * @cdk.bug 1300
      */
     @Test public void testDoubleBracketProblem() throws Exception {
-        IAtomContainer mol = MoleculeFactory.makePyrrole();
+        IAtomContainer mol = TestMoleculeFactory.makePyrrole();
         mol.getAtom(1).setFormalCharge(-1);
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
         CDKHueckelAromaticityDetector.detectAromaticity(mol);
@@ -857,7 +892,7 @@ public class SmilesGeneratorTest extends CDKTestCase {
      * @cdk.bug 1300
      */
     @Test public void testHydrogenOnChargedNitrogen() throws Exception {
-        IAtomContainer mol = MoleculeFactory.makePyrrole();
+        IAtomContainer mol = TestMoleculeFactory.makePyrrole();
         mol.getAtom(1).setFormalCharge(-1);
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
         CDKHueckelAromaticityDetector.detectAromaticity(mol);
@@ -986,14 +1021,14 @@ public class SmilesGeneratorTest extends CDKTestCase {
 
     
     @Test public void testCreateSMILESWithoutCheckForMultipleMolecules_withDetectAromaticity() throws CDKException{
-        IAtomContainer benzene = MoleculeFactory.makeBenzene();
+        IAtomContainer benzene = TestMoleculeFactory.makeBenzene();
         SmilesGenerator sg = new SmilesGenerator(false);
         String smileswithoutaromaticity = sg.createSMILESWithoutCheckForMultipleMolecules(benzene, false, new boolean[benzene.getBondCount()]);
         Assert.assertEquals("C=1C=CC=CC=1", smileswithoutaromaticity);
     }
 
     @Test public void testCreateSMILESWithoutCheckForMultipleMolecules_withoutDetectAromaticity() throws CDKException{
-        IAtomContainer benzene = MoleculeFactory.makeBenzene();
+        IAtomContainer benzene = TestMoleculeFactory.makeBenzene();
         SmilesGenerator sg = new SmilesGenerator(true);
         String smileswitharomaticity = sg.createSMILESWithoutCheckForMultipleMolecules(benzene, false, new boolean[benzene.getBondCount()]);
         Assert.assertEquals("c1ccccc1", smileswitharomaticity);

@@ -27,7 +27,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 import org.openscience.cdk.coverage.PdbCoverageTest;
+import org.openscience.cdk.io.PDBReaderFactoryTest;
 import org.openscience.cdk.io.PDBReaderTest;
+import org.openscience.cdk.io.PDBWriterTest;
 import org.openscience.cdk.templates.AminoAcidsTest;
 import org.openscience.cdk.tools.ProteinBuilderToolTest;
 
@@ -41,6 +43,8 @@ import org.openscience.cdk.tools.ProteinBuilderToolTest;
     PdbCoverageTest.class,
     AminoAcidsTest.class,
     PDBReaderTest.class,
-    ProteinBuilderToolTest.class
+    PDBWriterTest.class,
+    ProteinBuilderToolTest.class,
+    PDBReaderFactoryTest.class
 })
 public class MpdbTests {}

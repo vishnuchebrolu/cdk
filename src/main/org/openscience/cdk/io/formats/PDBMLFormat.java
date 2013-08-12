@@ -36,11 +36,11 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.set    io-formats
  */
 @TestClass("org.openscience.cdk.io.formats.PDBMLFormatTest")
-public class PDBMLFormat implements IChemFormat {
+public class PDBMLFormat extends AbstractResourceFormat implements IChemFormat {
 
 	private static IResourceFormat myself = null;
 	
-    private PDBMLFormat() {}
+    public PDBMLFormat() {}
     
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {

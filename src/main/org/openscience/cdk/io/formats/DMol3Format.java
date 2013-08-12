@@ -36,11 +36,11 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.set    io-formats
  */
 @TestClass("org.openscience.cdk.io.formats.DMol3FormatTest")
-public class DMol3Format implements IChemFormat {
+public class DMol3Format extends AbstractResourceFormat implements IChemFormat {
 
 	private static IResourceFormat myself = null;
 	
-    private DMol3Format() {}
+    public DMol3Format() {}
     
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {

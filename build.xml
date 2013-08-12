@@ -523,13 +523,13 @@
         <antcall target="compile-init"/>
         <foreach target="compile-module" param="module"
             parallel="${parallel}" maxthreads="${threadCount}"
-            list="interfaces,annotation"/>
+            list="interfaces,annotation,log4j"/>
         <foreach target="compile-module" param="module"
             parallel="${parallel}" maxthreads="${threadCount}"
             list="core,ioformats"/>
         <foreach target="compile-module" param="module"
             parallel="${parallel}" maxthreads="${threadCount}"
-            list="silent,data,dict,diff,qm,standard,log4j"/>
+            list="silent,data,dict,diff,qm,standard"/>
         <foreach target="compile-module" param="module" trim="yes"
             parallel="${parallel}" maxthreads="${threadCount}"
             list="datadebug,isomorphism,atomtype,render,valencycheck,
@@ -563,10 +563,13 @@
             list="renderawt"/>
         <foreach target="compile-module" param="module"
             parallel="${parallel}" maxthreads="${threadCount}"
+            list="forcefield"/>
+        <foreach target="compile-module" param="module"
+            parallel="${parallel}" maxthreads="${threadCount}"
             list="qsaratomic,qsarbond,qsarprotein,qsarcml,qsarmolecular"/>
         <foreach target="compile-module" param="module"
             parallel="${parallel}" maxthreads="${threadCount}"
-            list="forcefield,qsarionpot,iordf"/>
+            list="qsarionpot,iordf"/>
         <foreach target="compile-module" param="module"
             parallel="${parallel}" maxthreads="${threadCount}"
             list="builder3d,builder3dtools"/>
@@ -582,16 +585,16 @@
             list="test"/>
         <foreach target="compile-module" param="module" trim="true"
             parallel="${parallel}" maxthreads="${threadCount}"
-            list="test-interfaces,test-libiocml,test-qsar,test-io,test-core,
+            list="test-interfaces,test-data,test-libiocml,test-qsar,test-io,test-core,
         	      test-valencycheck,test-smarts,test-standard,test-reaction,
                   test-pcore,test-sdg,test-forcefield,test-fingerprint,
                   test-ionpot,test-qm,test-isomorphism,test-libiomd,test-dict,
-                  test-diff,test-charges,test-inchi,test-formula,
+                  test-diff,test-charges,test-inchi,
                   test-render,test-ioformats,test-log4j,test-cip"/>
         <foreach target="compile-module" param="module" trim="true"
             parallel="${parallel}" maxthreads="${threadCount}"
-            list="test-data,test-qsaratomic,test-qsarbond,
-                  test-pdb,test-smiles,test-extra,test-fragment,test-atomtype,
+            list="test-formula,test-qsaratomic,test-qsarbond,test-qsarcml,
+                  test-pdb,test-pdbcml,test-smiles,test-extra,test-fragment,test-atomtype,
                   test-structgen,test-iordf,test-silent"/>
         <foreach target="compile-module" param="module" trim="true"
             parallel="${parallel}" maxthreads="${threadCount}"
@@ -601,7 +604,7 @@
             list="test-qsarprotein,test-qsarionpot,test-smsd,test-tautomer"/>
         <foreach target="compile-module" param="module"
             parallel="${parallel}" maxthreads="${threadCount}"
-            list="test-signature,test-pdbcml"/>
+            list="test-signature"/>
         <foreach target="compile-module" param="module"
             parallel="${parallel}" maxthreads="${threadCount}"
             list="test-renderbasic"/>
@@ -1112,6 +1115,7 @@
 
 			<mkdir dir="${reports.tests}"/>
             <junit printsummary="yes" haltonfailure="no" fork="yes" maxmemory="256m">
+                <sysproperty key="java.awt.headless" value="true"/>
                 <classpath>
                      <fileset dir="${lib}" >
                          <exclude name="**/*" unless="module.libdepends.present" />
@@ -1143,11 +1147,11 @@
                 list="core,data,datadebug,dict,diff,atomtype,standard,
                       io,builder3d,forcefield,valencycheck,charges,reaction,
                       smarts,fingerprint,smiles,qsar,qsaratomic,qsarbond,
-                      qsarmolecular,qsarionpot,qsarprotein,pdb,pcore,inchi,
-                      structgen,libiomd,libiocml,formula,render,extra,fragment,sdg,
+                      qsarcml,qsarmolecular,qsarionpot,qsarprotein,pdb,pcore,inchi,
+                      structgen,libiomd,libiocml,pdbcml,formula,render,extra,fragment,sdg,
                       ioformats,log4j,smsd,signature,iordf,cip,tautomer,
                       isomorphism,renderbasic,renderawt,renderextra,silent,group,
-                      hash,pdbcml"/>
+                      hash"/>
         </target>
 
         <target id="limitations" name="limitations" depends="noJunit, dist-all"

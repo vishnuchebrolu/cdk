@@ -37,11 +37,11 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.set    io-formats
  */
 @TestClass("org.openscience.cdk.io.formats.DOCK5FormatTest")
-public class DOCK5Format implements IChemFormat {
+public class DOCK5Format extends AbstractResourceFormat implements IChemFormat {
 
 	private static IResourceFormat myself = null;
 	
-    private DOCK5Format() {}
+    public DOCK5Format() {}
     
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {

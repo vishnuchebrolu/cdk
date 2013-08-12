@@ -3,6 +3,7 @@ package org.openscience.cdk.qsar.descriptors.molecular;
 import java.io.InputStream;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.DefaultChemObjectBuilder;
@@ -21,6 +22,9 @@ public class FragmentComplexityDescriptorTest extends MolecularDescriptorTest {
 	
 	public  FragmentComplexityDescriptorTest() {}
 
+    @Before public void setup() throws Exception {
+        setDescriptor(FragmentComplexityDescriptor.class);
+    }
 	   
 	@Test public void test1FragmentComplexityDescriptor() throws Exception {
 		IMolecularDescriptor descriptor = new FragmentComplexityDescriptor();
@@ -38,7 +42,7 @@ public class FragmentComplexityDescriptorTest extends MolecularDescriptorTest {
         		Complexity=((DoubleResult)descriptor.calculate(setOfFragments[i]).getValue()).doubleValue();
         		//System.out.println("Complexity:"+Complexity);
         	}
-    	 Assert.assertEquals(444.0,Complexity , 0.01);
+    	 Assert.assertEquals(659.00,Complexity , 0.01);
 	}
 	
 	@Test
@@ -56,7 +60,7 @@ public class FragmentComplexityDescriptorTest extends MolecularDescriptorTest {
             addExplicitHydrogens(setOfFragment);
             Complexity = ((DoubleResult) descriptor.calculate(setOfFragment).getValue()).doubleValue();
         }
-    	Assert.assertEquals(466.01,Complexity , 0.01);
+    	Assert.assertEquals(544.01,Complexity , 0.01);
 	}
 	
 	

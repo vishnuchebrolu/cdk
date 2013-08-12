@@ -37,11 +37,11 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.set    io-formats
  */
 @TestClass("org.openscience.cdk.io.formats.YasaraFormatTest")
-public class YasaraFormat implements IChemFormat {
+public class YasaraFormat extends AbstractResourceFormat implements IChemFormat {
     
 	private static IResourceFormat myself = null;
 	
-    private YasaraFormat() {}
+    public YasaraFormat() {}
     
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {

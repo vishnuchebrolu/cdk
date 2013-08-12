@@ -26,6 +26,7 @@ import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
+import org.openscience.cdk.qsar.AbstractMolecularDescriptor;
 import org.openscience.cdk.qsar.DescriptorSpecification;
 import org.openscience.cdk.qsar.DescriptorValue;
 import org.openscience.cdk.qsar.IMolecularDescriptor;
@@ -48,7 +49,7 @@ import org.openscience.cdk.smiles.smarts.SMARTSQueryTool;
  * @cdk.dictref qsar-descriptors:acidicGroupCount
  */
 @TestClass("org.openscience.cdk.qsar.descriptors.molecular.BasicGroupCountDescriptorTest")
-public class BasicGroupCountDescriptor implements IMolecularDescriptor {
+public class BasicGroupCountDescriptor extends AbstractMolecularDescriptor implements IMolecularDescriptor {
 
     private final static String[] SMARTS_STRINGS = {
         "[$([NH2]-[CX4])]", "[$([NH](-[CX4])-[CX4])]",
@@ -63,7 +64,10 @@ public class BasicGroupCountDescriptor implements IMolecularDescriptor {
      * Creates a new {@link BasicGroupCountDescriptor}.
      */
     @TestMethod("testConstructor")
-    public BasicGroupCountDescriptor(IChemObjectBuilder builder) throws CDKException {
+    public BasicGroupCountDescriptor() {
+    }
+
+    @Override public void initialise(IChemObjectBuilder builder) {
         for (String smarts : SMARTS_STRINGS) {
             tools.add(new SMARTSQueryTool(smarts, builder));
         }
@@ -100,6 +104,11 @@ public class BasicGroupCountDescriptor implements IMolecularDescriptor {
     /** {@inheritDoc} */
     @TestMethod("testCalculate_IAtomContainer")
     public DescriptorValue calculate(IAtomContainer atomContainer) {
+
+        if(tools.isEmpty()) {
+            throw new IllegalStateException("descriptor is not initalised, invoke 'initalise' first");
+        }
+
         try {
             int count = 0;
             for (SMARTSQueryTool tool : tools) {

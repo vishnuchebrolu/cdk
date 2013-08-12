@@ -35,11 +35,11 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.set    io-formats
  */
 @TestClass("org.openscience.cdk.io.formats.Mol2FormatTest")
-public class Mol2Format implements IChemFormatMatcher {
+public class Mol2Format extends AbstractResourceFormat implements IChemFormatMatcher {
 
 	private static IResourceFormat myself = null;
 	
-    private Mol2Format() {}
+    public Mol2Format() {}
     
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {

@@ -32,13 +32,9 @@ import org.openscience.cdk.io.CIFReaderTest;
 import org.openscience.cdk.io.CMLReaderTest;
 import org.openscience.cdk.io.CTXReaderTest;
 import org.openscience.cdk.io.ChemObjectIOInstantionTests;
-import org.openscience.cdk.io.CrystClustReaderTest;
-import org.openscience.cdk.io.GamessReaderTest;
 import org.openscience.cdk.io.Gaussian98ReaderTest;
 import org.openscience.cdk.io.GhemicalReaderTest;
 import org.openscience.cdk.io.HINReaderTest;
-import org.openscience.cdk.io.INChIPlainTextReaderTest;
-import org.openscience.cdk.io.INChIReaderTest;
 import org.openscience.cdk.io.MDLRXNReaderTest;
 import org.openscience.cdk.io.MDLRXNV2000ReaderTest;
 import org.openscience.cdk.io.MDLRXNV3000ReaderTest;
@@ -51,18 +47,15 @@ import org.openscience.cdk.io.Mol2ReaderTest;
 import org.openscience.cdk.io.Mol2WriterTest;
 import org.openscience.cdk.io.Mopac7ReaderTest;
 import org.openscience.cdk.io.PCCompoundASNReaderTest;
-import org.openscience.cdk.io.PDBWriterTest;
 import org.openscience.cdk.io.PMPReaderTest;
 import org.openscience.cdk.io.ReaderFactoryTest;
 import org.openscience.cdk.io.SDFReaderTest;
 import org.openscience.cdk.io.SDFWriterTest;
-import org.openscience.cdk.io.SMILESWriterTest;
 import org.openscience.cdk.io.ShelXReaderTest;
 import org.openscience.cdk.io.WriterFactoryTest;
 import org.openscience.cdk.io.XYZReaderTest;
 import org.openscience.cdk.io.XYZWriterTest;
 import org.openscience.cdk.io.cml.CMLIOTests;
-import org.openscience.cdk.io.iterator.IteratingMDLConformerReaderTest;
 import org.openscience.cdk.io.iterator.IteratingSDFReaderTest;
 import org.openscience.cdk.io.iterator.IteratingPCCompoundASNReaderTest;
 import org.openscience.cdk.io.iterator.IteratingPCCompoundXMLReaderTest;
@@ -79,16 +72,12 @@ import org.openscience.cdk.io.program.Mopac7WriterTest;
     IoCoverageTest.class,
     CMLIOTests.class,
     CMLReaderTest.class,
-    CrystClustReaderTest.class,
     CDKSourceCodeWriterTest.class,
     CIFReaderTest.class,
     CTXReaderTest.class,
-    GamessReaderTest.class,
     Gaussian98ReaderTest.class,
     GhemicalReaderTest.class,
     HINReaderTest.class,
-    INChIReaderTest.class,
-    INChIPlainTextReaderTest.class,
     MDLReaderTest.class,
     MDLV2000ReaderTest.class,
     MDLV3000ReaderTest.class,
@@ -104,10 +93,8 @@ import org.openscience.cdk.io.program.Mopac7WriterTest;
     Mopac7ReaderTest.class,
     Mopac7WriterTest.class,
     PCCompoundASNReaderTest.class,
-    PDBWriterTest.class,
     PMPReaderTest.class,
     ShelXReaderTest.class,
-    SMILESWriterTest.class,
     XYZReaderTest.class,
     XYZWriterTest.class,
 
@@ -117,7 +104,6 @@ import org.openscience.cdk.io.program.Mopac7WriterTest;
 
         // cdk.io.iterator package
     IteratingSDFReaderTest.class,
-    IteratingMDLConformerReaderTest.class,
     IteratingPCCompoundASNReaderTest.class,
     IteratingPCCompoundXMLReaderTest.class,
     IteratingPCSubstancesXMLReaderTest.class        
