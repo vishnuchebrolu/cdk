@@ -21,7 +21,9 @@
 package org.openscience.cdk.smiles.smarts.parser;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
+import com.google.common.io.CharStreams;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openscience.cdk.CDKTestCase;
@@ -32,6 +34,9 @@ import org.openscience.cdk.io.iterator.IteratingSMILESReader;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.smiles.smarts.SMARTSQueryTool;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
+
+import static org.openscience.cdk.smiles.smarts.parser.SMARTSSearchTest.smarts;
+import static org.openscience.cdk.smiles.smarts.parser.SMARTSSearchTest.smiles;
 
 /**
  * Test recursive smarts
@@ -282,33 +287,72 @@ public class RecursiveTest extends CDKTestCase {
         Assert.assertEquals(1, nqmatch);
     }
 
-
     @Test public void testRecursiveSmarts26() throws Exception {
+        SMARTSQueryTool sqt = smarts("[NX3;H2,H1;!$(NC=O)]");
+        IAtomContainer  smi = smiles("CCCc1cc(=O)nc([nH]1)S", true);
+        sqt.preserveAtomType();
+        int[] result = SMARTSSearchTest.match(sqt, smi);
+        Assert.assertEquals(0, result[0]);
+        Assert.assertEquals(0, result[1]);
+    }
+
+    @Test public void testRecursiveSmarts26_cdkAromaticModel() throws Exception {
         match("[NX3;H2,H1;!$(NC=O)]", "CCCc1cc(=O)nc([nH]1)S");
-        Assert.assertEquals(0, nmatch);
-        Assert.assertEquals(0, nqmatch);
+        Assert.assertEquals(1, nmatch);
+        Assert.assertEquals(1, nqmatch);
+    }
+
+    @Test public void testRecursiveSmarts27_cdkAromaticModel() throws Exception {
+        match("[NX3;H2,H1;!$(NC=O)]", "CCCc1nc(c2n1[nH]c(nc2=O)c1cc(ccc1OCC)S(=O)(=O)N1CCN(CC1)CC)C");
+        Assert.assertEquals(1, nmatch);
+        Assert.assertEquals(1, nqmatch);
     }
 
     @Test public void testRecursiveSmarts27() throws Exception {
-        match("[NX3;H2,H1;!$(NC=O)]", "CCCc1nc(c2n1[nH]c(nc2=O)c1cc(ccc1OCC)S(=O)(=O)N1CCN(CC1)CC)C");
-        Assert.assertEquals(0, nmatch);
-        Assert.assertEquals(0, nqmatch);
+        SMARTSQueryTool sqt = smarts("[NX3;H2,H1;!$(NC=O)]");
+        IAtomContainer  smi = smiles("CCCc1nc(c2n1[nH]c(nc2=O)c1cc(ccc1OCC)S(=O)(=O)N1CCN(CC1)CC)C", true);
+        sqt.preserveAtomType();
+        int[] result = SMARTSSearchTest.match(sqt, smi);
+        Assert.assertEquals(0, result[0]);
+        Assert.assertEquals(0, result[1]);
     }
 
     @Test public void testRecursive28() throws Exception {
-        match("[NX3;H2,H1;!$(NC=O)]", "Cc1ccc[n+]2c1[nH]cc(c2=O)c1n[nH]nn1");
-        Assert.assertEquals(0, nmatch);
-        Assert.assertEquals(0, nqmatch);
+        SMARTSQueryTool sqt = smarts("[NX3;H2,H1;!$(NC=O)]");
+        IAtomContainer  smi = smiles("Cc1ccc[n+]2c1[nH]cc(c2=O)c1n[nH]nn1", true);
+        sqt.preserveAtomType();
+        int[] result = SMARTSSearchTest.match(sqt, smi);
+        Assert.assertEquals(0, result[0]);
+        Assert.assertEquals(0, result[1]);
+    }
+
+    @Test public void testRecursive28_cdkAromaticModel() throws Exception {
+        SMARTSQueryTool sqt = smarts("[NX3;H2,H1;!$(NC=O)]");
+        IAtomContainer  smi = smiles("Cc1ccc[n+]2c1[nH]cc(c2=O)c1n[nH]nn1");
+        int[] result = SMARTSSearchTest.match(sqt, smi);
+        Assert.assertEquals(1, result[0]);
+        Assert.assertEquals(1, result[1]);
     }
 
     @Test public void testRecursive29() throws Exception {
-        match("[NX3;H2,H1;!$(NC=O)]", "Cc1cc(=O)c(c[nH]1)C(=O)NC(c1ccc(cc1)O)C(=O)NC1C(=O)N2C1SCC(=C2C(=O)O)CSc1nnnn1C");
-        Assert.assertEquals(0, nmatch);
-        Assert.assertEquals(0, nqmatch);
+        SMARTSQueryTool sqt = smarts("[NX3;H2,H1;!$(NC=O)]");
+        IAtomContainer  smi = smiles("Cc1cc(=O)c(c[nH]1)C(=O)NC(c1ccc(cc1)O)C(=O)NC1C(=O)N2C1SCC(=C2C(=O)O)CSc1nnnn1C", true);
+        sqt.preserveAtomType();
+        int[] result = SMARTSSearchTest.match(sqt, smi);
+        Assert.assertEquals(0, result[0]);
+        Assert.assertEquals(0, result[1]);
+    }
+
+    @Test public void testRecursive29_cdkAromaticModel() throws Exception {
+        SMARTSQueryTool sqt = smarts("[NX3;H2,H1;!$(NC=O)]");
+        IAtomContainer  smi = smiles("Cc1cc(=O)c(c[nH]1)C(=O)NC(c1ccc(cc1)O)C(=O)NC1C(=O)N2C1SCC(=C2C(=O)O)CSc1nnnn1C");
+        int[] result = SMARTSSearchTest.match(sqt, smi);
+        Assert.assertEquals(1, result[0]);
+        Assert.assertEquals(1, result[1]);
     }
 
 
-    @Test public void testBasicAmineOnDrugs() throws Exception {
+    @Test public void testBasicAmineOnDrugs_cdkAromaticModel() throws Exception {
         String filename = "data/smiles/drugs.smi";
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         IteratingSMILESReader reader = new IteratingSMILESReader(
@@ -316,19 +360,46 @@ public class RecursiveTest extends CDKTestCase {
         );
 
         SMARTSQueryTool sqt = new SMARTSQueryTool("[NX3;H2,H1;!$(NC=O)]", DefaultChemObjectBuilder.getInstance());
+        sqt.preserveAtomType(); // already done by IteratingSMILESReader
         int nmatch = 0;
         int nmol = 0;
         while (reader.hasNext()) {
             IAtomContainer container = (IAtomContainer) reader.next();
-            AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(container);
-            CDKHueckelAromaticityDetector.detectAromaticity(container);
             if (sqt.matches(container)) {
                 nmatch++;
             }
             nmol++;
         }
         reader.close();
-        Assert.assertEquals(142, nmol);
+        Assert.assertEquals(141, nmol);
+        Assert.assertEquals(6, nmatch);
+    }
+
+    @Test public void testBasicAmineOnDrugs() throws Exception {
+        String filename = "data/smiles/drugs.smi";
+        InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
+
+        SMARTSQueryTool sqt = new SMARTSQueryTool("[NX3;H2,H1;!$(NC=O)]", DefaultChemObjectBuilder.getInstance());
+
+        // iterating SMILES reader doesn't allow us to turn off automatic aromaticity
+        // perception
+        SmilesParser    sp  = new SmilesParser(DefaultChemObjectBuilder.getInstance());
+
+        // don't reconfigure the input - take it exactly as it is and test only
+        // that
+        sqt.preserveAtomType();
+        sp.setPreservingAromaticity(true);
+
+        int nmatch = 0;
+        int nmol = 0;
+        for (String smi : CharStreams.readLines(new InputStreamReader(ins))) {
+            IAtomContainer container = sp.parseSmiles(smi.split("\t")[0]);
+            if (sqt.matches(container)) {
+                nmatch++;
+            }
+            nmol++;
+        }
+        Assert.assertEquals(141, nmol);
         Assert.assertEquals(0, nmatch);
     }
 

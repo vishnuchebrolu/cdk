@@ -19,82 +19,116 @@
  */
 package org.openscience.cdk.graph.invariant;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.primitives.Ints;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IBond;
 
 /**
- * Tool for calculating Morgan numbers {@cdk.cite MOR65}.
+ * Compute the extended connectivity values (Morgan Numbers) {@cdk.cite MOR65}.
+ * The tool does not produce the lexicographic smallest labelling on the graph
+ * and should not be used as a robust canonical labelling tool. To canonical
+ * label a graph please use {@link InChINumbersTools} or {@link
+ * CanonicalLabeler}. To determine equivalent classes of atoms please use {@link
+ * HuLuIndexTool} or one of the discrete refines available in the 'cdk-group'
+ * module.
  *
- * @cdk.module  standard
+ * @author shk3
+ * @cdk.module standard
  * @cdk.githash
- *
- * @author      shk3
  * @cdk.created 2003-06-30
  * @cdk.keyword Morgan number
+ * @see InChINumbersTools
+ * @see CanonicalLabeler
+ * @see HuLuIndexTool
  */
 @TestClass("org.openscience.cdk.graph.invariant.MorganNumbersToolsTest")
 public class MorganNumbersTools {
 
-  /**
-   * Makes an array containing the morgan numbers of the atoms of atomContainer.
-   *
-   * @param  atomContainer  The atomContainer to analyse.
-   * @return                The morgan numbers value.
-   */
-  @TestMethod("testGetMorganNumbers_IAtomContainer")
-  public static long[] getMorganNumbers(IAtomContainer atomContainer) {
-		long[] morganMatrix;
-		long[] tempMorganMatrix;
-		int N = atomContainer.getAtomCount();
-		morganMatrix = new long[N];
-		tempMorganMatrix = new long[N];
-		@SuppressWarnings("unchecked")
-		java.util.List<IAtom>[] atoms = new List[N];
-		@SuppressWarnings("unchecked")
-		Map<IAtom, Integer>[] atomIndices = new HashMap[N];
-		for (int f = 0; f < N; f++) {
-			morganMatrix[f] = atomContainer.getConnectedBondsCount(f);
-			tempMorganMatrix[f] = atomContainer.getConnectedBondsCount(f);
-			atoms[f] = atomContainer.getConnectedAtomsList(atomContainer.getAtom(f));
-			atomIndices[f] = new HashMap<IAtom, Integer>();
-			for (IAtom atom : atoms[f]) {
-				atomIndices[f].put(atom, atomContainer.getAtomNumber(atom));
-			}
-		}
-		for (int e = 0; e < N; e++) {
-			for (int f = 0; f < N; f++) {
-				morganMatrix[f] = 0;
-				for (IAtom atom : atoms[f]) {
-					morganMatrix[f] += tempMorganMatrix[atomIndices[f].get(atom)];
-				}
-			}
-			System.arraycopy(morganMatrix, 0, tempMorganMatrix, 0, N);
-		}
-		return tempMorganMatrix;
-  }
+    /** Default size of adjacency lists. */
+    private static final int INITIAL_DEGREE = 4;
 
+    /**
+     * Makes an array containing the morgan numbers of the atoms of
+     * atomContainer. These number are the extended connectivity values and not
+     * the lexicographic smallest labelling on the graph.
+     *
+     * @param molecule the molecule to analyse.
+     * @return The morgan numbers value.
+     */
+    @TestMethod("testGetMorganNumbers_IAtomContainer")
+    public static long[] getMorganNumbers(IAtomContainer molecule) {
 
-  /**
-   *  Makes an array containing the morgan numbers+element symbol of the atoms of atomContainer. This method
-   *  puts the element symbol before the morgan number, useful for finding out how many different rests are connected to an atom.
-   *
-   * @param  atomContainer  The atomContainer to analyse.
-   * @return                The morgan numbers value.
-   */
-  @TestMethod("testPhenylamine")
-  public static String[] getMorganNumbersWithElementSymbol(IAtomContainer atomContainer) {
-    long[] morgannumbers = getMorganNumbers(atomContainer);
-    String[] morgannumberswithelement = new String[morgannumbers.length];
-    for (int i = 0; i < morgannumbers.length; i++) {
-      morgannumberswithelement[i] = atomContainer.getAtom(i).getSymbol() + "-" + morgannumbers[i];
+        int order = molecule.getAtomCount();
+
+        long[] currentInvariants  = new long[order];
+        long[] previousInvariants = new long[order];
+
+        int[][] graph  = new int[order][INITIAL_DEGREE];
+        int[]   degree = new int[order];
+
+        // which atoms are the non-hydrogens.
+        int[] nonHydrogens = new int[order];
+
+        for (int v = 0; v < order; v++)
+            nonHydrogens[v] = "H".equals(molecule.getAtom(v).getSymbol()) ? 0
+                                                                          : 1;
+
+        // build the graph and initialise the current connectivity
+        // value to the number of connected non-hydrogens
+        for (IBond bond : molecule.bonds()) {
+            int u = molecule.getAtomNumber(bond.getAtom(0));
+            int v = molecule.getAtomNumber(bond.getAtom(1));
+            graph[u] = Ints.ensureCapacity(graph[u],
+                                           degree[u] + 1,
+                                           INITIAL_DEGREE);
+            graph[v] = Ints.ensureCapacity(graph[v],
+                                           degree[v] + 1,
+                                           INITIAL_DEGREE);
+            graph[u][degree[u]++] = v;
+            graph[v][degree[v]++] = u;
+            currentInvariants[u] += nonHydrogens[v];
+            currentInvariants[v] += nonHydrogens[u];
+        }
+
+        // iteratively sum the connectivity values for each vertex
+        for (int i = 0; i < order; i++) {
+            System.arraycopy(currentInvariants, 0, previousInvariants, 0, order);
+            for (int u = 0; u < order; u++) {
+                currentInvariants[u] = 0;
+
+                // for each of the vertices adjacent to 'u' sum their
+                // previous connectivity value
+                int[] neighbors = graph[u];
+                for (int j = 0; j < degree[u]; j++) {
+                    int v = neighbors[j];
+                    currentInvariants[u] += previousInvariants[v] * nonHydrogens[v];
+                }
+            }
+        }
+        return currentInvariants;
     }
-    return (morgannumberswithelement);
-  }
+
+
+    /**
+     * Makes an array containing the morgan numbers+element symbol of the atoms
+     * of {@code atomContainer}. This method puts the element symbol before the
+     * morgan number, useful for finding out how many different rests are
+     * connected to an atom.
+     *
+     * @param atomContainer The atomContainer to analyse.
+     * @return The morgan numbers value.
+     */
+    @TestMethod("testPhenylamine")
+    public static String[] getMorganNumbersWithElementSymbol(IAtomContainer atomContainer) {
+        long[] morgannumbers = getMorganNumbers(atomContainer);
+        String[] morgannumberswithelement = new String[morgannumbers.length];
+        for (int i = 0; i < morgannumbers.length; i++) {
+            morgannumberswithelement[i] = atomContainer.getAtom(i)
+                                                       .getSymbol() + "-" + morgannumbers[i];
+        }
+        return (morgannumberswithelement);
+    }
 }
 

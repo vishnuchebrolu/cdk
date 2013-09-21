@@ -27,13 +27,23 @@ package org.openscience.cdk.hash;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.graph.AtomContainerAtomPermutor;
 import org.openscience.cdk.graph.AtomContainerPermutor;
+import org.openscience.cdk.hash.stereo.GeometricTetrahedralEncoderFactory;
+import org.openscience.cdk.hash.stereo.StereoEncoder;
+import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
+import org.openscience.cdk.interfaces.IStereoElement;
+import org.openscience.cdk.interfaces.ITetrahedralChirality;
 import org.openscience.cdk.io.iterator.IteratingSDFReader;
+import org.openscience.cdk.Atom;
+import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.stereo.TetrahedralChirality;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 import java.io.InputStream;
@@ -464,7 +474,8 @@ public class HashCodeScenarios {
 
             if (depth < 7) {
                 assertThat(eqMesg(a, b) + " at depth " + depth, aHash, is(bHash));
-            } else {
+            }
+            else {
                 assertThat(nonEqMesg(a, b) + " at depth " + depth,
                            aHash, is(not(bHash)));
             }
@@ -674,9 +685,9 @@ public class HashCodeScenarios {
                    basic.generate(mAllene), is(basic.generate(unspecAllene2)));
 
         MoleculeHashGenerator stereo = new HashGeneratorMaker().elemental()
-                                                              .depth(2)
-                                                              .chiral()
-                                                              .molecular();
+                                                               .depth(2)
+                                                               .chiral()
+                                                               .molecular();
         assertThat("(M) and (P) allene should not hash the same when using stereo",
                    stereo.generate(mAllene), is(not(stereo.generate(pAllene))));
         assertThat("Unspecifed allene should be the different",
@@ -711,8 +722,330 @@ public class HashCodeScenarios {
                    stereo.generate(eCumulene), is(not(stereo.generate(zCumulene))));
     }
 
+    @Test public void suppressedHydrogens() {
+        
+        List<IAtomContainer> implicits = sdf("/data/hash/butan-2-ols.sdf", 2);
+        List<IAtomContainer> explicits = sdf("/data/hash/butan-2-ols-explicit-hydrogens.sdf", 2);
+
+        IAtomContainer implicit = implicits.get(0);
+        IAtomContainer explicit = explicits.get(0);
+
+        MoleculeHashGenerator unsuppressed = new HashGeneratorMaker().elemental()
+                                                                     .depth(4)
+                                                                     .molecular();
+        assertThat(nonEqMesg(implicit, explicit),
+                   unsuppressed.generate(implicit),
+                   is(not(unsuppressed.generate(explicit))));
+        
+        MoleculeHashGenerator suppressed = new HashGeneratorMaker().elemental()
+                                                                   .depth(4)
+                                                                   .suppressHydrogens()
+                                                                   .molecular();
+        assertThat(eqMesg(implicit, explicit),
+                   suppressed.generate(implicit),
+                   is(suppressed.generate(explicit)));
+        
+    }
+
+    @Test public void suppressedHydrogens_chiral() {
+
+        List<IAtomContainer> implicits = sdf("/data/hash/butan-2-ols.sdf", 2);
+        List<IAtomContainer> explicits = sdf("/data/hash/butan-2-ols-explicit-hydrogens.sdf", 2);
+
+        IAtomContainer implicit = implicits.get(0);
+        IAtomContainer explicit = explicits.get(0);
+
+        MoleculeHashGenerator unsuppressed = new HashGeneratorMaker().elemental()
+                                                                     .depth(4)
+                                                                     .chiral()
+                                                                     .molecular();
+        assertThat(nonEqMesg(implicit, explicit),
+                   unsuppressed.generate(implicit),
+                   is(not(unsuppressed.generate(explicit))));
+
+        MoleculeHashGenerator suppressed = new HashGeneratorMaker().elemental()
+                                                                   .depth(4)
+                                                                   .chiral()
+                                                                   .suppressHydrogens()
+                                                                   .molecular();
+        assertThat(eqMesg(implicit, explicit),
+                   suppressed.generate(implicit),
+                   is(suppressed.generate(explicit)));
+        
+        // okay now let's do some permutations can check the hash codes are always the same
+        AtomContainerPermutor implicitPermutor = new AtomContainerAtomPermutor(implicit);
+        AtomContainerPermutor explicitPermutor = new AtomContainerAtomPermutor(explicit);
+        
+        while (implicitPermutor.hasNext() && explicitPermutor.hasNext()) {
+            implicit = implicitPermutor.next();
+            explicit = explicitPermutor.next();
+            assertThat(eqMesg(implicit, explicit),
+                       suppressed.generate(implicit),
+                       is(suppressed.generate(explicit)));
+        }
+
+    }
+    
+    @Test public void inositols_suppressedHydrogens() {
+
+        List<IAtomContainer> implicits = sdf("/data/hash/inositols.sdf", 9);
+        List<IAtomContainer> explicits = sdf("/data/hash/inositols-explicit-hydrogens.sdf", 9);
+
+        assertThat("different number of implicit and explicit structures",
+                   implicits.size(), is(explicits.size()));
+
+        MoleculeHashGenerator unsuppressed = new HashGeneratorMaker().elemental()
+                                                                     .depth(4)
+                                                                     .perturbed()
+                                                                     .molecular();
+
+        MoleculeHashGenerator suppressed = new HashGeneratorMaker().elemental()
+                                                                   .depth(4)
+                                                                   .suppressHydrogens()
+                                                                   .perturbed()
+                                                                   .molecular();
+
+        // check that for each inesitol the values are equal if we suppress the hydrogens
+        for (int i = 0; i < implicits.size(); i++) {
+
+            IAtomContainer implicit = implicits.get(i);
+            IAtomContainer explicit = explicits.get(i);
+
+            assertThat(nonEqMesg(implicit, explicit),
+                       unsuppressed.generate(implicit),
+                       is(not(unsuppressed.generate(explicit))));
+
+            assertThat(eqMesg(implicit, explicit),
+                       suppressed.generate(implicit),
+                       is(suppressed.generate(explicit)));
+            
+        }
+        
+    }
+
+    @Test public void inositols_suppressedHydrogens_chiral() {
+
+        List<IAtomContainer> implicits = sdf("/data/hash/inositols.sdf", 9);
+        List<IAtomContainer> explicits = sdf("/data/hash/inositols-explicit-hydrogens.sdf", 9);
+
+        assertThat("different number of implicit and explicit structures",
+                   implicits.size(), is(explicits.size()));
+
+        // check that for different depth values - all the inositols will hash
+        // differently or the same depending on whether or not we suppress the
+        // explicit hydrogens
+        for (int d = 0; d < 10; d++) {
+
+            MoleculeHashGenerator unsuppressed = new HashGeneratorMaker().elemental()
+                                                                         .depth(d)
+                                                                         .chiral()
+                                                                         .perturbed()
+                                                                         .molecular();
+
+            MoleculeHashGenerator suppressed = new HashGeneratorMaker().elemental()
+                                                                       .depth(d)
+                                                                       .chiral()
+                                                                       .suppressHydrogens()
+                                                                       .perturbed()
+                                                                       .molecular();
+            for (int i = 0; i < implicits.size(); i++) {
+
+                IAtomContainer implicit = implicits.get(i);
+                IAtomContainer explicit = explicits.get(i);
+
+                assertThat(nonEqMesg(implicit, explicit),
+                           unsuppressed.generate(implicit),
+                           is(not(unsuppressed.generate(explicit))));
+
+                assertThat(eqMesg(implicit, explicit),
+                           suppressed.generate(implicit),
+                           is(suppressed.generate(explicit)));
+
+            }
+        }
+    }
+    
+    @Test public void suppressedHydrogens_dicholorethenes() {
+        
+        List<IAtomContainer> implicits = sdf("/data/hash/dichloroethenes.sdf", 2);
+        List<IAtomContainer> explicits = sdf("/data/hash/dichloroethenes-explicit-hydrogens.sdf", 2);
+
+        assertThat("different number of implicit and explicit structures",
+                   implicits.size(), is(explicits.size()));
+
+        // check that for different depth values - all the dicholorethenes will hash
+        // differently or the same depending on whether or not we suppress the
+        // explicit hydrogens
+        for (int d = 0; d < 4; d++) {
+
+            MoleculeHashGenerator unsuppressed = new HashGeneratorMaker().elemental()
+                                                                         .depth(d)
+                                                                         .chiral()
+                                                                         .perturbed()
+                                                                         .molecular();
+
+            MoleculeHashGenerator suppressed = new HashGeneratorMaker().elemental()
+                                                                       .depth(d)
+                                                                       .chiral()
+                                                                       .suppressHydrogens()
+                                                                       .perturbed()
+                                                                       .molecular();
+            for (int i = 0; i < implicits.size(); i++) {
+
+                IAtomContainer implicit = implicits.get(i);
+                IAtomContainer explicit = explicits.get(i);
+
+                assertThat(nonEqMesg(implicit, explicit),
+                           unsuppressed.generate(implicit),
+                           is(not(unsuppressed.generate(explicit))));
+
+                assertThat(eqMesg(implicit, explicit),
+                           suppressed.generate(implicit),
+                           is(suppressed.generate(explicit)));
+
+            }
+        }    
+    }
+
+    @Test public void suppressedHydrogens_allenes() {
+
+        List<IAtomContainer> implicits = sdf("/data/hash/allene-implicit-h.sdf", 2);
+        List<IAtomContainer> explicits = sdf("/data/hash/allene-explicit-h.sdf", 2);
+
+        assertThat("different number of implicit and explicit structures",
+                   implicits.size(), is(explicits.size()));
+
+        // check that for different depth values - all the dicholorethenes will hash
+        // differently or the same depending on whether or not we suppress the
+        // explicit hydrogens
+        for (int d = 0; d < 4; d++) {
+
+            MoleculeHashGenerator unsuppressed = new HashGeneratorMaker().elemental()
+                                                                         .depth(d)
+                                                                         .chiral()
+                                                                         .perturbed()
+                                                                         .molecular();
+
+            MoleculeHashGenerator suppressed = new HashGeneratorMaker().elemental()
+                                                                       .depth(d)
+                                                                       .chiral()
+                                                                       .suppressHydrogens()
+                                                                       .perturbed()
+                                                                       .molecular();
+            for (int i = 0; i < implicits.size(); i++) {
+
+                IAtomContainer implicit = implicits.get(i);
+                IAtomContainer explicit = explicits.get(i);
+
+                assertThat(nonEqMesg(implicit, explicit),
+                           unsuppressed.generate(implicit),
+                           is(not(unsuppressed.generate(explicit))));
+
+                assertThat(eqMesg(implicit, explicit),
+                           suppressed.generate(implicit),
+                           is(suppressed.generate(explicit)));
+
+            }
+        }
+    }
+    
+    @Test public void butan2ol_UsingStereoElement() {
+        
+        // C[CH](O)CC
+        IAtomContainer butan2ol = new AtomContainer();
+        butan2ol.addAtom(new Atom("C")); 
+        butan2ol.addAtom(new Atom("C"));
+        butan2ol.addAtom(new Atom("O"));
+        butan2ol.addAtom(new Atom("C"));
+        butan2ol.addAtom(new Atom("C"));        
+        butan2ol.addBond(0, 1, IBond.Order.SINGLE);
+        butan2ol.addBond(1, 2, IBond.Order.SINGLE);
+        butan2ol.addBond(1, 3, IBond.Order.SINGLE);
+        butan2ol.addBond(3, 4, IBond.Order.SINGLE);
+
+        MoleculeHashGenerator generator = new HashGeneratorMaker().elemental()
+                                                                  .depth(4)
+                                                                  .chiral()
+                                                                  .molecular();
+
+
+        long achiral = generator.generate(butan2ol);
+
+        // C[C@@H](O)CC (2R)-butan-2-ol
+        butan2ol.addStereoElement(new TetrahedralChirality(butan2ol.getAtom(1),
+                                                           new IAtom[]{
+                                                                butan2ol.getAtom(0),
+                                                                butan2ol.getAtom(1), // represents implicit H
+                                                                butan2ol.getAtom(2),
+                                                                butan2ol.getAtom(3),                                                                   
+                                                           },
+                                                           ITetrahedralChirality.Stereo.CLOCKWISE));
+
+        long rConfiguration = generator.generate(butan2ol);
+
+        // C[C@H](O)CC  (2S)-butan-2-ol
+        butan2ol.setStereoElements(new ArrayList<IStereoElement>(1));
+        butan2ol.addStereoElement(new TetrahedralChirality(butan2ol.getAtom(1),
+                                                           new IAtom[]{
+                                                                   butan2ol.getAtom(0),
+                                                                   butan2ol.getAtom(1), // represents implicit H
+                                                                   butan2ol.getAtom(2),
+                                                                   butan2ol.getAtom(3),
+                                                           },
+                                                           ITetrahedralChirality.Stereo.ANTI_CLOCKWISE));
+        
+        long sConfiguration = generator.generate(butan2ol);
+
+        // first check we have 3 different values
+        assertThat(rConfiguration, is(not(sConfiguration)));
+        assertThat(rConfiguration, is(not(achiral)));
+        assertThat(sConfiguration, is(not(achiral)));       
+        
+        // load the ones with 2D coordinates to check we match them
+        List<IAtomContainer> butan2ols = sdf("/data/hash/butan-2-ols.sdf", 2);
+                
+        // first is 'R'
+        assertThat(rConfiguration, is(generator.generate(butan2ols.get(0))));
+        // second is 'S'
+        assertThat(sConfiguration, is(generator.generate(butan2ols.get(1))));
+
+        // okay now let's move around the atoms in the stereo element
+
+        // [C@H](C)(O)CC (2R)-butan-2-ol
+        butan2ol.setStereoElements(new ArrayList<IStereoElement>(1));
+        butan2ol.addStereoElement(new TetrahedralChirality(butan2ol.getAtom(1),
+                                                           new IAtom[]{                                                                                   
+                                                                   butan2ol.getAtom(1), // represents implicit H
+                                                                   butan2ol.getAtom(0),
+                                                                   butan2ol.getAtom(2),
+                                                                   butan2ol.getAtom(3),
+                                                           },
+                                                           ITetrahedralChirality.Stereo.ANTI_CLOCKWISE));
+
+        // check 'R' configuration was encoded
+        assertThat(generator.generate(butan2ol),
+                   is(generator.generate(butan2ols.get(0))));
+
+        // [C@@H](C)(O)CC (2S)-butan-2-ol
+        butan2ol.setStereoElements(new ArrayList<IStereoElement>(1));
+        butan2ol.addStereoElement(new TetrahedralChirality(butan2ol.getAtom(1),
+                                                           new IAtom[]{
+                                                                   butan2ol.getAtom(1), // represents implicit H
+                                                                   butan2ol.getAtom(0),
+                                                                   butan2ol.getAtom(2),
+                                                                   butan2ol.getAtom(3),
+                                                           },
+                                                           ITetrahedralChirality.Stereo.CLOCKWISE));
+
+        // check 'S' configuration was encoded
+        assertThat(generator.generate(butan2ol),
+                   is(generator.generate(butan2ols.get(1))));
+        
+    }
+    
+
     private static String title(IAtomContainer mol) {
-        return mol.getProperty(TITLE);
+        return mol.getProperty(TITLE);              
     }
 
     private static String nonEqMesg(IAtomContainer a, IAtomContainer b) {

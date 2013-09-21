@@ -30,7 +30,8 @@ import static org.junit.Assert.*;
 import static org.openscience.cdk.graph.InitialCyclesTest.anthracene;
 import static org.openscience.cdk.graph.InitialCyclesTest.bicyclo;
 import static org.openscience.cdk.graph.InitialCyclesTest.cyclophane_even;
-import static org.openscience.cdk.graph.InitialCyclesTest.napthalene;
+import static org.openscience.cdk.graph.InitialCyclesTest.naphthalene;
+import static org.openscience.cdk.graph.InitialCyclesTest.norbornane;
 
 /**
  * @author John May
@@ -45,8 +46,18 @@ public class EssentialCyclesTest {
         assertThat(paths, is(new int[0][0]));
     }
 
+    @Test public void paths_norbornane() {
+        int[][] norbornane = norbornane();
+        EssentialCycles essential = new EssentialCycles(norbornane);
+        int[][] paths = essential.paths();
+        assertThat(paths.length, is(2));
+        int[][] expected = new int[][]{{5, 6, 2, 1, 0, 5},
+                                       {5, 6, 2, 3, 4, 5}};
+        assertThat(paths, is(expected));
+    }
+
     @Test public void paths_napthalene() {
-        int[][] napthalene = napthalene();
+        int[][] napthalene = naphthalene();
         EssentialCycles essential = new EssentialCycles(napthalene);
         int[][] paths = essential.paths();
         int[][] expected = new int[][]{{5, 0, 1, 2, 3, 4, 5},
@@ -80,15 +91,19 @@ public class EssentialCyclesTest {
         assertThat(paths, is(expected));
     }
 
+    @Test public void size_norbornane() {
+        int[][] norbornane = norbornane();
+        EssentialCycles essential = new EssentialCycles(norbornane);
+        assertThat(essential.size(), is(2));
+    }
     @Test public void size_bicyclo() {
         int[][] bicyclo = bicyclo();
-        System.out.println("bicyclo");
         EssentialCycles essential = new EssentialCycles(bicyclo);
         assertThat(essential.size(), is(0));
     }
 
     @Test public void size_napthalene() {
-        int[][] napthalene = napthalene();
+        int[][] napthalene = naphthalene();
         EssentialCycles essential = new EssentialCycles(napthalene);
         assertThat(essential.size(), is(2));
     }

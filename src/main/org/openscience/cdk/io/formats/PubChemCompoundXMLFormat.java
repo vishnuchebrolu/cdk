@@ -24,6 +24,8 @@ import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.tools.DataFeatures;
 
+import java.util.List;
+
 /**
  * @cdk.module ioformats
  * @cdk.githash
@@ -96,11 +98,18 @@ public class PubChemCompoundXMLFormat extends AbstractResourceFormat implements 
 		return DataFeatures.NONE;
 	}
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     @TestMethod("testMatches")
-	public boolean matches(int lineNumber, String line) {
-	    if (lineNumber <= 2 && line.contains("<PC-Compound") &&
-	        !line.contains("<PC-Compounds")) return true;
-		return false;
-	}
+    public MatchResult matches(List<String> lines) {
+        MatchResult result = NO_MATCH;
+        for (int i = 0; i < lines.size(); i++) {
+            String line = lines.get(i);
+            if (line.contains("<PC-Compound") && result == NO_MATCH)
+                result = new MatchResult(true, this, i);
+            if (line.contains("<PC-Compounds"))
+                return NO_MATCH;
+        }
+        return result;
+    }
 }

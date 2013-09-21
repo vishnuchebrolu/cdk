@@ -118,6 +118,59 @@ public class SMARTSQueryTool {
     private IAtomContainer atomContainer = null;
     private QueryAtomContainer query = null;
 
+    /**
+     * Allow re-perception or preservation of aromaticity information.
+     */
+    private boolean perceiveAtomType = true;
+
+    /**
+     * Defines which set of rings to define rings in the target.
+     */
+    private enum RingSet {
+
+        /**
+         * Smallest Set of Smallest Rings (or Minimum Cycle Basis - but not
+         * strictly the same). Defines what is typically thought of as a 'ring'
+         * however the non-uniqueness leads to ambiguous matching.
+         */
+        SmallestSetOfSmallestRings {
+            @Override IRingSet ringSet(IAtomContainer m) {
+                return new SSSRFinder(m).findSSSR();
+            }
+        },
+
+        /**
+         * Intersect of all Minimum Cycle Bases (or SSSR) and thus is a subset.
+         * The set is unique but may excludes rings (e.g. from bridged systems).
+         */
+        EssentialRings {
+            @Override IRingSet ringSet(IAtomContainer m) {
+                return new SSSRFinder(m).findEssentialRings();
+            }
+        },
+
+        /**
+         * Union of all Minimum Cycle Bases (or SSSR) and thus is a superset.
+         * The set is unique but may include more rings then is necessary.
+         */
+        RelevantRings {
+            @Override IRingSet ringSet(IAtomContainer m) {
+                return new SSSRFinder(m).findRelevantRings();
+            }
+        };
+
+        /**
+         * Compute a ring set for a molecule.
+         *
+         * @param m molecule
+         * @return the ring set for the molecule
+         */
+        abstract IRingSet ringSet(IAtomContainer m);
+    }
+
+    /** Which short cyclic set should be used. */
+    private RingSet ringSet = RingSet.EssentialRings;
+
     private final IChemObjectBuilder builder;
 
     private List<List<Integer>> matchingAtoms = null;
@@ -131,8 +184,11 @@ public class SMARTSQueryTool {
     };
 
     /**
-     * @param smarts
+     * Create a new SMARTS query tool for the specified SMARTS string. Query
+     * objects will contain a reference to the specified {@link
+     * IChemObjectBuilder}.
      *
+     * @param smarts SMARTS query string
      * @throws IllegalArgumentException if the SMARTS string can not be handled
      */
     public SMARTSQueryTool(String smarts,
@@ -155,6 +211,54 @@ public class SMARTSQueryTool {
      */
     public void setQueryCacheSize(int maxEntries) {
         MAX_ENTRIES = maxEntries;
+    }
+
+
+    /**
+     * Indicates that ring properties should use the Smallest Set of Smallest
+     * Rings. The set is not unique and may lead to ambiguous matches.
+     * @see #useEssentialRings()
+     * @see #useRelevantRings()
+     */
+    public void useSmallestSetOfSmallestRings() {
+        this.ringSet = RingSet.SmallestSetOfSmallestRings;
+    }
+
+    /**
+     * Indicates that ring properties should use the Relevant Rings. The set is
+     * unique and includes all of the SSSR but may be exponential in size.
+     *
+     * @see #useSmallestSetOfSmallestRings()
+     * @see #useEssentialRings()
+     */
+    public void useRelevantRings() {
+        this.ringSet = RingSet.RelevantRings;
+    }
+
+    /**
+     * Indicates that ring properties should use the Essential Rings (default).
+     * The set is unique but only includes a subset of the SSSR.
+     *
+     * @see #useSmallestSetOfSmallestRings()
+     * @see #useEssentialRings()
+     */
+    public void useEssentialRings() {
+        this.ringSet = RingSet.EssentialRings;
+    }
+
+    /**
+     * Indicates the SMARTS search should first re-perceive atom type and
+     * aromaticity of the target molecule.
+     */
+    public void perceiveAtomType() {
+        this.perceiveAtomType = true;
+    }
+
+    /**
+     * Indicates you which the target atom type and aromaticity to be preserved.
+     */
+    public void preserveAtomType() {
+        this.perceiveAtomType = false;
     }
 
     /**
@@ -375,9 +479,8 @@ public class SMARTSQueryTool {
             throw new CDKException(e.toString(), e);
         }
 
-        // sets SSSR information
-        SSSRFinder finder = new SSSRFinder(atomContainer);
-        IRingSet sssr = finder.findEssentialRings();
+        // set short cycle information
+        IRingSet sssr = ringSet.ringSet(atomContainer);
 
         for (IAtom atom : atomContainer.atoms()) {
 
@@ -444,8 +547,10 @@ public class SMARTSQueryTool {
 
         // check for atomaticity
         try {
-            AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(atomContainer);
-            CDKHueckelAromaticityDetector.detectAromaticity(atomContainer);
+            if (perceiveAtomType) {
+                AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(atomContainer);
+                CDKHueckelAromaticityDetector.detectAromaticity(atomContainer);
+            }
         } catch (CDKException e) {
             logger.debug(e.toString());
             throw new CDKException(e.toString(), e);
@@ -458,7 +563,7 @@ public class SMARTSQueryTool {
      * We loop over the SMARTS atoms in the query and associate the target molecule with each of the SMARTS atoms that
      * need it
      *
-     * @param atomContainer
+     * @param atomContainer molecule to initialise
      * @throws CDKException
      */
     private void initializeRecursiveSmarts(IAtomContainer atomContainer) throws CDKException {
@@ -470,8 +575,8 @@ public class SMARTSQueryTool {
     /**
      * Recursively initializes recursive smarts atoms
      *
-     * @param atom
-     * @param atomContainer
+     * @param atom the atom to initialise
+     * @param atomContainer the container of the atom to initialise
      * @throws CDKException
      */
     private void initializeRecursiveSmartsAtom(IAtom atom, IAtomContainer atomContainer) throws CDKException {
@@ -523,7 +628,7 @@ public class SMARTSQueryTool {
                 if (!tmp.contains(idx1)) tmp.add(idx1);
                 if (!tmp.contains(idx2)) tmp.add(idx2);
             }
-            if (tmp.size() > 0) atomMapping.add(tmp);
+            if (tmp.size() == query.getAtomCount()) atomMapping.add(tmp);
 
             // If there is only one bond, check if it matches both ways.
             if (list.size() == 1 && atom1.getAtomicNumber() == atom2.getAtomicNumber()) {

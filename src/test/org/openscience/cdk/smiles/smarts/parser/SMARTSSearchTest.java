@@ -31,6 +31,7 @@ import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.ChemObject;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.io.DefaultChemObjectReader;
 import org.openscience.cdk.io.MDLV2000Reader;
@@ -64,19 +65,40 @@ public class SMARTSSearchTest extends CDKTestCase {
 		uiTester = new UniversalIsomorphismTester();
 	}
 
-    private int[] match(String smarts, String smiles) throws Exception {
+    static IAtomContainer smiles(String smiles) throws
+                                                        InvalidSmilesException {
+        return smiles(smiles, false);
+    }
+
+    static IAtomContainer smiles(String smiles,
+                                         boolean perserveAromaticity) throws
+                                                                      InvalidSmilesException {
+        SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder
+                                                   .getInstance());
+        sp.setPreservingAromaticity(perserveAromaticity);
+        return sp.parseSmiles(smiles);
+    }
+
+    static SMARTSQueryTool smarts(String smarts) {
         SMARTSQueryTool sqt = new SMARTSQueryTool(smarts, DefaultChemObjectBuilder.getInstance());
-        SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
-        IAtomContainer atomContainer = sp.parseSmiles(smiles);
-        boolean status = sqt.matches(atomContainer);
+        return sqt;
+    }
+
+    static int[] match(SMARTSQueryTool sqt, IAtomContainer m) throws
+                                                               CDKException {
+        boolean status = sqt.matches(m);
         if (status) {
-        	return new int[] {
-              sqt.countMatches(),
-              sqt.getUniqueMatchingAtoms().size()
-        	};
+            return new int[] {
+                    sqt.countMatches(),
+                    sqt.getUniqueMatchingAtoms().size()
+            };
         } else {
-        	return new int[]{0,0};
+            return new int[]{0,0};
         }
+    }
+
+    private int[] match(String smarts, String smiles) throws Exception {
+        return match(smarts(smarts), smiles(smiles));
     }
 
     @Test public void testMoleculeFromSDF() throws CDKException {
@@ -430,10 +452,30 @@ public class SMARTSSearchTest extends CDKTestCase {
 
     @Test
     public void testPropertyR2() throws Exception {
-        int[] results = match("[R2]", "COc1cc2c(ccnc2cc1)C(O)C4CC(CC3)C(C=C)CN34");
+        SMARTSQueryTool sqt = smarts("[R2]");
+        sqt.useSmallestSetOfSmallestRings(); // default for daylight
+        int[] results = match(sqt, smiles("COc1cc2c(ccnc2cc1)C(O)C4CC(CC3)C(C=C)CN34"));
         Assert.assertEquals(6, results[0]);
         Assert.assertEquals(6, results[1]);
 
+    }
+
+    @Test
+    public void testPropertyR2_essentialRings() throws Exception {
+        SMARTSQueryTool sqt = smarts("[R2]");
+        sqt.useEssentialRings();
+        int[] results = match(sqt, smiles("COc1cc2c(ccnc2cc1)C(O)C4CC(CC3)C(C=C)CN34"));
+        Assert.assertEquals(2, results[0]);
+        Assert.assertEquals(2, results[1]);
+    }
+
+    @Test
+    public void testPropertyR2_relevantRings() throws Exception {
+        SMARTSQueryTool sqt = smarts("[R2]");
+        sqt.useRelevantRings();
+        int[] results = match(sqt, smiles("COc1cc2c(ccnc2cc1)C(O)C4CC(CC3)C(C=C)CN34"));
+        Assert.assertEquals(8, results[0]);
+        Assert.assertEquals(8, results[1]);
     }
 
     @Test public void testPropertyR3() throws Exception {
@@ -1155,10 +1197,22 @@ public class SMARTSSearchTest extends CDKTestCase {
         Assert.assertEquals(5, results[1]);
     }
 
-    /* this fails, likely dueto a problem in aromaticity detection */
-    @Test public void testLogicalOrLowAnd6() throws Exception { 
-    	int[] results = match("[#7,C;+0,+1]", "[Na+].[Na+].[O-]C(=O)c1ccccc1c2c3ccc([O-])cc3oc4cc(=O)ccc24");
-    	Assert.assertEquals(1, results[0]);    	
+    /** The CDK aromaticity detection differs from Daylight - by persevering
+     *  aromaticity from the SMILES we can match correctly.  */
+    @Test public void testLogicalOrLowAnd6() throws Exception {
+        SMARTSQueryTool sqt = smarts("[#7,C;+0,+1]");
+        sqt.preserveAtomType();
+        IAtomContainer  smi = smiles("[Na+].[Na+].[O-]C(=O)c1ccccc1c2c3ccc([O-])cc3oc4cc(=O)ccc24", true);
+    	int[] results = match(sqt, smi);
+    	Assert.assertEquals(1, results[0]);
+    }
+
+    @Test public void testLogicalOrLowAnd6_cdkAromaticity() throws Exception {
+        SMARTSQueryTool sqt = smarts("[#7,C;+0,+1]");
+        sqt.perceiveAtomType();
+        IAtomContainer  smi = smiles("[Na+].[Na+].[O-]C(=O)c1ccccc1c2c3ccc([O-])cc3oc4cc(=O)ccc24", false);
+        int[] results = match(sqt, smi);
+        Assert.assertEquals(8, results[0]);
     }
 
     @Test public void testLogicalOrLowAnd7() throws Exception {
@@ -1677,6 +1731,11 @@ public class SMARTSSearchTest extends CDKTestCase {
     @Test public void unspecifiedRingMembership() throws Exception {
         assertThat(match("[#6+0&R]=[#6+0&!R]", "C1=C2CCCC2CCC1"),
                    is(new int[]{0, 0}));
+    }
+        
+    @Test public void cyclopropane() throws Exception {
+        assertThat(match("**(*)*", "C1CC1"),
+                   is(new int[]{0, 0}));        
     }
 }
 
