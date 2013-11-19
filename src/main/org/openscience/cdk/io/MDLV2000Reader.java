@@ -35,6 +35,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
@@ -42,6 +44,7 @@ import javax.vecmath.Point3d;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
+import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.config.IsotopeFactory;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
@@ -64,9 +67,6 @@ import org.openscience.cdk.isomorphism.matchers.QueryAtomContainer;
 import org.openscience.cdk.tools.ILoggingTool;
 import org.openscience.cdk.tools.LoggingToolFactory;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 /**
  * Reads content from MDL molfiles and SD files. 
  * It can read a {@link IAtomContainer} or {@link IChemModel} from an MDL molfile, and
@@ -386,7 +386,7 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
         Map<Integer,IPseudoAtom> rAtoms = new HashMap<Integer,IPseudoAtom>();
         
         try {
-        	IsotopeFactory isotopeFactory = IsotopeFactory.getInstance(molecule.getBuilder());
+        	IsotopeFactory isotopeFactory = Isotopes.getInstance();
         	
             logger.info("Reading header");
             line = input.readLine(); linecount++;
@@ -533,7 +533,7 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                     try {
                         int massDiff = Integer.parseInt(massDiffString);
                         if (massDiff != 0) {
-                            IIsotope major = IsotopeFactory.getInstance(molecule.getBuilder()).getMajorIsotope(element);
+                            IIsotope major = Isotopes.getInstance().getMajorIsotope(element);
                             atom.setMassNumber(major.getMassNumber() + massDiff);
                         }
                     } catch (Exception exception) {
@@ -949,15 +949,17 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                 if (!lineRead) {
                     logger.warn("Skipping line in property block: ", line);
                 }
-            }
-            
-            for (int i = 0; i < atoms; i++) {
-                applyMDLValenceModel(outputContainer.getAtom(i), explicitValence[i]);                
-            }
+            }                       
 
 		    if (interpretHydrogenIsotopes.isSet()) {
 		        fixHydrogenIsotopes(molecule, isotopeFactory);
 		    }
+
+            // note: apply the valence model last so that all fixes (i.e. hydrogen
+            // isotopes) are in place
+            for (int i = 0; i < atoms; i++) {
+                applyMDLValenceModel(outputContainer.getAtom(i), explicitValence[i]);
+            }
 
 		} catch (CDKException exception) {
             String error = "Error while parsing line " + linecount + ": " + line + " -> " + exception.getMessage();
@@ -1010,23 +1012,21 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
         }
     }
 
-    private void fixHydrogenIsotopes(IAtomContainer molecule,IsotopeFactory isotopeFactory) {
-		Iterator<IAtom> atoms = molecule.atoms().iterator();
-		while (atoms.hasNext()) {
-			IAtom atom = atoms.next();
+    private void fixHydrogenIsotopes(IAtomContainer molecule, IsotopeFactory isotopeFactory) {
+		for (IAtom atom : AtomContainerManipulator.getAtomArray(molecule)) {
 			if (atom instanceof IPseudoAtom) {
-				IPseudoAtom pseudo = (IPseudoAtom)atom;
+				IPseudoAtom pseudo = (IPseudoAtom) atom;
                 if ("D".equals(pseudo.getLabel())) {
 					IAtom newAtom = molecule.getBuilder().newInstance(IAtom.class,atom);
 					newAtom.setSymbol("H");
-                    IIsotope isotope = molecule.getBuilder().newInstance(IIsotope.class, 1, "H", 2, 2.014101778, 0.0115);
-					isotopeFactory.configure(newAtom, isotope);
+                    newAtom.setAtomicNumber(1);
+					isotopeFactory.configure(newAtom, isotopeFactory.getIsotope("H", 2));
 					AtomContainerManipulator.replaceAtomByAtom(molecule, atom, newAtom);
                 } else if ("T".equals(pseudo.getLabel())) {
                     IAtom newAtom = molecule.getBuilder().newInstance(IAtom.class,atom);
 					newAtom.setSymbol("H");
-				    IIsotope isotope = molecule.getBuilder().newInstance(IIsotope.class, 1, "H", 3, 3.016049278, 0d);
-				    isotopeFactory.configure(newAtom, isotope);
+                    newAtom.setAtomicNumber(1);
+				    isotopeFactory.configure(newAtom, isotopeFactory.getIsotope("H", 3));
 					AtomContainerManipulator.replaceAtomByAtom(molecule, atom, newAtom);
 				}
 			}

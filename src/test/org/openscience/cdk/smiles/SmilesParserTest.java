@@ -20,8 +20,10 @@
  */
 package org.openscience.cdk.smiles;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Assume;
@@ -54,6 +56,11 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import org.openscience.cdk.tools.manipulator.AtomTypeManipulator;
 import org.openscience.cdk.tools.manipulator.BondManipulator;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Please see the test.gui package for visual feedback on tests.
  * 
@@ -70,160 +77,191 @@ public class SmilesParserTest extends CDKTestCase {
 	  @Test (timeout=1000)
 	  public void testSingleOrDoubleFlag() throws Exception {
 		  String smiles = "c1cccn1c2cccn2";
-		  IAtomContainer mol = sp.parseSmiles(smiles);
-		  assertAtomTypesPerceived(mol);
-		  // Let's check the atoms first...
-		  Assert.assertTrue(mol.getAtom(0).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
-		  Assert.assertTrue(mol.getAtom(1).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
-		  Assert.assertTrue(mol.getAtom(2).getFlag(CDKConstants.SINGLE_OR_DOUBLE));		  
-		  Assert.assertTrue(mol.getAtom(3).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
-		  Assert.assertTrue(mol.getAtom(4).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
+          
+          // need to load the exact representation - this is SMILES string is 
+          // invalid and cannot be correctly kekulised
+		  IAtomContainer mol = loadExact(smiles);
 		  
-		  Assert.assertTrue(mol.getAtom(5).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
-		  Assert.assertTrue(mol.getAtom(6).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
-		  Assert.assertTrue(mol.getAtom(7).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
-		  Assert.assertTrue(mol.getAtom(8).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
-		  Assert.assertTrue(mol.getAtom(9).getFlag(CDKConstants.SINGLE_OR_DOUBLE));		  
+          // single or double flags now assigned separately
+          AtomContainerManipulator.setSingleOrDoubleFlags(mol);
+          
+		  // Let's check the atoms first...
+		  assertTrue(mol.getAtom(0).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
+		  assertTrue(mol.getAtom(1).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
+		  assertTrue(mol.getAtom(2).getFlag(CDKConstants.SINGLE_OR_DOUBLE));		  
+		  assertTrue(mol.getAtom(3).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
+		  assertTrue(mol.getAtom(4).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
+		  
+		  assertTrue(mol.getAtom(5).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
+		  assertTrue(mol.getAtom(6).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
+		  assertTrue(mol.getAtom(7).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
+		  assertTrue(mol.getAtom(8).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
+		  assertTrue(mol.getAtom(9).getFlag(CDKConstants.SINGLE_OR_DOUBLE));		  
 		  // ...and then the bonds...
 		  // ...in the first ring...
-		  Assert.assertTrue(mol.getBond(0).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
-		  Assert.assertTrue(mol.getBond(1).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
-		  Assert.assertTrue(mol.getBond(2).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
-		  Assert.assertTrue(mol.getBond(3).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
-		  Assert.assertTrue(mol.getBond(4).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
+		  assertTrue(mol.getBond(mol.getAtom(0), mol.getAtom(1)).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
+		  assertTrue(mol.getBond(mol.getAtom(1), mol.getAtom(2)).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
+		  assertTrue(mol.getBond(mol.getAtom(2), mol.getAtom(3)).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
+		  assertTrue(mol.getBond(mol.getAtom(3), mol.getAtom(4)).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
+		  assertTrue(mol.getBond(mol.getAtom(4), mol.getAtom(0)).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
 		  // ...then the bond in between the rings...
-		  Assert.assertFalse(mol.getBond(5).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
+		  assertFalse(mol.getBond(mol.getAtom(4), mol.getAtom(5)).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
 		  // ...and at last the bonds in the other ring.
-		  Assert.assertTrue(mol.getBond(6).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
-		  Assert.assertTrue(mol.getBond(7).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
-		  Assert.assertTrue(mol.getBond(8).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
-		  Assert.assertTrue(mol.getBond(9).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
-		  Assert.assertTrue(mol.getBond(10).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
+		  assertTrue(mol.getBond(mol.getAtom(5), mol.getAtom(6)).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
+		  assertTrue(mol.getBond(mol.getAtom(6), mol.getAtom(7)).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
+		  assertTrue(mol.getBond(mol.getAtom(7), mol.getAtom(8)).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
+		  assertTrue(mol.getBond(mol.getAtom(8), mol.getAtom(9)).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
+		  assertTrue(mol.getBond(mol.getAtom(9), mol.getAtom(5)).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
 	  }
-	  
-	/** @cdk.bug 1363882 */
-  @Test (timeout=1000)
-  public void testBug1363882() throws Exception {
-    String smiles = "[H]c2c([H])c(c1c(nc(n1([H]))C(F)(F)F)c2Cl)Cl";
-    IAtomContainer mol = sp.parseSmiles(smiles);
-    assertAtomTypesPerceived(mol);
-    Assert.assertEquals(18, mol.getAtomCount());
-    Assert.assertTrue(CDKHueckelAromaticityDetector.detectAromaticity(mol));
-  }
-  
-  /** @cdk.bug 1535587 */
-  @Test (timeout=1000)
-  public void testBug1535587() throws Exception {
-    String smiles = "COC(=O)c2ccc3n([H])c1ccccc1c3(c2)";
-    IAtomContainer mol = sp.parseSmiles(smiles);
-    assertAtomTypesPerceived(mol);
-    Assert.assertEquals(18, mol.getAtomCount());
-    Assert.assertTrue(CDKHueckelAromaticityDetector.detectAromaticity(mol));
-    Assert.assertEquals("N", mol.getAtom(8).getSymbol());
-    Assert.assertTrue(mol.getAtom(8).getFlag(CDKConstants.ISAROMATIC));
-  }
 
-  /** @cdk.bug 1579235 */
-  @Test (timeout=1000)
-  public void testBug1579235() throws Exception {
-    String smiles = "c2cc1cccn1cc2";
-    IAtomContainer mol = sp.parseSmiles(smiles);
-    assertAtomTypesPerceived(mol);
-    Assert.assertEquals(9, mol.getAtomCount());
-    Assert.assertTrue(CDKHueckelAromaticityDetector.detectAromaticity(mol));
-    Assert.assertEquals("N", mol.getAtom(6).getSymbol());
-    for (IAtom atom : mol.atoms()) {
-        if (atom.getSymbol().equals("C")) {
-            Assert.assertEquals(IAtomType.Hybridization.SP2, atom.getHybridization());
-        } else {
-            Assert.assertEquals(IAtomType.Hybridization.PLANAR3, atom.getHybridization());
+    /**
+     * 1-(1H-pyrrol-2-yl)pyrrole
+     * @cdk.inchi InChI=1/C8H8N2/c1-2-7-10(6-1)8-4-3-5-9-8/h1-7,9H
+     */
+    @Test(expected = InvalidSmilesException.class)
+    public void pyrrolylpyrrole_invalid() throws InvalidSmilesException {
+        IAtomContainer m = load("c1cccn1c2cccn2");    
+    }
+
+    /**
+     * 1-(1H-pyrrol-2-yl)pyrrole
+     * @cdk.inchi InChI=1/C8H8N2/c1-2-7-10(6-1)8-4-3-5-9-8/h1-7,9H
+     */
+    @Test
+    public void pyrrolylpyrrole_valid() throws InvalidSmilesException {
+        IAtomContainer m = load("c1cccn1c2ccc[nH]2");
+    }
+
+    /** @cdk.bug 1363882 */
+    @Test(timeout = 1000)
+    public void testBug1363882() throws Exception {
+        String smiles = "[H]c2c([H])c(c1c(nc(n1([H]))C(F)(F)F)c2Cl)Cl";
+        IAtomContainer mol = load(smiles);
+        atomtype(mol);
+        assertAtomTypesPerceived(mol);
+        Assert.assertEquals(18, mol.getAtomCount());
+        assertTrue(CDKHueckelAromaticityDetector.detectAromaticity(mol));
+    }
+
+    /** @cdk.bug 1535587 */
+    @Test(timeout = 1000)
+    public void testBug1535587() throws Exception {
+        String smiles = "COC(=O)c2ccc3n([H])c1ccccc1c3(c2)";
+        IAtomContainer mol = loadExact(smiles);
+        atomtype(mol);
+        assertAtomTypesPerceived(mol);
+        Assert.assertEquals(18, mol.getAtomCount());
+        assertTrue(CDKHueckelAromaticityDetector.detectAromaticity(mol));
+        Assert.assertEquals("N", mol.getAtom(8).getSymbol());
+        assertTrue(mol.getAtom(8).getFlag(CDKConstants.ISAROMATIC));
+    }
+
+    /** @cdk.bug 1579235 */
+    @Test(timeout = 1000)
+    public void testBug1579235() throws Exception {
+        String smiles = "c2cc1cccn1cc2";
+        IAtomContainer mol = loadExact(smiles);
+        atomtype(mol);
+        assertAtomTypesPerceived(mol);
+        Assert.assertEquals(9, mol.getAtomCount());
+        assertTrue(CDKHueckelAromaticityDetector.detectAromaticity(mol));
+        Assert.assertEquals("N", mol.getAtom(6).getSymbol());
+        for (IAtom atom : mol.atoms()) {
+            if (atom.getSymbol().equals("C")) {
+                Assert.assertEquals(IAtomType.Hybridization.SP2, atom.getHybridization());
+            }
+            else {
+                Assert.assertEquals(IAtomType.Hybridization.PLANAR3, atom.getHybridization());
+            }
         }
     }
-  }
 
-  @Test (timeout=1000)
-  public void testBug1579229() throws Exception {
-    String smiles = "c1c(c23)ccc(c34)ccc4ccc2c1";
-    IAtomContainer mol = sp.parseSmiles(smiles);
-    assertAtomTypesPerceived(mol);
-    Assert.assertEquals(14, mol.getAtomCount());
-    Assert.assertTrue(CDKHueckelAromaticityDetector.detectAromaticity(mol));
-    for (IAtom atom : mol.atoms()) {
-        Assert.assertEquals(IAtomType.Hybridization.SP2, atom.getHybridization());
-    }
-  }
-  
-  /** @cdk.bug 1579230 */
-  @Test (timeout=1000)
-  public void testBug1579230() throws Exception {
-    String smiles = "Cc1cccc2sc3nncn3c12";
-    IAtomContainer mol = sp.parseSmiles(smiles);
-    assertAtomTypesPerceived(mol);
-    Assert.assertEquals(13, mol.getAtomCount());
-    Assert.assertTrue(CDKHueckelAromaticityDetector.detectAromaticity(mol));
-    for (int i=1;i<13;i++) { // first atom is not aromatic
-        IAtom atom = mol.getAtom(i);
-        if (atom.getSymbol().equals("C"))
+    @Test(timeout = 1000)
+    public void testBug1579229() throws Exception {
+        String smiles = "c1c(c23)ccc(c34)ccc4ccc2c1";
+        IAtomContainer mol = sp.parseSmiles(smiles);
+        atomtype(mol);
+        assertAtomTypesPerceived(mol);
+        Assert.assertEquals(14, mol.getAtomCount());
+        assertTrue(CDKHueckelAromaticityDetector.detectAromaticity(mol));
+        for (IAtom atom : mol.atoms()) {
             Assert.assertEquals(IAtomType.Hybridization.SP2, atom.getHybridization());
-        if (atom.getSymbol().equals("N") || atom.getSymbol().equals("S")) {
-            Assert.assertTrue(
-                IAtomType.Hybridization.SP2 == atom.getHybridization() ||
-                IAtomType.Hybridization.PLANAR3 == atom.getHybridization()
-            );
         }
     }
-  }
-  
-	@org.junit.Test (timeout=1000)
-	public void testPyridine_N_oxideUncharged() throws Exception {
-		String smiles = "O=n1ccccc1";
-		IAtomContainer mol = sp.parseSmiles(smiles);
-		assertAtomTypesPerceived(mol);
-		Assert.assertEquals(7, mol.getAtomCount());
-	}
-	
-	@org.junit.Test (timeout=1000)
-	public void testPyridine_N_oxideCharged() throws Exception {
-		String smiles = "[O-][n+]1ccccc1";
-		IAtomContainer mol = sp.parseSmiles(smiles);
-		assertAtomTypesPerceived(mol);
+
+    /** @cdk.bug 1579230 */
+    @Test(timeout = 1000)
+    public void testBug1579230() throws Exception {
+        String smiles = "Cc1cccc2sc3nncn3c12";
+        IAtomContainer mol = loadExact(smiles);
+        atomtype(mol);
+        assertAtomTypesPerceived(mol);
+        Assert.assertEquals(13, mol.getAtomCount());
+        assertTrue(CDKHueckelAromaticityDetector.detectAromaticity(mol));
+        for (int i = 1; i < 13; i++) { // first atom is not aromatic
+            IAtom atom = mol.getAtom(i);
+            if (atom.getSymbol().equals("C"))
+                Assert.assertEquals(IAtomType.Hybridization.SP2, atom.getHybridization());
+            if (atom.getSymbol().equals("N") || atom.getSymbol().equals("S")) {
+                assertTrue(
+                        IAtomType.Hybridization.SP2 == atom.getHybridization() ||
+                                IAtomType.Hybridization.PLANAR3 == atom.getHybridization()
+                          );
+            }
+        }
+    }
+
+    @org.junit.Test(timeout = 1000)
+    public void testPyridine_N_oxideUncharged() throws Exception {
+        String smiles = "O=n1ccccc1";
+        IAtomContainer mol = loadExact(smiles);
+        atomtype(mol);
+        assertAtomTypesPerceived(mol);
         Assert.assertEquals(7, mol.getAtomCount());
-	}
+    }
 
-	@org.junit.Test (timeout=1000)
-	public void testPositivePhosphor() throws Exception {
-		String smiles = "[Cl+3]([O-])([O-])([O-])[O-].[P+]([O-])(c1ccccc1)(c1ccccc1)c1cc([nH0+](C)c(c1)c1ccccc1)c1ccccc1";
-		IAtomContainer mol = sp.parseSmiles(smiles);
-		Assert.assertEquals(0, mol.getAtom(22).getImplicitHydrogenCount().intValue());
-		assertAtomTypesPerceived(mol);
+    @org.junit.Test(timeout = 1000)
+    public void testPyridine_N_oxideCharged() throws Exception {
+        String smiles = "[O-][n+]1ccccc1";
+        IAtomContainer mol = sp.parseSmiles(smiles);
+        assertAtomTypesPerceived(mol);
+        Assert.assertEquals(7, mol.getAtomCount());
+    }
+
+    @org.junit.Test(timeout = 1000)
+    public void testPositivePhosphor() throws Exception {
+        String smiles = "[Cl+3]([O-])([O-])([O-])[O-].[P+]([O-])(c1ccccc1)(c1ccccc1)c1cc([nH0+](C)c(c1)c1ccccc1)c1ccccc1";
+        IAtomContainer mol = sp.parseSmiles(smiles);
+        Assert.assertEquals(0, mol.getAtom(22).getImplicitHydrogenCount().intValue());
+        assertAtomTypesPerceived(mol);
         Assert.assertEquals(38, mol.getAtomCount());
-		Assert.assertEquals("P", mol.getAtom(5).getSymbol());
-		Assert.assertEquals(+1, mol.getAtom(5).getFormalCharge().intValue());
-		Assert.assertEquals("Cl", mol.getAtom(0).getSymbol());
-		Assert.assertEquals(+3, mol.getAtom(0).getFormalCharge().intValue());
-	}
-	
-	/*
+        Assert.assertEquals("P", mol.getAtom(5).getSymbol());
+        Assert.assertEquals(+1, mol.getAtom(5).getFormalCharge().intValue());
+        Assert.assertEquals("Cl", mol.getAtom(0).getSymbol());
+        Assert.assertEquals(+3, mol.getAtom(0).getFormalCharge().intValue());
+    }
+
+    /*
 	 * The next methods tests compounds with several conjugated rings
 	 * These compounds would not fail if the Aromaticity Detection was changed
 	 * so that a ring is aromatic if all the atoms in a ring have already been flagged
 	 * as aromatic from the testing of other rings in the system.
 	 */
-	@org.junit.Test (timeout=1000)
-	public void testUnusualConjugatedRings() throws Exception {		
-		//7090-41-7:
-		String smiles = "c1(Cl)cc2c3cc(Cl)c(Cl)cc3c2cc1Cl";
-		IAtomContainer mol = sp.parseSmiles(smiles);
-		assertAtomTypesPerceived(mol);
+    @org.junit.Test(timeout = 1000)
+    public void testUnusualConjugatedRings() throws Exception {
+        //7090-41-7:
+        String smiles = "c1(Cl)cc2c3cc(Cl)c(Cl)cc3c2cc1Cl";
+        IAtomContainer mol = sp.parseSmiles(smiles);
+        assertAtomTypesPerceived(mol);
         Assert.assertEquals(16, mol.getAtomCount());
-	}
-	
-	@org.junit.Test (timeout=1000)
-	public void testUnusualConjugatedRings_2() throws Exception {
-		//206-44-0:
-		String smiles = "c(c(ccc1)ccc2)(c1c(c3ccc4)c4)c23";
-		IAtomContainer mol = sp.parseSmiles(smiles);
-		assertAtomTypesPerceived(mol);
+    }
+
+    @org.junit.Test(timeout = 1000)
+    public void testUnusualConjugatedRings_2() throws Exception {
+        //206-44-0:
+        String smiles = "c(c(ccc1)ccc2)(c1c(c3ccc4)c4)c23";
+        IAtomContainer mol = sp.parseSmiles(smiles);
+        assertAtomTypesPerceived(mol);
         Assert.assertEquals(16, mol.getAtomCount());
 	}
 	
@@ -283,12 +321,17 @@ public class SmilesParserTest extends CDKTestCase {
 	}
 	
 	@org.junit.Test (timeout=1000)
-	public void test239_64_5 () throws Exception {
-		String smiles = "c1ccc4c(c1)ccc5c3ccc2ccccc2c3nc45";
+	public void test239_64_5() throws Exception {
+		String smiles = "c1ccc4c(c1)ccc5c3ccc2ccccc2c3[nH]c45";
 		IAtomContainer mol = sp.parseSmiles(smiles);
 		assertAtomTypesPerceived(mol);
         Assert.assertEquals(21, mol.getAtomCount());
 	}
+    
+    @Test(expected = InvalidSmilesException.class)
+    public void test239_64_5_invalid() throws Exception {
+        load("c1ccc4c(c1)ccc5c3ccc2ccccc2c3nc45");     
+    }
 	
 	/*
 	 * Compounds like Indolizine (274-40-8) with a fused nitrogen as part of a 6 membered ring
@@ -416,10 +459,10 @@ public class SmilesParserTest extends CDKTestCase {
     @org.junit.Test (timeout=1000)
 	public void testAromaticSmiles2() throws Exception {
     	String smiles = "n12:n:n:n:c:2:c:c:c:c:1";
-    	IAtomContainer molecule = sp.parseSmiles(smiles);
+    	IAtomContainer molecule = loadExact(smiles);
     	assertAtomTypesPerceived(molecule);
         Iterator bonds = molecule.bonds().iterator();
-    	while (bonds.hasNext()) Assert.assertTrue(((IBond)bonds.next()).getFlag(CDKConstants.ISAROMATIC));
+    	while (bonds.hasNext()) assertTrue(((IBond) bonds.next()).getFlag(CDKConstants.ISAROMATIC));
     }
 
 	/**
@@ -432,8 +475,8 @@ public class SmilesParserTest extends CDKTestCase {
 		String smiles = "c1cc[c-]c1";
 		IAtomContainer molecule = sp.parseSmiles(smiles);
 		assertAtomTypesPerceived(molecule);
-		Assert.assertTrue(molecule.getAtom(0).getFlag(CDKConstants.ISAROMATIC));
-		Assert.assertTrue(molecule.getBond(0).getFlag(CDKConstants.ISAROMATIC));
+		assertTrue(molecule.getAtom(0).getFlag(CDKConstants.ISAROMATIC));
+		assertTrue(molecule.getBond(0).getFlag(CDKConstants.ISAROMATIC));
 	}
 
 
@@ -444,8 +487,8 @@ public class SmilesParserTest extends CDKTestCase {
 	public void testAromaticSmiles() throws Exception {
 		String smiles = "c1ccccc1";
 		IAtomContainer molecule = sp.parseSmiles(smiles);
-		Assert.assertTrue(molecule.getAtom(0).getFlag(CDKConstants.ISAROMATIC));
-		Assert.assertTrue(molecule.getBond(0).getFlag(CDKConstants.ISAROMATIC));
+        for (IBond bond : molecule.bonds())
+            assertTrue(bond.getFlag(CDKConstants.ISAROMATIC));
 	}
 	
 	
@@ -456,7 +499,7 @@ public class SmilesParserTest extends CDKTestCase {
 	public void testSFBug630475() throws Exception {
 		String smiles = "CC1(C(=C(CC(C1)O)C)C=CC(=CC=CC(=CC=CC=C(C=CC=C(C=CC1=C(CC(CC1(C)C)O)C)C)C)C)C)C";
 		IAtomContainer mol = sp.parseSmiles(smiles);
-		Assert.assertTrue(mol.getAtomCount() > 0);
+		assertTrue(mol.getAtomCount() > 0);
 	}
 
 
@@ -467,7 +510,7 @@ public class SmilesParserTest extends CDKTestCase {
 	public void testSFBug585811() throws Exception {
 		String smiles = "CC(C(C8CCC(CC8)=O)C3C4C(CC5(CCC(C9=CC(C=CN%10)=C%10C=C9)CCCC5)C4)C2CCC1CCC7(CCC7)C6(CC6)C1C2C3)=O";
 		IAtomContainer mol = sp.parseSmiles(smiles);
-		Assert.assertTrue(mol.getAtomCount() > 0);
+		assertTrue(mol.getAtomCount() > 0);
 	}
 
 
@@ -525,9 +568,9 @@ public class SmilesParserTest extends CDKTestCase {
 		// 11
 		
 		IsomorphismTester it = new IsomorphismTester(apinene);
-		Assert.assertTrue(it.isIsomorphic(
-		    mol.getBuilder().newInstance(IAtomContainer.class, mol)
-		));
+		assertTrue(it.isIsomorphic(
+                mol.getBuilder().newInstance(IAtomContainer.class, mol)
+                                  ));
 	}
 
 
@@ -560,12 +603,20 @@ public class SmilesParserTest extends CDKTestCase {
 		Assert.assertEquals(1, mol.getAtomCount());
 		Assert.assertEquals("Ni", mol.getAtom(0).getSymbol());
 
-		smiles = "Ni";
-		mol = sp.parseSmiles(smiles);
+		smiles = "Co";
+		mol = loadExact(smiles);
 		Assert.assertEquals(2, mol.getAtomCount());
-		Assert.assertEquals("N", mol.getAtom(0).getSymbol());
-		Assert.assertEquals("I", mol.getAtom(1).getSymbol());
+		Assert.assertEquals("C", mol.getAtom(0).getSymbol());
+		Assert.assertEquals("O", mol.getAtom(1).getSymbol());
 	}
+
+    // note we can't kekulise 'Co' (above) but we can kekulise 'Cocc'
+    @Test public void testOrganicSubsetUnderstanding2() throws Exception {
+        IAtomContainer mol = load("Cocc"); 
+        assertThat(mol.getBond(0).getOrder(), is(IBond.Order.SINGLE));
+        assertThat(mol.getBond(1).getOrder(), is(IBond.Order.SINGLE));
+        assertThat(mol.getBond(2).getOrder(), is(IBond.Order.DOUBLE));
+    }
 
 	/**
 	 *  A unit test for JUnit
@@ -638,15 +689,15 @@ public class SmilesParserTest extends CDKTestCase {
 		IAtomContainer mol = sp.parseSmiles(smiles);
 		Assert.assertEquals(2, mol.getAtomCount());
 		Assert.assertEquals(1, mol.getBondCount());
-		Assert.assertTrue(mol.getAtom(0) instanceof IPseudoAtom);
-		Assert.assertFalse(mol.getAtom(1) instanceof IPseudoAtom);
+		assertTrue(mol.getAtom(0) instanceof IPseudoAtom);
+		assertFalse(mol.getAtom(1) instanceof IPseudoAtom);
 
 		smiles = "[*]C";
 		mol = sp.parseSmiles(smiles);
 		Assert.assertEquals(2, mol.getAtomCount());
 		Assert.assertEquals(1, mol.getBondCount());
-		Assert.assertTrue(mol.getAtom(0) instanceof IPseudoAtom);
-		Assert.assertFalse(mol.getAtom(1) instanceof IPseudoAtom);
+		assertTrue(mol.getAtom(0) instanceof IPseudoAtom);
+		assertFalse(mol.getAtom(1) instanceof IPseudoAtom);
 	}
 
     /**
@@ -659,7 +710,7 @@ public class SmilesParserTest extends CDKTestCase {
         IAtomContainer mol = sp.parseSmiles(smiles);
 		Assert.assertEquals(1, mol.getAtomCount());
 		Assert.assertEquals(0, mol.getBondCount());
-		Assert.assertTrue(mol.getAtom(0) instanceof IPseudoAtom);
+		assertTrue(mol.getAtom(0) instanceof IPseudoAtom);
         Assert.assertEquals(12, mol.getAtom(0).getMassNumber().intValue());
         Assert.assertEquals(2, mol.getAtom(0).getImplicitHydrogenCount().intValue());
         Assert.assertEquals(-1, mol.getAtom(0).getFormalCharge().intValue());
@@ -732,15 +783,36 @@ public class SmilesParserTest extends CDKTestCase {
 	/**
 	 *  A unit test for JUnit
 	 */
-	@org.junit.Test (timeout=1000)
-	public void testSingleH() {
-		try {
-			String smiles = "H";
-			sp.parseSmiles(smiles);
-			Assert.fail("The SMILES string 'H' is not valid: H is not in the organic element subset");
-		} catch (Exception e) {
-			// yes! it should fail
-		}
+	@Test
+	public void testSingleH() throws Exception{
+        // Beam allows bare 'H' - this is a common typo for '[H]' - there is 
+        // a 'strict' option which won't allow these but this isn't exposed
+        // in the public API yet
+        IAtomContainer mol = load("H");
+        assertThat(mol.getAtom(0).getAtomicNumber(), is(1));
+        assertThat(mol.getAtomCount(), is(1));
+	}
+    
+    @Test
+	public void testSingleD() throws Exception{
+        // Beam allows bare 'D' - this is a common typo for '[2H]' - there is 
+        // a 'strict' option which won't allow these but this isn't exposed
+        // in the public API yet
+        IAtomContainer mol = load("D");
+        assertThat(mol.getAtomCount(), is(1));
+        assertThat(mol.getAtom(0).getAtomicNumber(), is(1));
+        assertThat(mol.getAtom(0).getMassNumber(), is(2));
+	}
+    
+    @Test
+	public void testSingleT() throws Exception{
+        // Beam allows bare 'T' - this is a common typo for '[3H]' - there is 
+        // a 'strict' option which won't allow these but this isn't exposed
+        // in the public API yet
+        IAtomContainer mol = load("T");
+        assertThat(mol.getAtomCount(), is(1));
+        assertThat(mol.getAtom(0).getAtomicNumber(), is(1));
+        assertThat(mol.getAtom(0).getMassNumber(), is(3));
 	}
 
 
@@ -801,10 +873,10 @@ public class SmilesParserTest extends CDKTestCase {
 	 * @cdk.bug   956929
 	 * @cdk.inchi InChI=1/C4H5N/c1-2-4-5-3-1/h1-5H 
 	 *
-	 * @see #testPyrolle()
+	 * @see #testPyrrole()
 	 */
 	@org.junit.Test (timeout=1000)
-	public void testPyrole() throws Exception {
+	public void testPyrrole() throws Exception {
 		String smiles = "c1ccc[NH]1";
 		IAtomContainer mol = sp.parseSmiles(smiles);
 		for(int i=0;i<mol.getAtomCount();i++){
@@ -909,10 +981,12 @@ public class SmilesParserTest extends CDKTestCase {
 			AtomTypeManipulator.configure(nextAtom, type);
 				hAdder.addImplicitHydrogens(fromFactory, nextAtom);
 		}
+        atomtype(fromSmiles);
+		CDKHueckelAromaticityDetector.detectAromaticity(fromSmiles);
 		CDKHueckelAromaticityDetector.detectAromaticity(fromFactory);
 		boolean result = new UniversalIsomorphismTester().isIsomorph(fromFactory,
 		fromSmiles);
-		Assert.assertTrue(result);
+		assertTrue(result);
 	}
 	
 	/**
@@ -1136,7 +1210,8 @@ public class SmilesParserTest extends CDKTestCase {
 	 */
 	@org.junit.Test (timeout=1000)
 	public void testPyridine() throws Exception {
-		IAtomContainer mol = sp.parseSmiles("c1ccncc1");
+		IAtomContainer mol = load("c1ccncc1");
+        atomtype(mol);
 		Assert.assertEquals(6, mol.getAtomCount());
 		// I can also check whether the total neighbor count around the
 		// nitrogen is 3, all single bonded
@@ -1178,7 +1253,7 @@ public class SmilesParserTest extends CDKTestCase {
 	public void testBug1459299() throws Exception {
 		IAtomContainer mol = sp.parseSmiles("Cc1nn(C)cc1[C@H]2[C@H](C(=O)N)C(=O)C[C@@](C)(O)[C@@H]2C(=O)N");
 		Assert.assertNotNull(mol);
-		Assert.assertEquals(25, mol.getAtomCount());
+		Assert.assertEquals(22, mol.getAtomCount());
 	}
 	
 	/**
@@ -1186,10 +1261,10 @@ public class SmilesParserTest extends CDKTestCase {
 	 */
 	@org.junit.Test (timeout=1000)
 	public void testBug1365547() throws Exception {
-		IAtomContainer mol = sp.parseSmiles("c2ccc1[nH]ccc1c2");
+		IAtomContainer mol = loadExact("c2ccc1[nH]ccc1c2");
 		Assert.assertNotNull(mol);
 		Assert.assertEquals(9, mol.getAtomCount());
-		Assert.assertTrue(mol.getBond(0).getFlag(CDKConstants.ISAROMATIC));
+		assertTrue(mol.getBond(0).getFlag(CDKConstants.ISAROMATIC));
 	}
 	
 	/**
@@ -1197,7 +1272,7 @@ public class SmilesParserTest extends CDKTestCase {
 	 */
 	@org.junit.Test (timeout=1000)
 	public void testBug1365547_2() throws Exception {
-		IAtomContainer mol = sp.parseSmiles("[H]c1c([H])c(c([H])c2c([H])c([H])n([H])c12)Br");
+		IAtomContainer mol = loadExact("[H]c1c([H])c(c([H])c2c([H])c([H])n([H])c12)Br");
 		Assert.assertNotNull(mol);
 		Assert.assertEquals(16, mol.getAtomCount());
 		Assert.assertEquals(17, mol.getBondCount());
@@ -1207,9 +1282,9 @@ public class SmilesParserTest extends CDKTestCase {
 					bond.getAtom(0).getSymbol().equals("Br") ||
 					bond.getAtom(1).getSymbol().equals("H") ||
 					bond.getAtom(1).getSymbol().equals("Br")) {
-				Assert.assertFalse(bond.getFlag(CDKConstants.ISAROMATIC));
+				assertFalse(bond.getFlag(CDKConstants.ISAROMATIC));
 			} else {
-				Assert.assertTrue(bond.getFlag(CDKConstants.ISAROMATIC));
+				assertTrue(bond.getFlag(CDKConstants.ISAROMATIC));
 			}
 		}
 	}
@@ -1219,17 +1294,17 @@ public class SmilesParserTest extends CDKTestCase {
 	 */
 	@org.junit.Test (timeout=1000)
 	public void testBug1235852() throws Exception {
-		//                              0 1 234 56 7 890 12 3456 78
+		//                                   0 1 234 56 7 890 12 3456 78
 		IAtomContainer mol = sp.parseSmiles("O=C(CCS)CC(C)CCC2Cc1ccsc1CC2");
 		Assert.assertNotNull(mol);
 		Assert.assertEquals(19, mol.getAtomCount());
 		Assert.assertEquals(20, mol.getBondCount());
 		// test only option for delocalized bond system
-		Assert.assertEquals(3.0, mol.getBondOrderSum(mol.getAtom(12)), 0.001);
-		Assert.assertEquals(2.0, mol.getBondOrderSum(mol.getAtom(13)), 0.001);
-		Assert.assertEquals(2.0, mol.getBondOrderSum(mol.getAtom(14)), 0.001);
+		Assert.assertEquals(4.0, mol.getBondOrderSum(mol.getAtom(12)), 0.001);
+		Assert.assertEquals(3.0, mol.getBondOrderSum(mol.getAtom(13)), 0.001);
+		Assert.assertEquals(3.0, mol.getBondOrderSum(mol.getAtom(14)), 0.001);
 		Assert.assertEquals(2.0, mol.getBondOrderSum(mol.getAtom(15)), 0.001);
-		Assert.assertEquals(3.0, mol.getBondOrderSum(mol.getAtom(16)), 0.001);
+		Assert.assertEquals(4.0, mol.getBondOrderSum(mol.getAtom(16)), 0.001);
 	}
 	
 	/**
@@ -1250,7 +1325,7 @@ public class SmilesParserTest extends CDKTestCase {
 	@org.junit.Test (timeout=1000)
 	public void testBug1530926() throws Exception {
 		//                               0      12345   6
-		IAtomContainer mol = sp.parseSmiles("[n+]%101ccccc1.[O-]%10");
+		IAtomContainer mol = loadExact("[n+]%101ccccc1.[O-]%10");
 		Assert.assertNotNull(mol);
 		Assert.assertEquals(7, mol.getAtomCount());
 		Assert.assertEquals(7, mol.getBondCount());
@@ -1258,9 +1333,9 @@ public class SmilesParserTest extends CDKTestCase {
 			IBond bond = mol.getBond(i);
 			if (bond.getAtom(0).getSymbol().equals("O") ||
 				bond.getAtom(1).getSymbol().equals("O")) {
-				Assert.assertFalse(bond.getFlag(CDKConstants.ISAROMATIC));
+				assertFalse(bond.getFlag(CDKConstants.ISAROMATIC));
 			} else {
-				Assert.assertTrue(bond.getFlag(CDKConstants.ISAROMATIC));
+				assertTrue(bond.getFlag(CDKConstants.ISAROMATIC));
 			}
 		}
 	}
@@ -1280,10 +1355,14 @@ public class SmilesParserTest extends CDKTestCase {
 		Assert.assertEquals(23, mol2.getAtomCount());
 		Assert.assertEquals(25, mol2.getBondCount());
 		// do some checking
-		Assert.assertEquals(IBond.Order.DOUBLE, mol1.getBond(1).getOrder());
-		Assert.assertEquals(IBond.Order.DOUBLE, mol2.getBond(1).getOrder());
-		Assert.assertTrue(mol1.getBond(7).getFlag(CDKConstants.ISAROMATIC));
-		Assert.assertTrue(mol2.getBond(7).getFlag(CDKConstants.ISAROMATIC));
+		Assert.assertEquals(IBond.Order.DOUBLE, mol1.getBond(mol1.getAtom(1), mol1.getAtom(2)).getOrder());
+		Assert.assertEquals(IBond.Order.DOUBLE, mol2.getBond(mol2.getAtom(1), mol2.getAtom(2)).getOrder());
+        atomtype(mol1);
+        atomtype(mol2);
+        CDKHueckelAromaticityDetector.detectAromaticity(mol1);
+        CDKHueckelAromaticityDetector.detectAromaticity(mol2);
+		assertTrue(mol1.getBond(7).getFlag(CDKConstants.ISAROMATIC));
+		assertTrue(mol2.getBond(7).getFlag(CDKConstants.ISAROMATIC));
 	}
 	/**
 	 * @cdk.bug 1719287
@@ -1293,9 +1372,9 @@ public class SmilesParserTest extends CDKTestCase {
 		//                              01  2  3  4  5 67 8
 		IAtomContainer mol = sp.parseSmiles("OC(=O)[C@@H](N)CC[S+1](C)C[C@@H](O1)[C@@H](O)[C@@H](O)[C@@H]1n(c3)c(n2)c(n3)c(N)nc2");
 		Assert.assertNotNull(mol);
-		Assert.assertEquals(32, mol.getAtomCount());
-		Assert.assertEquals(34, mol.getBondCount());
-		Assert.assertEquals(1, mol.getAtom(8).getFormalCharge().intValue());
+		Assert.assertEquals(27, mol.getAtomCount());
+		Assert.assertEquals(29, mol.getBondCount());
+		Assert.assertEquals(1, mol.getAtom(7).getFormalCharge().intValue());
 	}
 	
 	/**
@@ -1382,19 +1461,19 @@ public class SmilesParserTest extends CDKTestCase {
 	public void testBug1783547() throws Exception {
 		// easy case
 		String smiles = "c1ccccc1C1=CC=CC=C1";
-		IAtomContainer mol = sp.parseSmiles(smiles);
-		Assert.assertTrue(mol.getBond(0).getFlag(CDKConstants.ISAROMATIC));
-		Assert.assertTrue(mol.getBond(1).getFlag(CDKConstants.ISAROMATIC));
-		Assert.assertTrue(mol.getBond(2).getFlag(CDKConstants.ISAROMATIC));
-		Assert.assertTrue(mol.getBond(3).getFlag(CDKConstants.ISAROMATIC));
+		IAtomContainer mol = loadExact(smiles);
+		assertTrue(mol.getBond(0).getFlag(CDKConstants.ISAROMATIC));
+		assertTrue(mol.getBond(1).getFlag(CDKConstants.ISAROMATIC));
+		assertTrue(mol.getBond(2).getFlag(CDKConstants.ISAROMATIC));
+		assertTrue(mol.getBond(3).getFlag(CDKConstants.ISAROMATIC));
 		
 		// harder case
 		String smiles2 = "C%21=%01C=CC=C%02C=%01N(C)CCC%02.C%21c%02ccccc%02";
-		IAtomContainer mol2 = sp.parseSmiles(smiles2);
-		Assert.assertTrue(mol2.getBond(16).getFlag(CDKConstants.ISAROMATIC));
-		Assert.assertTrue(mol2.getBond(17).getFlag(CDKConstants.ISAROMATIC));
-		Assert.assertTrue(mol2.getBond(18).getFlag(CDKConstants.ISAROMATIC));
-		Assert.assertTrue(mol2.getBond(19).getFlag(CDKConstants.ISAROMATIC));
+		IAtomContainer mol2 = loadExact(smiles2);
+		assertTrue(mol2.getBond(16).getFlag(CDKConstants.ISAROMATIC));
+		assertTrue(mol2.getBond(17).getFlag(CDKConstants.ISAROMATIC));
+		assertTrue(mol2.getBond(18).getFlag(CDKConstants.ISAROMATIC));
+		assertTrue(mol2.getBond(19).getFlag(CDKConstants.ISAROMATIC));
 	}	
 
 	/**
@@ -1407,12 +1486,12 @@ public class SmilesParserTest extends CDKTestCase {
 	public void testBug1783546() throws Exception {
 		String smiles = "C=1C=CC=CC=1";
 		IAtomContainer mol = sp.parseSmiles(smiles);
-		Assert.assertEquals(IBond.Order.SINGLE, mol.getBond(0).getOrder());
-		Assert.assertEquals(IBond.Order.DOUBLE, mol.getBond(1).getOrder());
-		Assert.assertEquals(IBond.Order.SINGLE, mol.getBond(2).getOrder());
-		Assert.assertEquals(IBond.Order.DOUBLE, mol.getBond(3).getOrder());
-		Assert.assertEquals(IBond.Order.SINGLE, mol.getBond(4).getOrder());
-		Assert.assertEquals(IBond.Order.DOUBLE, mol.getBond(5).getOrder());
+		Assert.assertEquals(IBond.Order.SINGLE, mol.getBond(mol.getAtom(0), mol.getAtom(1)).getOrder());
+		Assert.assertEquals(IBond.Order.DOUBLE, mol.getBond(mol.getAtom(1), mol.getAtom(2)).getOrder());
+		Assert.assertEquals(IBond.Order.SINGLE, mol.getBond(mol.getAtom(2), mol.getAtom(3)).getOrder());
+		Assert.assertEquals(IBond.Order.DOUBLE, mol.getBond(mol.getAtom(3), mol.getAtom(4)).getOrder());
+		Assert.assertEquals(IBond.Order.SINGLE, mol.getBond(mol.getAtom(4), mol.getAtom(5)).getOrder());
+		Assert.assertEquals(IBond.Order.DOUBLE, mol.getBond(mol.getAtom(5), mol.getAtom(0)).getOrder());
 	}	
 
 	@org.junit.Test public void testChargedAtoms() throws Exception {
@@ -1430,6 +1509,7 @@ public class SmilesParserTest extends CDKTestCase {
 	@org.junit.Test public void bug1872969() throws Exception {
 		String smiles = "CS(=O)(=O)[O-].[Na+]";
 		IAtomContainer mol = sp.parseSmiles(smiles);
+        atomtype(mol);
 		for (int i=0; i<6; i++) {
 			Assert.assertNotNull(mol.getAtom(i).getAtomTypeName());
 		}
@@ -1452,13 +1532,15 @@ public class SmilesParserTest extends CDKTestCase {
 	 */
 	@org.junit.Test public void testSP2HybridizedSulphur() throws Exception {
 		String smiles = "[s+]1c2c(nc3c1cccc3)cccc2";
-		IAtomContainer mol = sp.parseSmiles(smiles);
+		IAtomContainer mol = load(smiles);
+        atomtype(mol);
+        CDKHueckelAromaticityDetector.detectAromaticity(mol);
 		assertAtomTypesPerceived(mol);
 		Iterator<IAtom> atoms = mol.atoms().iterator();
 		while (atoms.hasNext()) {
 			IAtom atom = atoms.next();
 			Assert.assertEquals(IAtomType.Hybridization.SP2, atom.getHybridization());
-			Assert.assertTrue(atom.getFlag(CDKConstants.ISAROMATIC));
+			assertTrue(atom.getFlag(CDKConstants.ISAROMATIC));
 		}
 	}
 	
@@ -1478,7 +1560,7 @@ public class SmilesParserTest extends CDKTestCase {
 
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
         boolean isaromatic = CDKHueckelAromaticityDetector.detectAromaticity(mol);
-        Assert.assertTrue(isaromatic);
+        assertTrue(isaromatic);
     }
     
 	/*
@@ -1490,8 +1572,8 @@ public class SmilesParserTest extends CDKTestCase {
 	 */
 	@org.junit.Test public void testPyrrole1() throws Exception {
 		String smiles = "[nH]1cccc1";
-		IAtomContainer mol = sp.parseSmiles(smiles);
-
+		IAtomContainer mol = loadExact(smiles);
+        atomtype(mol);
 		assertAtomTypesPerceived(mol);
 
 		Assert.assertEquals(5, mol.getAtomCount());
@@ -1516,8 +1598,8 @@ public class SmilesParserTest extends CDKTestCase {
 	 */
 	@org.junit.Test public void testPyrrole2() throws Exception {
 		String smiles = "n1([H])cccc1";
-		IAtomContainer mol = sp.parseSmiles(smiles);
-
+		IAtomContainer mol = loadExact(smiles);
+        atomtype(mol);
 		assertAtomTypesPerceived(mol);
 
 		Assert.assertEquals(6, mol.getAtomCount());
@@ -1541,14 +1623,9 @@ public class SmilesParserTest extends CDKTestCase {
 	/**
 	 * @cdk.bug 1962419
 	 */
-	@org.junit.Test public void testPyrrole3() throws Exception {
+	@Test(expected = InvalidSmilesException.class) public void testPyrrole3() throws Exception {
 		String smiles = "n1cccc1";
-		try {
 			sp.parseSmiles(smiles);
-			Assert.fail("The SMILES string 'n1cccc1' is invalid but no exception was thrown.");
-		} catch (Exception e) {
-			// yes! it should fail
-		}
 	}
 
 	/**
@@ -1556,8 +1633,8 @@ public class SmilesParserTest extends CDKTestCase {
 	 */
 	@org.junit.Test public void testPyrroleAnion1() throws Exception {
 		String smiles = "[n-]1cccc1";
-		IAtomContainer mol = sp.parseSmiles(smiles);
-
+		IAtomContainer mol = loadExact(smiles);
+        atomtype(mol);
 		assertAtomTypesPerceived(mol);
 
 		Assert.assertEquals(5, mol.getAtomCount());
@@ -1582,8 +1659,8 @@ public class SmilesParserTest extends CDKTestCase {
 	 */
 	@org.junit.Test public void testImidazole1() throws Exception {
 		String smiles = "[nH]1cncc1";
-		IAtomContainer mol = sp.parseSmiles(smiles);
-
+		IAtomContainer mol = loadExact(smiles);
+        atomtype(mol);
 		assertAtomTypesPerceived(mol);
 
 		Assert.assertEquals(5, mol.getAtomCount());
@@ -1608,8 +1685,8 @@ public class SmilesParserTest extends CDKTestCase {
 	 */
 	@org.junit.Test public void testImidazole2() throws Exception {
 		String smiles = "n1([H])cncc1";
-		IAtomContainer mol = sp.parseSmiles(smiles);
-
+		IAtomContainer mol = loadExact(smiles);
+        atomtype(mol);
 		assertAtomTypesPerceived(mol);
 
 		Assert.assertEquals(6, mol.getAtomCount());
@@ -1633,14 +1710,9 @@ public class SmilesParserTest extends CDKTestCase {
 	/**
 	 * @cdk.bug 1962419
 	 */
-	@org.junit.Test public void testImidazole3() throws Exception {
+	@Test(expected = InvalidSmilesException.class) public void testImidazole3() throws Exception {
 		String smiles = "n1cncc1";
-		try {
 			sp.parseSmiles(smiles);
-			Assert.fail("The SMILES string 'n1cncc1' is invalid but no exception was thrown.");
-		} catch (Exception e) {
-			// yes! it should fail
-		}
 	}
 		 
 	/**
@@ -1648,8 +1720,8 @@ public class SmilesParserTest extends CDKTestCase {
 	 */
 	@org.junit.Test public void testImidazole4() throws Exception {
 		String smiles = "n1cc[nH]c1";
-		IAtomContainer mol = sp.parseSmiles(smiles);
-
+		IAtomContainer mol = loadExact(smiles);
+        atomtype(mol);
 		assertAtomTypesPerceived(mol);
 
 		Assert.assertEquals(5, mol.getAtomCount());
@@ -1674,13 +1746,11 @@ public class SmilesParserTest extends CDKTestCase {
 	 */
 	@org.junit.Test public void testPyridine1() throws Exception {
 		String smiles = "n1ccccc1";
-		IAtomContainer mol = sp.parseSmiles(smiles);
-
+		IAtomContainer mol = load(smiles);
+        atomtype(mol);
 		assertAtomTypesPerceived(mol);
 
 		Assert.assertEquals(6, mol.getAtomCount());
-		
-		assertAllSingleAndAromatic(mol);
 		
 		assertAtomSymbols(new String[] {"N", "C", "C", "C", "C", "C"}, mol);
 		
@@ -1701,8 +1771,8 @@ public class SmilesParserTest extends CDKTestCase {
 	 */
 	@org.junit.Test public void testPyrimidine1() throws Exception {
 		String smiles = "n1cnccc1";
-		IAtomContainer mol = sp.parseSmiles(smiles);
-
+		IAtomContainer mol = loadExact(smiles);
+        atomtype(mol);
 		assertAtomTypesPerceived(mol);
 
 		Assert.assertEquals(6, mol.getAtomCount());
@@ -1731,14 +1801,14 @@ public class SmilesParserTest extends CDKTestCase {
     @Test
     public void testIndole1() throws Exception {
         String smiles1 = "c1ccc2cc[nH]c2(c1)";
-        IAtomContainer mol = sp.parseSmiles(smiles1);
+        IAtomContainer mol = loadExact(smiles1);
         assertAtomTypesPerceived(mol);
         Assert.assertEquals(9, mol.getAtomCount());
 
         Iterator<IAtom> atoms = mol.atoms().iterator();
         while (atoms.hasNext()) {
             IAtom atom = atoms.next();
-            Assert.assertTrue(atom.getFlag(CDKConstants.ISAROMATIC));
+            assertTrue(atom.getFlag(CDKConstants.ISAROMATIC));
         }
     }
 
@@ -1750,14 +1820,15 @@ public class SmilesParserTest extends CDKTestCase {
     @Test
     public void testIndole2() throws Exception {
         String smiles1 = "C1(NC=C2)=C2C=CC=C1";
-        IAtomContainer mol = sp.parseSmiles(smiles1);
+        IAtomContainer mol = loadExact(smiles1);
+        atomtype(mol);
         CDKHueckelAromaticityDetector.detectAromaticity(mol);
         assertAtomTypesPerceived(mol);
         Assert.assertEquals(9, mol.getAtomCount());
         Iterator<IAtom> atoms = mol.atoms().iterator();
         while (atoms.hasNext()) {
             IAtom atom = atoms.next();
-            Assert.assertTrue(atom.getFlag(CDKConstants.ISAROMATIC));
+            assertTrue(atom.getFlag(CDKConstants.ISAROMATIC));
         }
     }
     /**
@@ -1789,7 +1860,7 @@ public class SmilesParserTest extends CDKTestCase {
 		IAtomContainer mol = p.parseSmiles("Cc1nn(C)cc1[C@H]2[C@H](C(=O)N)C(=O)C[C@@](C)(O)[C@@H]2C(=O)N");
 		IAtomContainer mol2=DefaultChemObjectBuilder.getInstance().newInstance(IAtomContainer.class, mol);		
 		Assert.assertNotNull(mol2);
-		Assert.assertEquals(25, mol2.getAtomCount());
+		Assert.assertEquals(22, mol2.getAtomCount());
 	}
 
     @Test public void testExplicitH() throws Exception {
@@ -1811,7 +1882,7 @@ public class SmilesParserTest extends CDKTestCase {
      */
     @Test public void testno937() throws Exception {
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
-        IAtomContainer mol = sp.parseSmiles("C[nH0]1c([nH0]cc1"); // xlogp training set molecule no937
+        IAtomContainer mol = sp.parseSmiles("C[nH0]1c[nH0]cc1"); // xlogp training set molecule no937
         Assert.assertNotNull(mol.getAtom(1).getImplicitHydrogenCount());
         Assert.assertEquals(0, mol.getAtom(1).getImplicitHydrogenCount().intValue());
         Assert.assertNotNull(mol.getAtom(3).getImplicitHydrogenCount());
@@ -1860,14 +1931,29 @@ public class SmilesParserTest extends CDKTestCase {
     /**
      * @cdk.inchi InChI=1/C4H5N/c1-2-4-5-3-1/h1-5H
      *
-     * @see #testPyrole()
+     * @see #testPyrrole()
      */
     @Test
-    public void testPyrolle() throws InvalidSmilesException{
+    public void testPyrrole_2() throws Exception {
         SmilesParser p = new SmilesParser(DefaultChemObjectBuilder.getInstance());
-        IAtomContainer mol = p.parseSmiles("c1c[nH]cc1");
+        IAtomContainer mol = p.parseSmiles("c1c[nH]cc1");            
+        
+        assertThat(mol.getBond(mol.getAtom(0), mol.getAtom(1)).getOrder(),
+                   is(IBond.Order.DOUBLE));
+        assertThat(mol.getBond(mol.getAtom(1), mol.getAtom(2)).getOrder(),
+                   is(IBond.Order.SINGLE));
+        assertThat(mol.getBond(mol.getAtom(2), mol.getAtom(3)).getOrder(),
+                   is(IBond.Order.SINGLE));
+        assertThat(mol.getBond(mol.getAtom(3), mol.getAtom(4)).getOrder(),
+                   is(IBond.Order.DOUBLE));
+        assertThat(mol.getBond(mol.getAtom(4), mol.getAtom(0)).getOrder(),
+                   is(IBond.Order.SINGLE));
+        
+        atomtype(mol);
+        CDKHueckelAromaticityDetector.detectAromaticity(mol);
+        
         for (IAtom atom : mol.atoms()) {
-            Assert.assertTrue(atom.getFlag(CDKConstants.ISAROMATIC));
+            assertTrue(atom.getFlag(CDKConstants.ISAROMATIC));
         }
     }
 
@@ -1882,7 +1968,7 @@ public class SmilesParserTest extends CDKTestCase {
         p.setPreservingAromaticity(true);
         IAtomContainer mol = p.parseSmiles("c1cc2cccnc2[se]1");
         for (IAtom atom : mol.atoms()) {
-            Assert.assertTrue(atom.getFlag(CDKConstants.ISAROMATIC));
+            assertTrue(atom.getFlag(CDKConstants.ISAROMATIC));
         }
     }
 
@@ -2033,9 +2119,9 @@ public class SmilesParserTest extends CDKTestCase {
     @Test
     public void testAromaticity() throws InvalidSmilesException{
         SmilesParser p = new SmilesParser(DefaultChemObjectBuilder.getInstance());
-        IAtomContainer mol = p.parseSmiles("c1cnc2s[cH][cH]n12");
+        IAtomContainer mol = loadExact("c1cnc2s[cH][cH]n12");
         for (IAtom atom : mol.atoms()) {
-            Assert.assertTrue(atom.getFlag(CDKConstants.ISAROMATIC));
+            assertTrue(atom.getFlag(CDKConstants.ISAROMATIC));
         }
     }
 
@@ -2046,18 +2132,20 @@ public class SmilesParserTest extends CDKTestCase {
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer mol = sp.parseSmiles("Br[C@@H](Cl)I");
         Iterator<IStereoElement> stereoElements = mol.stereoElements().iterator();
-        Assert.assertTrue(stereoElements.hasNext());
+        assertTrue(stereoElements.hasNext());
         IStereoElement stereoElement = stereoElements.next();
         Assert.assertNotNull(stereoElement);
-        Assert.assertTrue(stereoElement instanceof ITetrahedralChirality);
+        assertTrue(stereoElement instanceof ITetrahedralChirality);
         ITetrahedralChirality l4Chiral = (ITetrahedralChirality)stereoElement;
         Assert.assertEquals("C", l4Chiral.getChiralAtom().getSymbol());
         IAtom[] ligands = l4Chiral.getLigands();
         for (IAtom atom : ligands) Assert.assertNotNull(atom);
-        Assert.assertEquals("Br", ligands[0].getSymbol());
-        Assert.assertEquals("H", ligands[1].getSymbol());
-        Assert.assertEquals("Cl", ligands[2].getSymbol());
-        Assert.assertEquals("I", ligands[3].getSymbol());
+        // note: the tetrahedral centre holds atom '1' to refer to implicit
+        // hydrogen
+        Assert.assertEquals(mol.getAtom(0), ligands[0]);
+        Assert.assertEquals(mol.getAtom(1), ligands[1]);
+        Assert.assertEquals(mol.getAtom(2), ligands[2]);
+        Assert.assertEquals(mol.getAtom(3), ligands[3]);
         Assert.assertEquals(Stereo.CLOCKWISE, l4Chiral.getStereo());
     }
 
@@ -2070,18 +2158,20 @@ public class SmilesParserTest extends CDKTestCase {
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer mol = sp.parseSmiles("Br[C@H](Cl)I");
         Iterator<IStereoElement> stereoElements = mol.stereoElements().iterator();
-        Assert.assertTrue(stereoElements.hasNext());
+        assertTrue(stereoElements.hasNext());
         IStereoElement stereoElement = stereoElements.next();
         Assert.assertNotNull(stereoElement);
-        Assert.assertTrue(stereoElement instanceof ITetrahedralChirality);
+        assertTrue(stereoElement instanceof ITetrahedralChirality);
         ITetrahedralChirality l4Chiral = (ITetrahedralChirality)stereoElement;
         Assert.assertEquals("C", l4Chiral.getChiralAtom().getSymbol());
         IAtom[] ligands = l4Chiral.getLigands();
         for (IAtom atom : ligands) Assert.assertNotNull(atom);
-        Assert.assertEquals("Br", ligands[0].getSymbol());
-        Assert.assertEquals("H", ligands[1].getSymbol());
-        Assert.assertEquals("Cl", ligands[2].getSymbol());
-        Assert.assertEquals("I", ligands[3].getSymbol());
+        // note: the tetrahedral centre holds atom '1' to refer to implicit
+        // hydrogen
+        Assert.assertEquals(mol.getAtom(0), ligands[0]);
+        Assert.assertEquals(mol.getAtom(1), ligands[1]);
+        Assert.assertEquals(mol.getAtom(2), ligands[2]);
+        Assert.assertEquals(mol.getAtom(3), ligands[3]);
         Assert.assertEquals(Stereo.ANTI_CLOCKWISE, l4Chiral.getStereo());
     }
 
@@ -2089,10 +2179,10 @@ public class SmilesParserTest extends CDKTestCase {
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer mol = sp.parseSmiles("Br[C@@]([H])(Cl)I");
         Iterator<IStereoElement> stereoElements = mol.stereoElements().iterator();
-        Assert.assertTrue(stereoElements.hasNext());
+        assertTrue(stereoElements.hasNext());
         IStereoElement stereoElement = stereoElements.next();
         Assert.assertNotNull(stereoElement);
-        Assert.assertTrue(stereoElement instanceof ITetrahedralChirality);
+        assertTrue(stereoElement instanceof ITetrahedralChirality);
         ITetrahedralChirality l4Chiral = (ITetrahedralChirality)stereoElement;
         Assert.assertEquals("C", l4Chiral.getChiralAtom().getSymbol());
         IAtom[] ligands = l4Chiral.getLigands();
@@ -2108,10 +2198,10 @@ public class SmilesParserTest extends CDKTestCase {
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer mol = sp.parseSmiles("Br[C@]([H])(Cl)I");
         Iterator<IStereoElement> stereoElements = mol.stereoElements().iterator();
-        Assert.assertTrue(stereoElements.hasNext());
+        assertTrue(stereoElements.hasNext());
         IStereoElement stereoElement = stereoElements.next();
         Assert.assertNotNull(stereoElement);
-        Assert.assertTrue(stereoElement instanceof ITetrahedralChirality);
+        assertTrue(stereoElement instanceof ITetrahedralChirality);
         ITetrahedralChirality l4Chiral = (ITetrahedralChirality)stereoElement;
         Assert.assertEquals("C", l4Chiral.getChiralAtom().getSymbol());
         IAtom[] ligands = l4Chiral.getLigands();
@@ -2139,19 +2229,21 @@ public class SmilesParserTest extends CDKTestCase {
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer mol = sp.parseSmiles("[C@]12(OC1)NCN2");
         Iterator<IStereoElement> stereoElements = mol.stereoElements().iterator();
-        Assert.assertTrue(stereoElements.hasNext());
+        assertTrue(stereoElements.hasNext());
         IStereoElement stereoElement = stereoElements.next();
         Assert.assertNotNull(stereoElement);
-        Assert.assertTrue(stereoElement instanceof ITetrahedralChirality);
+        assertTrue(stereoElement instanceof ITetrahedralChirality);
         ITetrahedralChirality l4Chiral = (ITetrahedralChirality)stereoElement;
         Assert.assertEquals("C", l4Chiral.getChiralAtom().getSymbol());
         IAtom[] ligands = l4Chiral.getLigands();
         for (IAtom atom : ligands) Assert.assertNotNull(atom);
-        Assert.assertEquals("C", ligands[0].getSymbol());
-        Assert.assertEquals("N", ligands[1].getSymbol());
-        Assert.assertEquals("O", ligands[2].getSymbol());
-        Assert.assertEquals("N", ligands[3].getSymbol());
-        Assert.assertEquals(Stereo.ANTI_CLOCKWISE, l4Chiral.getStereo());
+        // note: ligands are given in the order they appear in (hence in this
+        // case the winding (getStereo) has flipped
+        Assert.assertEquals(mol.getAtom(1), ligands[0]);
+        Assert.assertEquals(mol.getAtom(2), ligands[1]);
+        Assert.assertEquals(mol.getAtom(3), ligands[2]);
+        Assert.assertEquals(mol.getAtom(5), ligands[3]);
+        Assert.assertEquals(Stereo.CLOCKWISE, l4Chiral.getStereo());
     }
 
     @Test public void testNeighboringChirality() throws Exception {
@@ -2159,32 +2251,32 @@ public class SmilesParserTest extends CDKTestCase {
         IAtomContainer mol = sp.parseSmiles("C[C@H](O)[C@H](O)C");
         Iterator<IStereoElement> stereoElements = mol.stereoElements().iterator();
         // first chiral center
-        Assert.assertTrue(stereoElements.hasNext());
+        assertTrue(stereoElements.hasNext());
         IStereoElement stereoElement = stereoElements.next();
         Assert.assertNotNull(stereoElement);
-        Assert.assertTrue(stereoElement instanceof ITetrahedralChirality);
+        assertTrue(stereoElement instanceof ITetrahedralChirality);
         ITetrahedralChirality l4Chiral = (ITetrahedralChirality)stereoElement;
         Assert.assertEquals("C", l4Chiral.getChiralAtom().getSymbol());
         IAtom[] ligands = l4Chiral.getLigands();
         for (IAtom atom : ligands) Assert.assertNotNull(atom);
-        Assert.assertEquals("C", ligands[0].getSymbol());
-        Assert.assertEquals("H", ligands[1].getSymbol());
-        Assert.assertEquals("O", ligands[2].getSymbol());
-        Assert.assertEquals("C", ligands[3].getSymbol());
+        Assert.assertEquals(mol.getAtom(0), ligands[0]);
+        Assert.assertEquals(mol.getAtom(1), ligands[1]);
+        Assert.assertEquals(mol.getAtom(2), ligands[2]);
+        Assert.assertEquals(mol.getAtom(3), ligands[3]);
         Assert.assertEquals(Stereo.ANTI_CLOCKWISE, l4Chiral.getStereo());
         // second chiral center
-        Assert.assertTrue(stereoElements.hasNext());
+        assertTrue(stereoElements.hasNext());
         stereoElement = stereoElements.next();
         Assert.assertNotNull(stereoElement);
-        Assert.assertTrue(stereoElement instanceof ITetrahedralChirality);
+        assertTrue(stereoElement instanceof ITetrahedralChirality);
         l4Chiral = (ITetrahedralChirality)stereoElement;
         Assert.assertEquals("C", l4Chiral.getChiralAtom().getSymbol());
         ligands = l4Chiral.getLigands();
         for (IAtom atom : ligands) Assert.assertNotNull(atom);
-        Assert.assertEquals("C", ligands[0].getSymbol());
-        Assert.assertEquals("H", ligands[1].getSymbol());
-        Assert.assertEquals("O", ligands[2].getSymbol());
-        Assert.assertEquals("C", ligands[3].getSymbol());
+        Assert.assertEquals(mol.getAtom(1), ligands[0]);
+        Assert.assertEquals(mol.getAtom(3), ligands[1]);
+        Assert.assertEquals(mol.getAtom(4), ligands[2]);
+        Assert.assertEquals(mol.getAtom(5), ligands[3]);
         Assert.assertEquals(Stereo.ANTI_CLOCKWISE, l4Chiral.getStereo());
     }
 
@@ -2193,18 +2285,18 @@ public class SmilesParserTest extends CDKTestCase {
         IAtomContainer mol = sp.parseSmiles("NC([C@H](O)C)Cl");
         Iterator<IStereoElement> stereoElements = mol.stereoElements().iterator();
         // first chiral center
-        Assert.assertTrue(stereoElements.hasNext());
+        assertTrue(stereoElements.hasNext());
         IStereoElement stereoElement = stereoElements.next();
         Assert.assertNotNull(stereoElement);
-        Assert.assertTrue(stereoElement instanceof ITetrahedralChirality);
+        assertTrue(stereoElement instanceof ITetrahedralChirality);
         ITetrahedralChirality l4Chiral = (ITetrahedralChirality)stereoElement;
         Assert.assertEquals("C", l4Chiral.getChiralAtom().getSymbol());
         IAtom[] ligands = l4Chiral.getLigands();
         for (IAtom atom : ligands) Assert.assertNotNull(atom);
-        Assert.assertEquals("C", ligands[0].getSymbol());
-        Assert.assertEquals("H", ligands[1].getSymbol());
-        Assert.assertEquals("O", ligands[2].getSymbol());
-        Assert.assertEquals("C", ligands[3].getSymbol());
+        Assert.assertEquals(mol.getAtom(1), ligands[0]);
+        Assert.assertEquals(mol.getAtom(2), ligands[1]); // refers to implicit hydrogen
+        Assert.assertEquals(mol.getAtom(3), ligands[2]);
+        Assert.assertEquals(mol.getAtom(4), ligands[3]);
         Assert.assertEquals(Stereo.ANTI_CLOCKWISE, l4Chiral.getStereo());
     }
 
@@ -2212,10 +2304,10 @@ public class SmilesParserTest extends CDKTestCase {
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer mol = sp.parseSmiles("I1.Cl2.Br3.[C@]123CCC");
         Iterator<IStereoElement> stereoElements = mol.stereoElements().iterator();
-        Assert.assertTrue(stereoElements.hasNext());
+        assertTrue(stereoElements.hasNext());
         IStereoElement stereoElement = stereoElements.next();
         Assert.assertNotNull(stereoElement);
-        Assert.assertTrue(stereoElement instanceof ITetrahedralChirality);
+        assertTrue(stereoElement instanceof ITetrahedralChirality);
         ITetrahedralChirality l4Chiral = (ITetrahedralChirality)stereoElement;
         Assert.assertEquals("C", l4Chiral.getChiralAtom().getSymbol());
         IAtom[] ligands = l4Chiral.getLigands();
@@ -2231,10 +2323,10 @@ public class SmilesParserTest extends CDKTestCase {
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer mol = sp.parseSmiles("Br1.[C@]1(Cl)(OC)CCC");
         Iterator<IStereoElement> stereoElements = mol.stereoElements().iterator();
-        Assert.assertTrue(stereoElements.hasNext());
+        assertTrue(stereoElements.hasNext());
         IStereoElement stereoElement = stereoElements.next();
         Assert.assertNotNull(stereoElement);
-        Assert.assertTrue(stereoElement instanceof ITetrahedralChirality);
+        assertTrue(stereoElement instanceof ITetrahedralChirality);
         ITetrahedralChirality l4Chiral = (ITetrahedralChirality)stereoElement;
         Assert.assertEquals("C", l4Chiral.getChiralAtom().getSymbol());
         IAtom[] ligands = l4Chiral.getLigands();
@@ -2250,19 +2342,21 @@ public class SmilesParserTest extends CDKTestCase {
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer mol = sp.parseSmiles("[C@@H]231.C2.N1.F3");
         Iterator<IStereoElement> stereoElements = mol.stereoElements().iterator();
-        Assert.assertTrue(stereoElements.hasNext());
+        assertTrue(stereoElements.hasNext());
         IStereoElement stereoElement = stereoElements.next();
         Assert.assertNotNull(stereoElement);
-        Assert.assertTrue(stereoElement instanceof ITetrahedralChirality);
+        assertTrue(stereoElement instanceof ITetrahedralChirality);
         ITetrahedralChirality l4Chiral = (ITetrahedralChirality)stereoElement;
         Assert.assertEquals("C", l4Chiral.getChiralAtom().getSymbol());
         IAtom[] ligands = l4Chiral.getLigands();
         for (IAtom atom : ligands) Assert.assertNotNull(atom);
-        Assert.assertEquals("H", ligands[0].getSymbol());
-        Assert.assertEquals("C", ligands[1].getSymbol());
-        Assert.assertEquals("F", ligands[2].getSymbol());
-        Assert.assertEquals("N", ligands[3].getSymbol());
-        Assert.assertEquals(Stereo.CLOCKWISE, l4Chiral.getStereo());
+        // note: ligands are given in the order they appear in (hence in this
+        // case the winding (getStereo) has flipped (0,1,3,2) -> (0,1,2,3) 
+        Assert.assertEquals(mol.getAtom(0), ligands[0]);
+        Assert.assertEquals(mol.getAtom(1), ligands[1]);
+        Assert.assertEquals(mol.getAtom(2), ligands[2]);
+        Assert.assertEquals(mol.getAtom(3), ligands[3]);
+        Assert.assertEquals(Stereo.ANTI_CLOCKWISE, l4Chiral.getStereo());
     }
 
     @Test public void testFromBlog2() throws Exception {
@@ -2270,27 +2364,30 @@ public class SmilesParserTest extends CDKTestCase {
         IAtomContainer mol = sp.parseSmiles("[C@@H](Cl)1[C@H](C)(F).Br1");
         Iterator<IStereoElement> stereoElements = mol.stereoElements().iterator();
         for (int i=0; i<2; i++) {
-            Assert.assertTrue(stereoElements.hasNext());
+            assertTrue(stereoElements.hasNext());
             IStereoElement stereoElement = stereoElements.next();
             Assert.assertNotNull(stereoElement);
-            Assert.assertTrue(stereoElement instanceof ITetrahedralChirality);
+            assertTrue(stereoElement instanceof ITetrahedralChirality);
             ITetrahedralChirality l4Chiral = (ITetrahedralChirality)stereoElement;
             Assert.assertEquals("C", l4Chiral.getChiralAtom().getSymbol());
-            if (l4Chiral.getStereo() == Stereo.CLOCKWISE) {
+            if (l4Chiral.getChiralAtom() == mol.getAtom(0)) {
                 IAtom[] ligands = l4Chiral.getLigands();
                 for (IAtom atom : ligands) Assert.assertNotNull(atom);
-                Assert.assertEquals("H", ligands[0].getSymbol());
-                Assert.assertEquals("Cl", ligands[1].getSymbol());
-                Assert.assertEquals("Br", ligands[2].getSymbol());
-                Assert.assertEquals("C", ligands[3].getSymbol());
-            } else {
+                // note: ligands are given in the order they appear, there is
+                // one inversion (0,1,5,2) -> (0,1,2,5) so winding flips
+                Assert.assertEquals(mol.getAtom(0), ligands[0]);
+                Assert.assertEquals(mol.getAtom(1), ligands[1]);
+                Assert.assertEquals(mol.getAtom(2), ligands[2]);
+                Assert.assertEquals(mol.getAtom(5), ligands[3]);
                 Assert.assertEquals(Stereo.ANTI_CLOCKWISE, l4Chiral.getStereo());
+            } else {
                 IAtom[] ligands = l4Chiral.getLigands();
                 for (IAtom atom : ligands) Assert.assertNotNull(atom);
-                Assert.assertEquals("C", ligands[0].getSymbol());
-                Assert.assertEquals("H", ligands[1].getSymbol());
-                Assert.assertEquals("C", ligands[2].getSymbol());
-                Assert.assertEquals("F", ligands[3].getSymbol());
+                Assert.assertEquals(mol.getAtom(0), ligands[0]);
+                Assert.assertEquals(mol.getAtom(2), ligands[1]);
+                Assert.assertEquals(mol.getAtom(3), ligands[2]);
+                Assert.assertEquals(mol.getAtom(4), ligands[3]);
+                Assert.assertEquals(Stereo.ANTI_CLOCKWISE, l4Chiral.getStereo());
             }
         }
     }
@@ -2306,7 +2403,7 @@ public class SmilesParserTest extends CDKTestCase {
         Assert.assertEquals(16, countAromaticAtoms(molecule));
         Assert.assertEquals(19, countAromaticBonds(molecule));
 
-        molecule = sp.parseSmiles("C:1C:C:C:C:C1");
+        molecule = sp.parseSmiles("C:1:C:C:C:C:C1"); // n.b see cyclohexaneWithAromaticBonds
         Assert.assertEquals(6, countAromaticAtoms(molecule));
         Assert.assertEquals(6, countAromaticBonds(molecule));
 
@@ -2316,10 +2413,25 @@ public class SmilesParserTest extends CDKTestCase {
 
     }
 
-    @Test public void testPreserveAromaticityAndPerceiveAtomTypes() throws InvalidSmilesException{
+    /**
+     *  'C:1:C:C:C:C:C1' is actually cyclo-hexane not benzene. Beam will kekulise
+     *  this correctly and leave single bonds the aromaticity flags are preserved.
+     */
+    @Test public void cyclohexaneWithAromaticBonds() throws Exception {
+        IAtomContainer molecule = sp.parseSmiles("C:1:C:C:C:C:C1");
+        Assert.assertEquals(6, countAromaticAtoms(molecule));
+        Assert.assertEquals(6, countAromaticBonds(molecule));
+        for (IBond bond : molecule.bonds()) {
+            assertThat(bond.getOrder(), is(IBond.Order.SINGLE));
+            assertTrue(bond.getFlag(CDKConstants.ISAROMATIC));
+        }
+    }
+
+    @Test public void testPreserveAromaticityAndPerceiveAtomTypes() throws Exception {
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         sp.setPreservingAromaticity(true);
         IAtomContainer molecule = sp.parseSmiles("c1ccccc1");
+        atomtype(molecule);
         Assert.assertNotNull(molecule.getAtom(0).getAtomTypeName());
     }
 
@@ -2327,10 +2439,31 @@ public class SmilesParserTest extends CDKTestCase {
      * @cdk.bug 3160514
      */
     @Test
-    public void testAromaticBoron() throws CDKException {
-        SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
-        IAtomContainer mol = sp.parseSmiles("c1cc2c3cc1.c1cb23cc1");
+    public void testAromaticBoron() throws Exception {
+        IAtomContainer mol = loadExact("c1cc2c3cc1.c1cb23cc1");
         Assert.assertNotNull(mol);
+        assertAllSingleAndAromatic(mol);
+    }
+
+    /**
+     * This molecule is actually invalid and there is no way to kekulise it.
+     */
+    @Test(expected = InvalidSmilesException.class)
+    public void testAromaticBoron_invalid() throws CDKException {
+        IAtomContainer mol = load("c1cc2c3cc1.c1cb23cc1");
+    }
+
+    /**
+     * A 'proper' aromatic boron example.
+     */
+    @Test public void borinine() throws Exception {
+        IAtomContainer mol = load("b1ccccc1");
+        assertThat(mol.getBond(mol.getAtom(0), mol.getAtom(1)).getOrder(), is(IBond.Order.DOUBLE));
+        assertThat(mol.getBond(mol.getAtom(1), mol.getAtom(2)).getOrder(), is(IBond.Order.SINGLE));
+        assertThat(mol.getBond(mol.getAtom(2), mol.getAtom(3)).getOrder(), is(IBond.Order.DOUBLE));
+        assertThat(mol.getBond(mol.getAtom(3), mol.getAtom(4)).getOrder(), is(IBond.Order.SINGLE));
+        assertThat(mol.getBond(mol.getAtom(4), mol.getAtom(5)).getOrder(), is(IBond.Order.DOUBLE));
+        assertThat(mol.getBond(mol.getAtom(5), mol.getAtom(0)).getOrder(), is(IBond.Order.SINGLE));
     }
 
     /** @cdk.bug 1234 */
@@ -2340,9 +2473,10 @@ public class SmilesParserTest extends CDKTestCase {
     }
 
     @Test
-    public void testFormalNeighborBount() throws CDKException, CloneNotSupportedException {
+    public void testFormalNeighborBount() throws Exception {
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer mol = sp.parseSmiles("Oc1ccc(O)cc1");
+        atomtype(mol);
         Assert.assertEquals("O.sp3", mol.getAtom(0).getAtomTypeName());
         Assert.assertEquals(2, mol.getAtom(0).getFormalNeighbourCount().intValue());
         Assert.assertEquals("C.sp2", mol.getAtom(1).getAtomTypeName());
@@ -2378,6 +2512,28 @@ public class SmilesParserTest extends CDKTestCase {
                 aromCount++;
         }
         return aromCount;
+    }
+    
+    static void atomtype(IAtomContainer container) throws Exception {
+        Set<IAtom> aromatic = new HashSet<IAtom>();
+        for (IAtom atom : container.atoms()) {
+            if (atom.getFlag(CDKConstants.ISAROMATIC)) 
+                aromatic.add(atom);
+        }
+        // helpfully clears aromatic flags...
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(container);
+        for (IAtom atom : aromatic)
+            atom.setFlag(CDKConstants.ISAROMATIC, true);
+    }
+    
+    static IAtomContainer load(String smi) throws InvalidSmilesException {
+        return new SmilesParser(SilentChemObjectBuilder.getInstance()).parseSmiles(smi);
+    }
+
+    static IAtomContainer loadExact(String smi) throws InvalidSmilesException {
+        SmilesParser parser = new SmilesParser(SilentChemObjectBuilder.getInstance());
+        parser.setPreservingAromaticity(true);
+        return parser.parseSmiles(smi);
     }
 
 }

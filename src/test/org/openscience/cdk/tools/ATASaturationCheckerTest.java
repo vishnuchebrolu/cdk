@@ -147,13 +147,14 @@ public class ATASaturationCheckerTest extends org.openscience.cdk.CDKTestCase {
 	@Test
 	public void testQuinone() throws Exception {
 		IAtomContainer mol = sp.parseSmiles("O=c1ccc(=O)cc1");
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
 		
 		atasc.decideBondOrder(mol, true);
 		
 		Assert.assertTrue(mol.getAtom(1).getHybridization() == IAtomType.Hybridization.SP2);
-		
-		Assert.assertTrue(mol.getBond(0).getAtom(0).getSymbol().equals("C"));
-		Assert.assertTrue(mol.getBond(0).getAtom(1).getSymbol().equals("O"));
+
+		Assert.assertTrue(mol.getBond(0).getAtom(1).getSymbol().equals("C"));
+		Assert.assertTrue(mol.getBond(0).getAtom(0).getSymbol().equals("O"));
 		Assert.assertEquals(mol.getBond(0).getOrder(), IBond.Order.DOUBLE);
 		
 		Assert.assertTrue(mol.getBond(1).getAtom(0).getSymbol().equals("C"));
@@ -168,8 +169,8 @@ public class ATASaturationCheckerTest extends org.openscience.cdk.CDKTestCase {
 		Assert.assertTrue(mol.getBond(3).getAtom(1).getSymbol().equals("C"));
 		Assert.assertEquals(mol.getBond(3).getOrder(), IBond.Order.SINGLE);
 		
-		Assert.assertTrue(mol.getBond(4).getAtom(0).getSymbol().equals("O"));
-		Assert.assertTrue(mol.getBond(4).getAtom(1).getSymbol().equals("C"));
+		Assert.assertTrue(mol.getBond(4).getAtom(1).getSymbol().equals("O"));
+		Assert.assertTrue(mol.getBond(4).getAtom(0).getSymbol().equals("C"));
 		Assert.assertEquals(mol.getBond(4).getOrder(), IBond.Order.DOUBLE);
 		
 		Assert.assertTrue(mol.getBond(5).getAtom(0).getSymbol().equals("C"));
@@ -184,7 +185,7 @@ public class ATASaturationCheckerTest extends org.openscience.cdk.CDKTestCase {
 		Assert.assertTrue(mol.getBond(7).getAtom(1).getSymbol().equals("C"));
 		Assert.assertEquals(mol.getBond(7).getOrder(), IBond.Order.SINGLE);
 	
-		Assert.assertEquals(mol.getBond(0).getAtom(0), mol.getBond(7).getAtom(1));
+		Assert.assertEquals(mol.getBond(0).getAtom(1), mol.getBond(7).getAtom(0));
 	}
 	
 	/**
@@ -195,7 +196,8 @@ public class ATASaturationCheckerTest extends org.openscience.cdk.CDKTestCase {
 	@Test
 	public void testASimpleCarbonRing2() throws CDKException {
 		IAtomContainer mol = sp.parseSmiles("c1ccccc1");
-		
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+
 		atasc.decideBondOrder(mol, true);
 		
 		Assert.assertEquals(mol.getAtom(1).getHybridization(), IAtomType.Hybridization.SP2);
@@ -351,6 +353,7 @@ public class ATASaturationCheckerTest extends org.openscience.cdk.CDKTestCase {
 	@Test
 	public void testCyclobutadiene() throws CDKException {
 		IAtomContainer mol = sp.parseSmiles("c1ccc1");
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
 
 		atasc.decideBondOrder(mol, true);
 		Assert.assertEquals(mol.getAtom(1).getHybridization(),
@@ -364,11 +367,11 @@ public class ATASaturationCheckerTest extends org.openscience.cdk.CDKTestCase {
     @Test
     public void testPyrrole() throws CDKException {
     	IAtomContainer mol = sp.parseSmiles("c1c[nH]cc1");
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
 
     	atasc.decideBondOrder(mol, true);
     	Assert.assertEquals(mol.getAtom(1).getHybridization(),
     			IAtomType.Hybridization.SP2);
-    	Assert.assertTrue(mol.getBond(0).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
     	Assert.assertEquals(IBond.Order.DOUBLE, mol.getBond(0).getOrder());
     	Assert.assertEquals(IBond.Order.SINGLE, mol.getBond(1).getOrder());
     	Assert.assertEquals(IBond.Order.SINGLE, mol.getBond(2).getOrder());
@@ -379,12 +382,11 @@ public class ATASaturationCheckerTest extends org.openscience.cdk.CDKTestCase {
     @Test
     public void testFurane() throws CDKException {
     	IAtomContainer mol = sp.parseSmiles("c1cocc1");
-    	AtomContainerManipulator.percieveAtomTypesAndConfigureUnsetProperties(mol);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
     	
     	atasc.decideBondOrder(mol, true);
     	Assert.assertEquals(mol.getAtom(1).getHybridization(),
     			IAtomType.Hybridization.SP2);
-    	Assert.assertTrue(mol.getBond(0).getFlag(CDKConstants.SINGLE_OR_DOUBLE));
     	Assert.assertEquals(IBond.Order.DOUBLE, mol.getBond(0).getOrder());
     	Assert.assertEquals(IBond.Order.SINGLE, mol.getBond(1).getOrder());
     	//bond to oxygen
@@ -397,13 +399,13 @@ public class ATASaturationCheckerTest extends org.openscience.cdk.CDKTestCase {
     @Test
     public void testAnOtherDoubleRing() throws CDKException {
     	IAtomContainer mol = sp.parseSmiles("c1cccc2cccc2c1");
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
 
     	atasc.decideBondOrder(mol, true);
     	Assert.assertEquals(mol.getAtom(1).getHybridization(),
     			IAtomType.Hybridization.SP2);
     	int doubleBondCount = 0;
     	for (IBond bond : mol.bonds()) {
-    		Assert.assertTrue(bond.getFlag(CDKConstants.SINGLE_OR_DOUBLE));
     		if (bond.getOrder() == IBond.Order.DOUBLE) doubleBondCount++;
     	}
     	Assert.assertEquals(5, doubleBondCount);
@@ -415,6 +417,7 @@ public class ATASaturationCheckerTest extends org.openscience.cdk.CDKTestCase {
 //    	IAtomContainer mol = sp.parseSmiles("O=c2c1ccccc1c3ccccc23");
     	// Should have 6 double bonds
     	IAtomContainer mol = sp.parseSmiles("o2c1ccccc1c3c2cccc3");
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
     	atasc.decideBondOrder(mol, true);
     	Assert.assertEquals(mol.getAtom(1).getHybridization(),
     			IAtomType.Hybridization.SP2);
@@ -429,6 +432,7 @@ public class ATASaturationCheckerTest extends org.openscience.cdk.CDKTestCase {
     public void testAnOtherRingSystem2() throws CDKException {
     	// Should have 7 double bonds
     	IAtomContainer mol = sp.parseSmiles("O=c2c1ccccc1c3ccccc23");
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
     	atasc.decideBondOrder(mol, true);
     	Assert.assertEquals(mol.getAtom(1).getHybridization(),
     			IAtomType.Hybridization.SP2);
@@ -475,49 +479,6 @@ public class ATASaturationCheckerTest extends org.openscience.cdk.CDKTestCase {
     		if (bond.getOrder() == IBond.Order.DOUBLE) doubleBondCount++;
     	}
     	Assert.assertEquals(2, doubleBondCount);
-	}
-	
-	/* Note: this molecule should not be saturated as long at ALL 
-	 * atoms has hybridization SP2, or...?*/
-	@Test
-	public void mailCase2a() throws CDKException {
-		IAtomContainer mol = sp.parseSmiles("c1cc2ccccc2c1");
-		atasc.decideBondOrder(mol, true);
-
-		int doubleBondCount = 0;
-		for (IBond bond : mol.bonds()) {
-			if (bond.getOrder() == IBond.Order.DOUBLE) doubleBondCount++;
-		}
-
-		Assert.assertEquals(4, doubleBondCount);
-	}
-	
-	/* Note: this molecule should not be saturated as long at ALL 
-	 * atoms has hybridization SP2, or...?*/
-	@Test
-	public void mailCase2b() throws CDKException {
-		IAtomContainer mol = sp.parseSmiles("c1ccc2ccccc12");
-		atasc.decideBondOrder(mol, true);
-
-    	int doubleBondCount = 0;
-    	for (IBond bond : mol.bonds()) {
-    		if (bond.getOrder() == IBond.Order.DOUBLE) doubleBondCount++;
-    	}
-    	Assert.assertEquals(4, doubleBondCount);
-	}
-	
-	/* Note: The small five carbon ring can't be saturated as log as 
-	 * ALL atoms has hybridization SP2*/
-	@Test
-	public void mailCase3a() throws CDKException {
-		IAtomContainer mol = sp.parseSmiles("c1ccccc1Oc1cccc1");
-		atasc.decideBondOrder(mol, true);
-
-    	int doubleBondCount = 0;
-    	for (IBond bond : mol.bonds()) {
-    		if (bond.getOrder() == IBond.Order.DOUBLE) doubleBondCount++;
-    	}
-    	Assert.assertEquals(5, doubleBondCount);
 	}
 	
 	@Test
@@ -593,20 +554,7 @@ public class ATASaturationCheckerTest extends org.openscience.cdk.CDKTestCase {
     	}
     	Assert.assertEquals(4, doubleBondCount);
 	}
-	
-	@Test
-	public void testIndoles1() throws CDKException {
-		IAtomContainer mol = sp.parseSmiles("c1ccc(C[C@@H](C(N[C@H](Cc2c3ccccc3[nH]c2)C(N[C@@H](CCCN)C(N[C@@H](Cc2ccc(cc2)O)C(N[C@H](C(N[C@@H]");
-		
-		atasc.decideBondOrder(mol, true);
 
-    	int doubleBondCount = 0;
-    	for (IBond bond : mol.bonds()) {
-    		if (bond.getOrder() == IBond.Order.DOUBLE) doubleBondCount++;
-    	}
-    	Assert.assertEquals(7, doubleBondCount);
-	}
-		
 	@Test
 	public void testIndoles2() throws CDKException {
 		IAtomContainer mol = sp.parseSmiles("Cl.Cl.Oc1ccc2CC3[C@](Cc4c(-c5ccccc5)c(C)[nH0](Cc5ccccc5)c4[C@@H]([C@](CCN3CC3CC3)(c2c1O1)2)1)2(O)");
@@ -634,6 +582,7 @@ public class ATASaturationCheckerTest extends org.openscience.cdk.CDKTestCase {
 	@Test
 	public void testButadieneSmile() throws Exception {
 		IAtomContainer mol =  sp.parseSmiles("cccc");
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
 		/* The SMILES-parser does not seams raise the SINGLE_OR_DOUBLE-flag if  
 		 * a molecule don't have any rings */
 		for (IBond bond : mol.bonds())

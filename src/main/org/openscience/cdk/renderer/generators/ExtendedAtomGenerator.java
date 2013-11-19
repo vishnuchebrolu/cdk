@@ -28,6 +28,7 @@ import javax.vecmath.Point2d;
 
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
+import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.config.IsotopeFactory;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -52,7 +53,7 @@ public class ExtendedAtomGenerator extends BasicAtomGenerator {
 	/** Boolean that indicates if implicit hydrogens should be depicted. */
     public static class ShowImplicitHydrogens extends
     AbstractGeneratorParameter<Boolean> {
-    	/** {@inheritDoc}} */
+    	/** {@inheritDoc} */
     	public Boolean getDefault() {
     		return Boolean.TRUE;
     	}
@@ -64,7 +65,7 @@ public class ExtendedAtomGenerator extends BasicAtomGenerator {
      * of element symbols. */
     public static class ShowAtomTypeNames extends
                         AbstractGeneratorParameter<Boolean> {
-    	/** {@inheritDoc}} */
+    	/** {@inheritDoc} */
         public Boolean getDefault() {
             return Boolean.FALSE;
         }
@@ -72,7 +73,7 @@ public class ExtendedAtomGenerator extends BasicAtomGenerator {
     private ShowAtomTypeNames showAtomTypeNames =
     	new ShowAtomTypeNames();
     
-	/** {@inheritDoc}} */
+	/** {@inheritDoc} */
 	@Override
     @TestMethod("testSingleAtom")
     public IRenderingElement generate(
@@ -139,8 +140,7 @@ public class ExtendedAtomGenerator extends BasicAtomGenerator {
         Integer massNumber = atom.getMassNumber();
         if (massNumber != null) {
             try {
-                IsotopeFactory factory = 
-                    IsotopeFactory.getInstance(container.getBuilder());
+                IsotopeFactory factory = Isotopes.getInstance();
                 int majorMass = 
                     factory.getMajorIsotope(atom.getSymbol()).getMassNumber();
                 if (massNumber != majorMass) {
@@ -211,7 +211,7 @@ public class ExtendedAtomGenerator extends BasicAtomGenerator {
         }
     }
 
-	/** {@inheritDoc}} */
+	/** {@inheritDoc} */
 	@Override
     @TestMethod("getParametersTest")
     public List<IGeneratorParameter<?>> getParameters() {

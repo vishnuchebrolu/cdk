@@ -30,19 +30,16 @@ import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.config.AtomTypeFactory;
 import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.exception.NoSuchAtomException;
-import org.openscience.cdk.graph.SpanningTree;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomType;
+import org.openscience.cdk.interfaces.IAtomType.Hybridization;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IBond.Order;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.interfaces.IPseudoAtom;
-import org.openscience.cdk.interfaces.IRing;
-import org.openscience.cdk.interfaces.IRingSet;
 import org.openscience.cdk.interfaces.ISingleElectron;
-import org.openscience.cdk.interfaces.IAtomType.Hybridization;
+import org.openscience.cdk.ringsearch.RingSearch;
 import org.openscience.cdk.tools.manipulator.BondManipulator;
 
 /**
@@ -91,8 +88,9 @@ public class CDKAtomTypeMatcher implements IAtomTypeMatcher {
     	return factories.get(mode).get(builder);
     }
     
+    /** {@inheritDoc} */ @Override
     @TestMethod("testFindMatchingAtomType_IAtomContainer")
-    public IAtomType[] findMatchingAtomType(IAtomContainer atomContainer) throws CDKException {
+    public IAtomType[] findMatchingAtomTypes(IAtomContainer atomContainer) throws CDKException {
         IAtomType[] types = new IAtomType[atomContainer.getAtomCount()];
         int typeCounter = 0;
         for (IAtom atom : atomContainer.atoms()) {
@@ -102,6 +100,7 @@ public class CDKAtomTypeMatcher implements IAtomTypeMatcher {
         return types;
     }
 
+    /** {@inheritDoc} */ @Override
     @TestMethod("testFindMatchingAtomType_IAtomContainer_IAtom")
     public IAtomType findMatchingAtomType(IAtomContainer atomContainer, IAtom atom)
         throws CDKException {
@@ -757,9 +756,7 @@ public class CDKAtomTypeMatcher implements IAtomTypeMatcher {
                     if (isAcceptable(atom, atomContainer, type)) return type;
             	} else
             	if (neighborCount > 1 && bothNeighborsAreSp2(atom, atomContainer)) {
-            		IRing ring = getRing(atom, atomContainer);
-            		int ringSize = ring == null ? 0 : ring.getAtomCount();
-            		if (ring != null && ring.getAtomCount() > 0) {
+            		if (isRingAtom(atom, atomContainer)) {
             			if (neighborCount == 3) {
                             IBond.Order maxOrder = atomContainer.getMaximumBondOrder(atom);
                             if (maxOrder == IBond.Order.DOUBLE) {
@@ -991,26 +988,8 @@ public class CDKAtomTypeMatcher implements IAtomTypeMatcher {
     }
 
     private boolean isRingAtom(IAtom atom, IAtomContainer atomContainer) {
-    	SpanningTree st = new SpanningTree(atomContainer);
-        return st.getCyclicFragmentsContainer().contains(atom);
-    }
-
-    private IRing getRing(IAtom atom, IAtomContainer atomContainer) {
-    	SpanningTree st = new SpanningTree(atomContainer);
-    	try {
-    		if (st.getCyclicFragmentsContainer().contains(atom)) {
-    			IRingSet set = st.getAllRings();
-    			for (int i=0; i<set.getAtomContainerCount(); i++) {
-    				IRing ring = (IRing)set.getAtomContainer(i);
-    				if (ring.contains(atom)) {
-    					return ring;
-    				}
-    			}
-    		}
-    	} catch (NoSuchAtomException exception) {
-    		return null;
-    	}
-    	return null;
+    	RingSearch searcher = new RingSearch(atomContainer);
+        return searcher.cyclic(atom);
     }
 
     private boolean isAmide(IAtom atom, IAtomContainer atomContainer) {

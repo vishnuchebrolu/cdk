@@ -33,6 +33,7 @@ import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 
 import org.openscience.cdk.CDKConstants;
+import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.config.IsotopeFactory;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
@@ -64,7 +65,7 @@ public class PubChemXMLHelper {
      */
 	public PubChemXMLHelper(IChemObjectBuilder builder) throws IOException {
 		this.builder = builder;
-		factory = IsotopeFactory.getInstance(builder);
+		factory = Isotopes.getInstance();
 	}
 
 	// general elements

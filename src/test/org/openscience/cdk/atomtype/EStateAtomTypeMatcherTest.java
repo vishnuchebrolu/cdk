@@ -87,7 +87,7 @@ public class EStateAtomTypeMatcherTest extends CDKTestCase {
       mol.addAtom(atom);
 
       // just check consistency; other methods do perception testing
-      IAtomType[] types = matcher.findMatchingAtomType(mol);
+      IAtomType[] types = matcher.findMatchingAtomTypes(mol);
       for (int i=0; i<types.length; i++) {
           IAtomType type = matcher.findMatchingAtomType(mol, mol.getAtom(i));
           Assert.assertEquals(type.getAtomTypeName(), types[i].getAtomTypeName());
@@ -354,6 +354,7 @@ public class EStateAtomTypeMatcherTest extends CDKTestCase {
     @Test public void testBenzeneFromSmiles() throws Exception {
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         mol = sp.parseSmiles("C1=CC=CC=C1");
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
         CDKHueckelAromaticityDetector.detectAromaticity(mol);
         AtomContainerManipulator.convertImplicitToExplicitHydrogens(mol);
 

@@ -28,6 +28,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.geometry.cip.CIPTool.CIP_CHIRALITY;
+import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IStereoElement;
 import org.openscience.cdk.interfaces.ITetrahedralChirality;
@@ -145,7 +146,7 @@ public class CIPSMILESTest extends CDKTestCase {
      * @cdk.inchi InChI=1S/C20H20BrN3O3S/c1-23(2)9-10-24(20-22-14-8-7-13(21)11-18(14)28-20)19(25)17-12-26-15-5-3-4-6-16(15)27-17/h3-8,11,17H,9-10,12H2,1-2H3/p+1/t17-/m1/s1
      */
     @Test
-    public void testCID42475007() throws Exception {
+    public void testCID42475007_R() throws Exception {
         IAtomContainer mol = smiles.parseSmiles("C[NH+](C)CCN(C1=NC2=C(S1)C=C(C=C2)Br)C(=O)[C@H]3COC4=CC=CC=C4O3");
         Iterator<IStereoElement> stereoElements = mol.stereoElements().iterator();
         Assert.assertTrue(stereoElements.hasNext());
@@ -156,6 +157,54 @@ public class CIPSMILESTest extends CDKTestCase {
             CIP_CHIRALITY.R,
             CIPTool.getCIPChirality(mol, (ITetrahedralChirality)stereo)
         );
+    }
+    
+    /**
+     * @cdk.inchi InChI=1S/C20H20BrN3O3S/c1-23(2)9-10-24(20-22-14-8-7-13(21)11-18(14)28-20)19(25)17-12-26-15-5-3-4-6-16(15)27-17/h3-8,11,17H,9-10,12H2,1-2H3/p+1/t17+/m1/s1
+     */
+    @Test
+    public void testCID42475007_S() throws Exception {
+        IAtomContainer mol = smiles.parseSmiles("C[NH+](C)CCN(C1=NC2=C(S1)C=C(C=C2)Br)C(=O)[C@@H]3COC4=CC=CC=C4O3");
+        Iterator<IStereoElement> stereoElements = mol.stereoElements().iterator();
+        Assert.assertTrue(stereoElements.hasNext());
+        IStereoElement stereo = stereoElements.next();
+        Assert.assertNotNull(stereo);
+        Assert.assertTrue(stereo instanceof ITetrahedralChirality);
+        Assert.assertEquals(
+            CIP_CHIRALITY.S,
+            CIPTool.getCIPChirality(mol, (ITetrahedralChirality)stereo)
+        );
+    }
+
+    /**
+     * @cdk.inchi InChI=1/C4H10OS/c1-3-4-6(2)5/h3-4H2,1-2H3/t6+/s2
+     */
+    @Test public void r_sulfinyl() throws Exception {
+        IAtomContainer mol = smiles.parseSmiles("CCC[S@@](C)=O");
+        Iterator<IStereoElement> stereoElements = mol.stereoElements().iterator();
+        Assert.assertTrue(stereoElements.hasNext());
+        IStereoElement stereo = stereoElements.next();
+        Assert.assertNotNull(stereo);
+        Assert.assertTrue(stereo instanceof ITetrahedralChirality);
+        Assert.assertEquals(
+                CIP_CHIRALITY.R,
+                CIPTool.getCIPChirality(mol, (ITetrahedralChirality)stereo));    
+    }
+
+    /**
+     * @cdk.inchi InChI=1/C4H10OS/c1-3-4-6(2)5/h3-4H2,1-2H3/t6-/s2
+     */
+    @Test public void s_sulfinyl() throws Exception {
+        IAtomContainer mol = smiles.parseSmiles("CCC[S@](C)=O");
+        Iterator<IStereoElement> stereoElements = mol.stereoElements().iterator();
+        Assert.assertTrue(stereoElements.hasNext());
+        IStereoElement stereo = stereoElements.next();
+        Assert.assertNotNull(stereo);
+        Assert.assertTrue(stereo instanceof ITetrahedralChirality);
+        Assert.assertEquals(
+                CIP_CHIRALITY.S,
+                CIPTool.getCIPChirality(mol, (ITetrahedralChirality)stereo)
+                           );   
     }
 }
 

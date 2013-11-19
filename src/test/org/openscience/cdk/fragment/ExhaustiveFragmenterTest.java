@@ -27,6 +27,8 @@ import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smiles.SmilesParser;
 
+import static org.hamcrest.CoreMatchers.is;
+
 /**
  * Test exhaustive fragmenter.
  *
@@ -63,10 +65,8 @@ public class ExhaustiveFragmenterTest extends CDKTestCase {
     public void testEF3() throws Exception {
         IAtomContainer mol = smilesParser.parseSmiles("C1CCCCC1CC");
         fragmenter.generateFragments(mol);
-        String[] frags = fragmenter.getFragments();
-        Assert.assertNotNull(frags);
-        Assert.assertEquals(1, frags.length);
-        Assert.assertTrue(frags[0].equals("C1CCCCC1"));
+        String[] frags = fragmenter.getFragments();                
+        Assert.assertThat(frags, is(new String[]{"C1CCCCC1"}));
     }
 
     @Test
@@ -75,8 +75,7 @@ public class ExhaustiveFragmenterTest extends CDKTestCase {
         fragmenter.generateFragments(mol);
         String[] frags = fragmenter.getFragments();
         Assert.assertNotNull(frags);
-        Assert.assertEquals(1, frags.length);
-        Assert.assertTrue(frags[0].equals("c1ccccc1"));
+        Assert.assertThat(frags, is(new String[]{"c1ccccc1"}));
     }
 
     @Test
@@ -85,10 +84,8 @@ public class ExhaustiveFragmenterTest extends CDKTestCase {
         fragmenter.generateFragments(mol);
         String[] frags = fragmenter.getFragments();
         Assert.assertNotNull(frags);
-        Assert.assertEquals(2,frags.length);
-        Assert.assertTrue(frags[1].equals("Cc1ccccc1"));
-        Assert.assertTrue(frags[0].equals("c1ccccc1"));
-
+        Assert.assertThat(frags, is(new String[]{"c1ccc(cc1)C",
+                                                 "c1ccccc1"}));
         Assert.assertNotNull(fragmenter.getFragmentsAsContainers());
         Assert.assertEquals(2, fragmenter.getFragmentsAsContainers().length);
 
@@ -100,8 +97,7 @@ public class ExhaustiveFragmenterTest extends CDKTestCase {
         fragmenter.generateFragments(mol);
         String[] frags = fragmenter.getFragments();
         Assert.assertNotNull(frags);
-        Assert.assertEquals(1,frags.length);
-        Assert.assertTrue(frags[0].equals("c1ccccc1"));
+        Assert.assertThat(frags, is(new String[]{"c1ccccc1"}));
 
         Assert.assertNotNull(fragmenter.getFragmentsAsContainers());
         Assert.assertEquals(1, fragmenter.getFragmentsAsContainers().length);
@@ -114,17 +110,17 @@ public class ExhaustiveFragmenterTest extends CDKTestCase {
         fragmenter.generateFragments(mol);
         String[] frags = fragmenter.getFragments();
         Assert.assertNotNull(frags);
-        Assert.assertEquals(26,frags.length);
+        Assert.assertEquals(25,frags.length);
 
         Assert.assertNotNull(fragmenter.getFragmentsAsContainers());
-        Assert.assertEquals(26, fragmenter.getFragmentsAsContainers().length);
+        Assert.assertEquals(25, fragmenter.getFragmentsAsContainers().length);
 
         int n = 0;
         for (String s : frags) {
             if (s.equals("c1ccccc1")) {
                 n++;
-            } else if (s.equals("CCC3CCC(c1ccccc1)(CC2C=CC=C2)C3")) n++;
-            else if (s.equals("CC2CCC(C)(c1ccccc1)C2")) n++;
+            } else if (s.equals("c1ccc(cc1)C2(CCC(CC)C2)CC3C=CC=C3")) n++;
+            else if (s.equals("c1ccc(cc1)C2(C)CCC(C)C2")) n++;
         }
         Assert.assertEquals(3, n);
     }

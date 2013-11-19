@@ -59,8 +59,10 @@ public class HBondAcceptorCountDescriptorTest extends MolecularDescriptorTest {
         Object[] params = {new Boolean(true)};
         descriptor.setParameters(params);
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
-        IAtomContainer mol = sp.parseSmiles("O=N(=O)c1cccc2cn[nH]c12"); //
-        Assert.assertEquals(2, ((IntegerResult) descriptor.calculate(mol).getValue()).intValue());
+        // original molecule O=N(=O)c1cccc2cn[nH]c12 - correct kekulisation will give
+        // the same result. this test though should depend on kekulisation working
+        IAtomContainer mol = sp.parseSmiles("O=N(=O)C1=C2NN=CC2=CC=C1");         
+        Assert.assertEquals(1, ((IntegerResult) descriptor.calculate(mol).getValue()).intValue());
     }
 
     /**
@@ -68,7 +70,7 @@ public class HBondAcceptorCountDescriptorTest extends MolecularDescriptorTest {
      * @cdk.inchi InChI=1S/C2H3N3/c1-3-2-5-4-1/h1-2H,(H,3,4,5)
      */
     @Test
-    public void testCID9257() {
+    public void testCID9257() throws CDKException {
         IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
         IAtomContainer mol = builder.newInstance(IAtomContainer.class);
         IAtom a1 = builder.newInstance(IAtom.class,"N");
@@ -119,7 +121,9 @@ public class HBondAcceptorCountDescriptorTest extends MolecularDescriptorTest {
         mol.addBond(b7);
         IBond b8 = builder.newInstance(IBond.class,a5, a8, IBond.Order.SINGLE);
         mol.addBond(b8);
-
+        
+        Object[] params = {new Boolean(true)};
+        descriptor.setParameters(params);
         Assert.assertEquals(
             2,
             ((IntegerResult) descriptor.calculate(mol).getValue()).intValue()

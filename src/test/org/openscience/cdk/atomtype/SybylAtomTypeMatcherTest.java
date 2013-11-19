@@ -30,6 +30,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.Bond;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.PseudoAtom;
@@ -37,6 +38,7 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomType;
 import org.openscience.cdk.interfaces.IBond;
+import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.io.Mol2Reader;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.templates.MoleculeFactory;
@@ -95,7 +97,7 @@ public class SybylAtomTypeMatcherTest extends AbstractSybylAtomTypeTest {
       // just check consistency; other methods do perception testing
       SybylAtomTypeMatcher matcher = SybylAtomTypeMatcher.getInstance(
           DefaultChemObjectBuilder.getInstance());
-      IAtomType[] types = matcher.findMatchingAtomType(mol);
+      IAtomType[] types = matcher.findMatchingAtomTypes(mol);
       for (int i=0; i<types.length; i++) {
           IAtomType type = matcher.findMatchingAtomType(mol, mol.getAtom(i));
           Assert.assertEquals(type.getAtomTypeName(), types[i].getAtomTypeName());
@@ -132,7 +134,7 @@ public class SybylAtomTypeMatcherTest extends AbstractSybylAtomTypeTest {
 
         // test if the perceived atom types match that
         SybylAtomTypeMatcher matcher = SybylAtomTypeMatcher.getInstance(benzene.getBuilder());
-        IAtomType[] types = matcher.findMatchingAtomType(benzene);
+        IAtomType[] types = matcher.findMatchingAtomTypes(benzene);
         for (IAtomType type : types) {
             Assert.assertEquals("C.ar", type.getAtomTypeName());
         }
@@ -144,7 +146,7 @@ public class SybylAtomTypeMatcherTest extends AbstractSybylAtomTypeTest {
             "N.ar", "N.3", "C.ar", "C.ar"
           };
           SybylAtomTypeMatcher matcher = SybylAtomTypeMatcher.getInstance(mol.getBuilder());
-          IAtomType[] types = matcher.findMatchingAtomType(mol);
+          IAtomType[] types = matcher.findMatchingAtomTypes(mol);
           for (int i=0; i<expectedTypes.length; i++) {
               assertAtomType(testedAtomTypes,
                   "Incorrect perception for atom " + i,
@@ -161,7 +163,7 @@ public class SybylAtomTypeMatcherTest extends AbstractSybylAtomTypeTest {
 
         // test if the perceived atom types match that
         SybylAtomTypeMatcher matcher = SybylAtomTypeMatcher.getInstance(benzene.getBuilder());
-        IAtomType[] types = matcher.findMatchingAtomType(benzene);
+        IAtomType[] types = matcher.findMatchingAtomTypes(benzene);
         for (IAtomType type : types) {
           Assert.assertEquals("C.ar", type.getAtomTypeName());
         }
@@ -359,6 +361,37 @@ public class SybylAtomTypeMatcherTest extends AbstractSybylAtomTypeTest {
         assertAtomTypes(testedAtomTypes, expectedTypes, mol);
     }
 
+    @Test public void testCarboxylicAcid() throws Exception {
+    	IAtomContainer mol = new AtomContainer();
+        IAtom atom = new Atom("O");
+        IAtom atom2 = new Atom("C");
+        IAtom atom3 = new Atom("O");
+        mol.addAtom(atom);
+        mol.addAtom(atom2);
+        mol.addAtom(atom3);
+        mol.addBond(0,1,CDKConstants.BONDORDER_DOUBLE);
+        mol.addBond(1,2,CDKConstants.BONDORDER_SINGLE);
+
+        String[] expectedTypes = {"O.co2", "C.2", "O.co2"};
+        assertAtomTypes(testedAtomTypes, expectedTypes, mol);
+    }
+
+    @Test public void testCarboxylate() throws Exception {
+    	IAtomContainer mol = new AtomContainer();
+        IAtom atom = new Atom("O");
+        IAtom atom2 = new Atom("C");
+        IAtom atom3 = new Atom("O");
+        atom3.setFormalCharge(-1);
+        mol.addAtom(atom);
+        mol.addAtom(atom2);
+        mol.addAtom(atom3);
+        mol.addBond(0,1,IBond.Order.DOUBLE);
+        mol.addBond(1,2,IBond.Order.SINGLE);
+
+        String[] expectedTypes = {"O.co2", "C.2", "O.co2"};
+        assertAtomTypes(testedAtomTypes, expectedTypes, mol);
+    }
+
     @Test public void testMethylAmine() throws Exception {
     	IAtomContainer mol = new AtomContainer();
         IAtom atom = new Atom("N");
@@ -371,6 +404,22 @@ public class SybylAtomTypeMatcherTest extends AbstractSybylAtomTypeTest {
         assertAtomTypes(testedAtomTypes, expectedTypes, mol);
     }
     
+    @Test public void testMethylNitro_Charged() throws Exception {
+        IAtomContainer mol = new AtomContainer();
+        IAtom atom = new Atom("C"); mol.addAtom(atom);
+        IAtom atom2 = new Atom("N"); mol.addAtom(atom2);
+        atom2.setFormalCharge(+1);
+        IAtom atom3 = new Atom("O"); mol.addAtom(atom3);
+        atom3.setFormalCharge(-1);
+        IAtom atom4 = new Atom("O"); mol.addAtom(atom4);
+        mol.addBond(0,1,IBond.Order.SINGLE);
+        mol.addBond(1,2,IBond.Order.SINGLE);
+        mol.addBond(1,3,IBond.Order.DOUBLE);
+
+        String[] expectedTypes = {"C.3", "N.pl3", "O.3", "O.2"};
+        assertAtomTypes(testedAtomTypes, expectedTypes, mol);
+    }
+
     @Test public void testAmmonia() throws Exception {
     	IAtomContainer mol = new AtomContainer();
         IAtom atom = new Atom("H");
@@ -634,7 +683,7 @@ public class SybylAtomTypeMatcherTest extends AbstractSybylAtomTypeTest {
 
         // test if the perceived atom types match that
         SybylAtomTypeMatcher matcher = SybylAtomTypeMatcher.getInstance(benzene.getBuilder());
-        IAtomType[] types = matcher.findMatchingAtomType(benzene);
+        IAtomType[] types = matcher.findMatchingAtomTypes(benzene);
         for (int i=0; i<6; i++) {
             assertAtomType(testedAtomTypes,
                 "Incorrect perception for atom " + i,
@@ -643,7 +692,7 @@ public class SybylAtomTypeMatcherTest extends AbstractSybylAtomTypeTest {
         }
         assertAtomType(testedAtomTypes,
             "Incorrect perception for atom " + 6,
-            "N.pl3", types[6]
+            "N.3", types[6]
         );
     }
 
@@ -738,6 +787,67 @@ public class SybylAtomTypeMatcherTest extends AbstractSybylAtomTypeTest {
           String[] expectedTypes = {"O.2", "P.3", "O.3", "O.3", "O.3"};
           assertAtomTypes(testedAtomTypes, expectedTypes, mol);
       }
+
+    @Test
+    public void test_Mo_4() throws Exception {
+        IAtomContainer mol = new AtomContainer();
+        IAtom a1 = new Atom("Mo"); mol.addAtom(a1);
+        IAtom a2 = new Atom("C");  mol.addAtom(a2);
+        IAtom a3 = new Atom("C");  mol.addAtom(a3);
+        IAtom a4 = new Atom("C");  mol.addAtom(a4);
+        IAtom a5 = new Atom("C"); mol.addAtom(a5);
+        mol.addBond(new Bond(a1, a2, IBond.Order.DOUBLE));
+        mol.addBond(new Bond(a1, a3, IBond.Order.DOUBLE));
+        mol.addBond(new Bond(a1, a4, IBond.Order.SINGLE));
+        mol.addBond(new Bond(a1, a5, IBond.Order.SINGLE));
+
+        String[] expectedTypes = {"Mo", "C.2", "C.2", "C.3", "C.3"};
+        assertAtomTypes(testedAtomTypes, expectedTypes, mol);
+    }
+
+    @Test
+    public void testCrth() throws Exception {
+        IAtomContainer mol = new AtomContainer();
+        // this is made up
+        IAtom a1 = new Atom("Cr"); mol.addAtom(a1);
+        for (int i=0; i<4; i++) {
+            IAtom atom = new Atom("O");  mol.addAtom(atom);
+            mol.addBond(new Bond(a1, atom, IBond.Order.SINGLE));
+        }
+
+        String[] expectedTypes = {"Cr.th", "O.3", "O.3", "O.3", "O.3"};
+        assertAtomTypes(testedAtomTypes, expectedTypes, mol);
+    }
+
+    @Test
+    public void testCroh() throws Exception {
+        IAtomContainer mol = new AtomContainer();
+        // this is made up, and may be wrong; info on the web is sparse, and PubChem has no
+        // octa-coordinate structure; lone pairs involved?
+        IAtom a1 = new Atom("Cr"); mol.addAtom(a1);
+        for (int i=0; i<6; i++) {
+            IAtom atom = new Atom("O");  mol.addAtom(atom);
+            mol.addBond(new Bond(a1, atom, IBond.Order.SINGLE));
+        }
+
+        String[] expectedTypes = {"Cr.oh", "O.3", "O.3", "O.3", "O.3", "O.3", "O.3"};
+        assertAtomTypes(testedAtomTypes, expectedTypes, mol);
+    }
+
+    @Test
+    public void testCooh() throws Exception {
+        IAtomContainer mol = new AtomContainer();
+        // this is made up, and may be wrong; info on the web is sparse, and PubChem has no
+        // octa-coordinate structure; lone pairs involved?
+        IAtom a1 = new Atom("Co"); mol.addAtom(a1);
+        for (int i=0; i<6; i++) {
+            IAtom atom = new Atom("O");  mol.addAtom(atom);
+            mol.addBond(new Bond(a1, atom, IBond.Order.SINGLE));
+        }
+
+        String[] expectedTypes = {"Co.oh", "O.3", "O.3", "O.3", "O.3", "O.3", "O.3"};
+        assertAtomTypes(testedAtomTypes, expectedTypes, mol);
+    }
 
     @AfterClass
     public static void testTestedAtomTypes() throws Exception {

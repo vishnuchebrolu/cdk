@@ -22,7 +22,9 @@
  */
 package org.openscience.cdk.aromaticity;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.annotations.TestClass;
@@ -64,7 +66,9 @@ import org.openscience.cdk.ringsearch.SSSRFinder;
  * 
  * @see org.openscience.cdk.CDKConstants
  * @see DoubleBondAcceptingAromaticityDetector
+ * @deprecated use {@link Aromaticity} with the {@link ElectronDonation#cdk()} model
  */
+@Deprecated
 @TestClass("org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetectorTest")
 public class CDKHueckelAromaticityDetector {
 
@@ -78,16 +82,22 @@ public class CDKHueckelAromaticityDetector {
 			// If there are no rings, then there cannot be any aromaticity
 			return false;
 		}
-		// disregard all atoms we know that cannot be aromatic anyway
-        for (IAtom atom : ringSystems.atoms())
-            if (!atomIsPotentiallyAromatic(atom))
-                ringSystems.removeAtomAndConnectedElectronContainers(atom);
 
         // FIXME: should not really mark them here
-		Iterator<IAtom> atoms = ringSystems.atoms().iterator();
-		while (atoms.hasNext()) atoms.next().setFlag(CDKConstants.ISINRING, true);
-		Iterator<IBond> bonds = ringSystems.bonds().iterator();
-		while (bonds.hasNext()) bonds.next().setFlag(CDKConstants.ISINRING, true);		
+        Iterator<IAtom> atoms = ringSystems.atoms().iterator();
+        while (atoms.hasNext()) atoms.next().setFlag(CDKConstants.ISINRING, true);
+        Iterator<IBond> bonds = ringSystems.bonds().iterator();
+        while (bonds.hasNext()) bonds.next().setFlag(CDKConstants.ISINRING, true);
+
+        // disregard all atoms we know that cannot be aromatic anyway
+        Set<IAtom> disregard = new HashSet<IAtom>();
+        for (IAtom atom : ringSystems.atoms())
+            if (!atomIsPotentiallyAromatic(atom))
+                disregard.add(atom);
+        
+        for (IAtom atom : disregard)
+            ringSystems.removeAtomAndConnectedElectronContainers(atom);
+                
 		
 		boolean foundSomeAromaticity = false;
 		Iterator<IAtomContainer> isolatedRingSystems =

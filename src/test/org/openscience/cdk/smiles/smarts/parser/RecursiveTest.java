@@ -360,7 +360,6 @@ public class RecursiveTest extends CDKTestCase {
         );
 
         SMARTSQueryTool sqt = new SMARTSQueryTool("[NX3;H2,H1;!$(NC=O)]", DefaultChemObjectBuilder.getInstance());
-        sqt.preserveAtomType(); // already done by IteratingSMILESReader
         int nmatch = 0;
         int nmol = 0;
         while (reader.hasNext()) {
@@ -372,7 +371,7 @@ public class RecursiveTest extends CDKTestCase {
         }
         reader.close();
         Assert.assertEquals(141, nmol);
-        Assert.assertEquals(6, nmatch);
+        Assert.assertEquals(4, nmatch);
     }
 
     @Test public void testBasicAmineOnDrugs() throws Exception {

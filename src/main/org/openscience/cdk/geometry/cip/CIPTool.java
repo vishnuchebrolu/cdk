@@ -68,6 +68,11 @@ public class CIPTool {
     
     private static CIPLigandRule cipRule = new CIPLigandRule();
 
+    /**
+     * Enumeration with the two tetrahedral chiralities defined by the CIP schema.
+     *
+     * @author egonw
+     */
     public enum CIP_CHIRALITY {
         R, S, NONE
     }
@@ -107,6 +112,7 @@ public class CIPTool {
     @TestMethod("testGetCIPChirality_ILigancyFourChirality,testGetCIPChirality_Anti_ILigancyFourChirality")
     public static CIP_CHIRALITY getCIPChirality(
             IAtomContainer container, ITetrahedralChirality stereoCenter) {
+        
         LigancyFourChirality cipLigancy = new LigancyFourChirality(container, stereoCenter);
         ILigand[] ligands = order(cipLigancy.getLigands());
         LigancyFourChirality rsChirality = cipLigancy.project(ligands);
@@ -189,8 +195,9 @@ public class CIPTool {
      * given <code>container</code>.
      *
      * @param container  {@link IAtomContainer} for which the returned {@link ILigand}s are defined
-     * @param chiralAtom int pointing to the {@link IAtom} index of the chiral atom
-     * @param ligandAtom int pointing to the {@link IAtom} index of the {@link ILigand}
+     * @param visitedAtoms a list of atoms already visited in the analysis
+     * @param chiralAtom an integer pointing to the {@link IAtom} index of the chiral atom
+     * @param ligandAtom an integer pointing to the {@link IAtom} index of the {@link ILigand}
      * @return           the created {@link ILigand}
      */
     @TestMethod("testDefineLigand")

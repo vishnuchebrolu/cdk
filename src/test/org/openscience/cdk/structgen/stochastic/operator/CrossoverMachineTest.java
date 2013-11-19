@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.graph.ConnectivityChecker;
@@ -33,7 +32,7 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 import org.openscience.cdk.io.SMILESReader;
-import org.openscience.cdk.tools.CDKHydrogenAdder;
+import org.openscience.cdk.silent.AtomContainerSet;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 /**
@@ -51,10 +50,6 @@ public class CrossoverMachineTest extends CDKTestCase {
         	som.getAtomContainerCount());
 		CrossoverMachine cm = new CrossoverMachine();
 		String correctFormula="C10H16";
-        CDKHydrogenAdder hAdder = CDKHydrogenAdder.getInstance(som.getBuilder());
-        for(int i=0;i<som.getAtomContainerCount();i++){
-            hAdder.addImplicitHydrogens(som.getAtomContainer(i));
-        }
         int errorcount=0;
         for(int i=0;i<som.getAtomContainerCount();i++){
 			int[] hydrogencount1=new int[4];

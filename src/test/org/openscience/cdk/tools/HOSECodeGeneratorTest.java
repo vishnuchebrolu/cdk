@@ -456,6 +456,8 @@ public class HOSECodeGeneratorTest extends CDKTestCase {
 		String s = null;
 		for (int f = 0; f < mol.getAtomCount(); f++)
 		{
+            AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+            CDKHueckelAromaticityDetector.detectAromaticity(mol);
 			s = hcg.getHOSECode(mol, mol.getAtom(f), 4);
 			if (standAlone)
 				System.out.println(f+"|" + s + "| -> " + result[f]);
@@ -485,6 +487,8 @@ public class HOSECodeGeneratorTest extends CDKTestCase {
      "C-3;*C*C(*C*C,*C/*C*N,*C,*&/*&,*&,*&)"};
 
 		IAtomContainer molecule = (new SmilesParser(DefaultChemObjectBuilder.getInstance())).parseSmiles("C1(C=CN2)=C2C=CC=C1");
+		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule);
+		CDKHueckelAromaticityDetector.detectAromaticity(molecule);
 		//display(molecule);
 		HOSECodeGenerator hcg = new HOSECodeGenerator();
 		String s = null;

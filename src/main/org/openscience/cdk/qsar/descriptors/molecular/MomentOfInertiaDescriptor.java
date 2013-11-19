@@ -23,6 +23,7 @@ import javax.vecmath.Point3d;
 
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
+import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.config.IsotopeFactory;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.geometry.GeometryTools;
@@ -184,7 +185,7 @@ public class MomentOfInertiaDescriptor extends AbstractMolecularDescriptor imple
         IsotopeFactory factory;
         try {
             clone = (IAtomContainer)container.clone();
-            factory = IsotopeFactory.getInstance(container.getBuilder());
+            factory = Isotopes.getInstance();
             factory.configureAtoms(clone);
         } catch (Exception e) {
             logger.debug(e);

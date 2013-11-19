@@ -31,6 +31,7 @@ import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.qsar.AbstractMolecularDescriptor;
 import org.openscience.cdk.qsar.DescriptorSpecification;
 import org.openscience.cdk.qsar.DescriptorValue;
@@ -38,6 +39,8 @@ import org.openscience.cdk.qsar.IMolecularDescriptor;
 import org.openscience.cdk.qsar.result.IDescriptorResult;
 import org.openscience.cdk.qsar.result.IntegerResult;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
+
+import java.util.List;
 
 /**
  * This descriptor calculates the number of hydrogen bond acceptors using a slightly simplified version of the
@@ -178,23 +181,34 @@ public class HBondAcceptorCountDescriptor extends AbstractMolecularDescriptor im
         //org.openscience.cdk.interfaces.IAtom[] atoms = ac.getAtoms();
     // labelled for loop to allow for labelled continue statements within the loop
     atomloop:
-    for (int atomIndex = 0; atomIndex < ac.getAtomCount(); atomIndex++) {
+    for (IAtom atom : ac.atoms()) {
         // looking for suitable nitrogen atoms
-        if (ac.getAtom(atomIndex).getSymbol().equals("N") && ac.getAtom(atomIndex).getFormalCharge() <= 0) {
+        if (atom.getSymbol().equals("N") && atom.getFormalCharge() <= 0) {
+            
             // excluding nitrogens that are adjacent to an oxygen
-            java.util.List neighbours = ac.getConnectedAtomsList(ac.getAtom(atomIndex));
-            for (Object neighbour : neighbours)
-                if (((IAtom) neighbour).getSymbol().equals("O"))
+            List<IBond> bonds = ac.getConnectedBondsList(atom);
+            int nPiBonds = 0;
+            for (IBond bond : bonds) {
+                if (bond.getConnectedAtom(atom).getSymbol().equals("O"))
                     continue atomloop;
+                if (IBond.Order.DOUBLE.equals(bond.getOrder()))
+                    nPiBonds++;
+            }
+            
+            // if the nitrogen is aromatic and there are no pi bonds then it's
+            // lone pair cannot accept any hydrogen bonds
+            if (atom.getFlag(CDKConstants.ISAROMATIC) && nPiBonds == 0)
+                continue;
+            
             hBondAcceptors++;
         }
         // looking for suitable oxygen atoms
-        if (ac.getAtom(atomIndex).getSymbol().equals("O") && ac.getAtom(atomIndex).getFormalCharge() <= 0) {
+        else if (atom.getSymbol().equals("O") && atom.getFormalCharge() <= 0) {
             //excluding oxygens that are adjacent to a nitrogen or to an aromatic carbon
-            java.util.List neighbours = ac.getConnectedAtomsList(ac.getAtom(atomIndex));
-            for (Object neighbour : neighbours)
-                if (((IAtom) neighbour).getSymbol().equals("N") ||
-                        (((IAtom) neighbour).getSymbol().equals("C") && ((IAtom) neighbour).getFlag(CDKConstants.ISAROMATIC)))
+            List<IAtom> neighbours = ac.getConnectedAtomsList(atom);
+            for (IAtom neighbour : neighbours)
+                if (neighbour.getSymbol().equals("N") ||
+                        (neighbour.getSymbol().equals("C") && neighbour.getFlag(CDKConstants.ISAROMATIC)))
                     continue atomloop;
             hBondAcceptors++;
         }

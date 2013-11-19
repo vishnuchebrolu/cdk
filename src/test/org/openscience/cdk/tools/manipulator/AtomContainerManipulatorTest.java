@@ -23,6 +23,12 @@
  */
 package org.openscience.cdk.tools.manipulator;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -38,12 +44,11 @@ import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.DefaultChemObjectBuilder;
-import org.openscience.cdk.config.IsotopeFactory;
+import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IAtomParity;
 import org.openscience.cdk.interfaces.IAtomType;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
@@ -56,12 +61,8 @@ import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.stereo.TetrahedralChirality;
 import org.openscience.cdk.templates.MoleculeFactory;
+import org.openscience.cdk.templates.TestMoleculeFactory;
 import org.openscience.cdk.tools.CDKHydrogenAdder;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 
 /**
  * @cdk.module test-standard
@@ -521,8 +522,8 @@ public class AtomContainerManipulatorTest extends CDKTestCase {
         mol.addAtom(new Atom("Cl"));
     	
         double expectedMass = 0.0;
-        expectedMass += IsotopeFactory.getInstance(builder).getNaturalMass(builder.newInstance(IElement.class,"C"));
-        expectedMass += IsotopeFactory.getInstance(builder).getNaturalMass(builder.newInstance(IElement.class,"Cl"));
+        expectedMass += Isotopes.getInstance().getNaturalMass(builder.newInstance(IElement.class,"C"));
+        expectedMass += Isotopes.getInstance().getNaturalMass(builder.newInstance(IElement.class,"Cl"));
         
     	double totalExactMass = AtomContainerManipulator.getNaturalExactMass(mol);
 
@@ -931,6 +932,25 @@ public class AtomContainerManipulatorTest extends CDKTestCase {
             Assert.assertTrue(atom.getExactMass() > 0);
         }
     }
+    
+    @Test public void setSingleOrDoubleFlags() {
+        IAtomContainer biphenyl = TestMoleculeFactory.makeBiphenyl();
+        for (IBond bond : biphenyl.bonds()) {
+            bond.setFlag(CDKConstants.ISAROMATIC, true);            
+        }
+        AtomContainerManipulator.setSingleOrDoubleFlags(biphenyl);
+        assertTrue(biphenyl.getFlag(CDKConstants.SINGLE_OR_DOUBLE));
+        for (IAtom atom : biphenyl.atoms()) {
+            assertTrue(biphenyl.getFlag(CDKConstants.SINGLE_OR_DOUBLE));
+        }
+        int n = 0;
+        for (IBond bond : biphenyl.bonds()) {
+            n += bond.getFlag(CDKConstants.SINGLE_OR_DOUBLE) ? 1 : 0;
+        }
+        // 13 bonds - the one which joins the two rings is now marked as single
+        // or double
+        assertThat(n, is(12)); 
+    }
 
     /**
      * Molecular hydrogen is found in the first batch of PubChem entries, and
@@ -961,31 +981,7 @@ public class AtomContainerManipulatorTest extends CDKTestCase {
         bosum = AtomContainerManipulator.getBondOrderSum(mol, mol.getAtom(2));
         Assert.assertEquals(1.0, bosum, 0.001);
 
-    }
-
-    @Test
-    public void testGetAtomParity() {
-        IAtomContainer container = new AtomContainer();
-        IAtom carbon = container.getBuilder().newInstance(IAtom.class,"C");
-        carbon.setID("central");
-        IAtom carbon1 = container.getBuilder().newInstance(IAtom.class,"C");
-        carbon1.setID("c1");
-        IAtom carbon2 = container.getBuilder().newInstance(IAtom.class,"C");
-        carbon2.setID("c2");
-        IAtom carbon3 = container.getBuilder().newInstance(IAtom.class,"C");
-        carbon3.setID("c3");
-        IAtom carbon4 = container.getBuilder().newInstance(IAtom.class,"C");
-        carbon4.setID("c4");
-        int parityInt = 1;
-        IAtomParity parity = container.getBuilder().newInstance(
-            IAtomParity.class, carbon, carbon1, carbon2, carbon3, carbon4, parityInt
-        );
-        container.addStereoElement(parity);
-
-        parity = AtomContainerManipulator.getAtomParity(container, carbon);
-        Assert.assertNotNull(parity);
-        Assert.assertEquals(carbon, parity.getAtom());
-    }
+    }          
 }
 
 

@@ -31,6 +31,7 @@ import javax.vecmath.Point3d;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.config.AtomTypeFactory;
+import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.config.IsotopeFactory;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
@@ -154,7 +155,7 @@ public class InductivePartialCharges implements IChargeCalculator {
 		String symbol = null;
 		int atomicNumber = 0;
 		try {
-			ifac = IsotopeFactory.getInstance(ac.getBuilder());
+			ifac = Isotopes.getInstance();
 			for (int i = 0; i < ac.getAtomCount(); i++) {
 				IAtom atom = ac.getAtom(i);
 				symbol = ac.getAtom(i).getSymbol();

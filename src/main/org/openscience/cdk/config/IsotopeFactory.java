@@ -1,9 +1,5 @@
-/*  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2001-2007  Christoph Steinbeck <steinbeck@users.sf.net>
+/*  Copyright (C) 2001-2007  Christoph Steinbeck <steinbeck@users.sf.net>
+ *                     2013  Egon Willighagen <egonw@users.sf.net>
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -23,116 +19,34 @@
  */
 package org.openscience.cdk.config;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.config.isotopes.IsotopeReader;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.interfaces.IElement;
 import org.openscience.cdk.interfaces.IIsotope;
 import org.openscience.cdk.tools.ILoggingTool;
 import org.openscience.cdk.tools.LoggingToolFactory;
+import org.openscience.cdk.tools.periodictable.PeriodicTable;
 
 /**
- * Used to store and return data of a particular isotope. As this class is a
- * singleton class, one gets an instance with: 
- * <pre>
- * IsotopeFactory ifac = IsotopFactory.getInstance(new IChemObject().getNewBuilder());
- * </pre>
- *
- * <p>Data about the isotopes are read from the file
- * org.openscience.cdk.config.isotopes.xml in the cdk-standard
- * module. Part of the data in this file was collected from
- * the website <a href="http://www.webelements.org">webelements.org</a>.
- *
- * <p>The use of this class is exemplified as follows. To get information 
- * about the major isotope of hydrogen, one can use this code:
- * <pre>
- *   IsotopeFactory factory = IsotopeFactory.getInstance(DefaultChemObjectBuilder.getInstance());
- *   Isotope major = factory.getMajorIsotope("H");
- * </pre> 
+ * Used to store and return data of a particular isotope.
  *
  * @cdk.module core
  * @cdk.githash
  *
- * @author     steinbeck
+ * @author         steinbeck
  * @cdk.created    2001-08-29
- * @cdk.keyword    isotope
- * @cdk.keyword    element
  */
-@TestClass("org.openscience.cdk.config.IsotopeFactoryTest")
-public class IsotopeFactory
-{
+public abstract class IsotopeFactory {
 
-	private static IsotopeFactory ifac = null;
-	private List<IIsotope> isotopes = null;
-    private HashMap<String, IIsotope> majorIsotopes = null;
-    private boolean debug = false;
-    private static ILoggingTool logger =
+	protected Map<String, List<IIsotope>> isotopes = null;
+	protected Map<String, IIsotope> majorIsotopes = null;
+    protected static ILoggingTool logger =
         LoggingToolFactory.createLoggingTool(IsotopeFactory.class);
-
-    /**
-     * Private constructor for the IsotopeFactory object.
-     *
-     *@exception IOException             A problem with reading the isotopes.xml
-     *      file
-     * @param builder The builder from which we the factory will be generated
-     */
-	private IsotopeFactory(IChemObjectBuilder builder) throws IOException {
-        logger.info("Creating new IsotopeFactory");
-
-        InputStream ins;
-        // ObjIn in = null;
-        String errorMessage = "There was a problem getting org.openscience.cdk." +
-                              "config.isotopes.xml as a stream";
-        try {
-            String configFile = "org/openscience/cdk/config/data/isotopes.xml";
-            if (debug) logger.debug("Getting stream for ", configFile);
-            ins = this.getClass().getClassLoader().getResourceAsStream(configFile);
-        } catch (Exception exception) {
-            logger.error(errorMessage);
-            logger.debug(exception);
-            throw new IOException(errorMessage);
-        }
-        if (ins == null) {
-            logger.error(errorMessage);
-            throw new IOException(errorMessage);
-        }
-        IsotopeReader reader = new IsotopeReader(ins, builder);
-        //in = new ObjIn(ins, new Config().aliasID(false));
-        isotopes = reader.readIsotopes();
-        if (debug) logger.debug("Found #isotopes in file: ", isotopes.size());
-        /* for (int f = 0; f < isotopes.size(); f++) {
-              Isotope isotope = (Isotope)isotopes.elementAt(f);
-          } What's this loop for?? */
-
-        majorIsotopes = new HashMap<String, IIsotope>();
-    }
-
-
-	/**
-	 * Returns an IsotopeFactory instance.
-	 *
-         * @param      builder                 ChemObjectBuilder used to construct the Isotope's
-	 * @return                             The instance value
-	 * @exception  IOException  if isotopic data files could not be read.
-	 */
-    @TestMethod("testGetInstance_IChemObjectBuilder")
-    public static IsotopeFactory getInstance(IChemObjectBuilder builder)
-			 throws IOException {
-        if (ifac == null) {
-            ifac = new IsotopeFactory(builder);
-        }
-        return ifac;
-    }
-
 
 	/**
 	 *  Returns the number of isotopes defined by this class.
@@ -145,6 +59,19 @@ public class IsotopeFactory
 		return isotopes.size();
 	}
 
+    /**
+     * Protected methods only to be used by classes extending this class to add
+     * an IIsotope.
+     */
+    protected void add(IIsotope isotope) {
+    	List<IIsotope> isotopesForSymbol = isotopes.get(isotope.getSymbol());
+    	if (isotopesForSymbol == null) {
+    		isotopesForSymbol = new ArrayList<IIsotope>();
+    		isotopes.put(isotope.getSymbol(), isotopesForSymbol);
+    	}
+    	isotopesForSymbol.add(isotope);
+    }
+    
 	/**
 	 * Gets an array of all isotopes known to the IsotopeFactory for the given
 	 * element symbol.
@@ -154,16 +81,15 @@ public class IsotopeFactory
 	 */
     @TestMethod("testGetIsotopes_String")
     public IIsotope[] getIsotopes(String symbol) {
-        ArrayList<IIsotope> list = new ArrayList<IIsotope>();
-        for (IIsotope isotope : isotopes) {
-            if (isotope.getSymbol().equals(symbol)) {
-                try {
-                    IIsotope clone = (IIsotope) isotope.clone();
-                    list.add(clone);
-                } catch (CloneNotSupportedException e) {
-                    logger.error("Could not clone IIsotope: ", e.getMessage());
-                    logger.debug(e);
-                }
+    	if (isotopes.get(symbol) == null) return new IIsotope[0];
+        List<IIsotope> list = new ArrayList<IIsotope>();
+        for (IIsotope isotope : isotopes.get(symbol)) {
+            try {
+                IIsotope clone = (IIsotope) isotope.clone();
+                list.add(clone);
+            } catch (CloneNotSupportedException e) {
+                logger.error("Could not clone IIsotope: ", e.getMessage());
+                logger.debug(e);
             }
         }
         return list.toArray(new IIsotope[list.size()]);
@@ -177,13 +103,15 @@ public class IsotopeFactory
     @TestMethod("testGetIsotopes")
     public IIsotope[] getIsotopes() {
     	ArrayList<IIsotope> list = new ArrayList<IIsotope>();
-    	for (IIsotope isotope : isotopes) {
-            try {
-                IIsotope clone = (IIsotope) isotope.clone();
-                list.add(clone);
-            } catch (CloneNotSupportedException e) {
-                logger.error("Could not clone IIsotope: ", e.getMessage());
-                logger.debug(e);
+    	for (String element : isotopes.keySet()) {
+            for (IIsotope isotope : isotopes.get(element)) {
+                try {
+                    IIsotope clone = (IIsotope) isotope.clone();
+                    list.add(clone);
+                } catch (CloneNotSupportedException e) {
+                    logger.error("Could not clone IIsotope: ", e.getMessage());
+                    logger.debug(e);
+                }
             }
     	}
     	return list.toArray(new IIsotope[list.size()]);
@@ -200,14 +128,16 @@ public class IsotopeFactory
     @TestMethod("testGetIsotopes_double_double")
     public IIsotope[] getIsotopes(double exactMass, double difference) {
     	ArrayList<IIsotope> list = new ArrayList<IIsotope>();
-    	for (IIsotope isotope : isotopes) {
-    		if (Math.abs(isotope.getExactMass() - exactMass) <= difference) {
-    			try {
-    				IIsotope clone = (IIsotope) isotope.clone();
-    				list.add(clone);
-    			} catch (CloneNotSupportedException e) {
-    				logger.error("Could not clone IIsotope: ", e.getMessage());
-    				logger.debug(e);
+    	for (String element : isotopes.keySet()) {
+            for (IIsotope isotope : isotopes.get(element)) {
+    		    if (Math.abs(isotope.getExactMass() - exactMass) <= difference) {
+    			    try {
+    			        IIsotope clone = (IIsotope) isotope.clone();
+    			        list.add(clone);
+    		        } catch (CloneNotSupportedException e) {
+    	                logger.error("Could not clone IIsotope: ", e.getMessage());
+    	                logger.debug(e);
+    		        }
     			}
     		}
     	}
@@ -224,7 +154,7 @@ public class IsotopeFactory
     @TestMethod("testGetIsotope")
     public IIsotope getIsotope(String symbol, int massNumber) {
         IIsotope ret = null;
-        for (IIsotope isotope : isotopes) {
+        for (IIsotope isotope : isotopes.get(symbol)) {
             if (isotope.getSymbol().equals(symbol) && isotope.getMassNumber() == massNumber) {
                 try {
                     ret = (IIsotope) isotope.clone();
@@ -250,7 +180,7 @@ public class IsotopeFactory
     public IIsotope getIsotope(String symbol, double exactMass, double tolerance) {
         IIsotope ret     = null;
         double   minDiff = Double.MAX_VALUE;
-        for (IIsotope isotope : isotopes) {
+        for (IIsotope isotope : isotopes.get(symbol)) {
             double diff = Math.abs(isotope.getExactMass() - exactMass);
             if (isotope.getSymbol().equals(symbol) &&
             	diff <= tolerance && diff < minDiff) {
@@ -282,20 +212,16 @@ public class IsotopeFactory
     @TestMethod("testGetMajorIsotope_int")
     public IIsotope getMajorIsotope(int atomicNumber) {
         IIsotope major = null;
-        for (IIsotope isotope : isotopes) {
-            if (isotope.getAtomicNumber() == atomicNumber) {
-                try {
-                    if (major == null) {
-                        major = (IIsotope) isotope.clone();
-                    } else {
-                        if (isotope.getNaturalAbundance() > major.getNaturalAbundance()) {
-                            major = (IIsotope) isotope.clone();
-                        }
-                    }
-                } catch (CloneNotSupportedException e) {
-                    logger.error("Could not clone IIsotope: ", e.getMessage());
-                    logger.debug(e);
+        for (IIsotope isotope : isotopes.get(PeriodicTable.getSymbol(atomicNumber))) {
+            try {
+                if (major == null) {
+                    major = (IIsotope) isotope.clone();
+                } else if (isotope.getNaturalAbundance() > major.getNaturalAbundance()) {
+                    major = (IIsotope) isotope.clone();
                 }
+            } catch (CloneNotSupportedException e) {
+                logger.error("Could not clone IIsotope: ", e.getMessage());
+                logger.debug(e);
             }
         }
         if (major == null) logger.error("Could not find major isotope for: ", atomicNumber);
@@ -325,7 +251,11 @@ public class IsotopeFactory
         if (majorIsotopes.containsKey(symbol)) {
             major = majorIsotopes.get(symbol);
         } else {
-            for (IIsotope isotope : isotopes) {
+        	if (isotopes.get(symbol) == null) {
+        		logger.error("Could not find major isotope for: ", symbol);
+        		return null;
+        	}
+            for (IIsotope isotope : isotopes.get(symbol)) {
                 if (isotope.getSymbol().equals(symbol)) {
                     try {
                         if (major == null) {

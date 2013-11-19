@@ -26,6 +26,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomType;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
+import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 /**
  * This class tests the matching of atom types defined in the
@@ -60,8 +61,8 @@ public class CDKAtomTypeMatcherSMILESTest extends AbstractCDKAtomTypeTest {
         Assert.assertEquals(mol1.getAtomCount(), mol2.getAtomCount());
         Assert.assertEquals(mol1.getBondCount(), mol2.getBondCount());
 
-        IAtomType[] types1 = atomTypeMatcher.findMatchingAtomType(mol1);
-        IAtomType[] types2 = atomTypeMatcher.findMatchingAtomType(mol2);
+        IAtomType[] types1 = atomTypeMatcher.findMatchingAtomTypes(mol1);
+        IAtomType[] types2 = atomTypeMatcher.findMatchingAtomTypes(mol2);
         for (int i=0; i<mol1.getAtomCount(); i++) {
             Assert.assertEquals(
                 types1[i].getAtomTypeName(),
@@ -74,10 +75,11 @@ public class CDKAtomTypeMatcherSMILESTest extends AbstractCDKAtomTypeTest {
         String smiles1 = "c1c2cc[NH]cc2nc1";
         
         IAtomContainer mol1 = smilesParser.parseSmiles(smiles1);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol1);
         
         Assert.assertEquals(9, mol1.getAtomCount());
 
-        IAtomType[] types1 = atomTypeMatcher.findMatchingAtomType(mol1);
+        IAtomType[] types1 = atomTypeMatcher.findMatchingAtomTypes(mol1);
         for (IAtomType type : types1) {
             Assert.assertNotNull(type.getAtomTypeName());
         }
@@ -90,7 +92,7 @@ public class CDKAtomTypeMatcherSMILESTest extends AbstractCDKAtomTypeTest {
         
         Assert.assertEquals(9, mol1.getAtomCount());
 
-        IAtomType[] types1 = atomTypeMatcher.findMatchingAtomType(mol1);
+        IAtomType[] types1 = atomTypeMatcher.findMatchingAtomTypes(mol1);
         for (IAtomType type : types1) {
             Assert.assertNotNull(type.getAtomTypeName());
         }
@@ -104,7 +106,7 @@ public class CDKAtomTypeMatcherSMILESTest extends AbstractCDKAtomTypeTest {
         IAtomContainer mol1 = smilesParser.parseSmiles(smiles1);
 
         Assert.assertEquals(8, mol1.getAtomCount());
-        IAtomType[] types1 = atomTypeMatcher.findMatchingAtomType(mol1);
+        IAtomType[] types1 = atomTypeMatcher.findMatchingAtomTypes(mol1);
         for (IAtomType type : types1) {
             Assert.assertNotNull(type.getAtomTypeName());
         }
@@ -123,8 +125,8 @@ public class CDKAtomTypeMatcherSMILESTest extends AbstractCDKAtomTypeTest {
         Assert.assertEquals(mol1.getAtomCount(), mol2.getAtomCount());
         Assert.assertEquals(mol1.getBondCount(), mol2.getBondCount());
 
-        IAtomType[] types1 = atomTypeMatcher.findMatchingAtomType(mol1);
-        IAtomType[] types2 = atomTypeMatcher.findMatchingAtomType(mol2);
+        IAtomType[] types1 = atomTypeMatcher.findMatchingAtomTypes(mol1);
+        IAtomType[] types2 = atomTypeMatcher.findMatchingAtomTypes(mol2);
         for (int i=0; i<mol1.getAtomCount(); i++) {
             Assert.assertEquals(
                 types1[i].getAtomTypeName(),
@@ -144,7 +146,7 @@ public class CDKAtomTypeMatcherSMILESTest extends AbstractCDKAtomTypeTest {
         	"(N2C=NC=1C(N)=NC=NC=12)C([H])(O)C3([H])(O)).[Co+3]";
         
         IAtomContainer mol1 = smilesParser.parseSmiles(smiles1);
-        IAtomType[] types1 = atomTypeMatcher.findMatchingAtomType(mol1);
+        IAtomType[] types1 = atomTypeMatcher.findMatchingAtomTypes(mol1);
         for (IAtomType type : types1) {
             Assert.assertNotNull(type.getAtomTypeName());
         }
@@ -154,6 +156,7 @@ public class CDKAtomTypeMatcherSMILESTest extends AbstractCDKAtomTypeTest {
         String smiles1 = "Cl[Pt]1(Cl)(Cl)(Cl)NC2CCCCC2N1";
         
         IAtomContainer mol1 = smilesParser.parseSmiles(smiles1);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol1);
         Assert.assertEquals(13, mol1.getAtomCount());
         Assert.assertEquals("Pt.6", mol1.getAtom(1).getAtomTypeName());
     }
@@ -162,6 +165,7 @@ public class CDKAtomTypeMatcherSMILESTest extends AbstractCDKAtomTypeTest {
         String smiles1 = "[Pt](Cl)(Cl)(N)N";
         
         IAtomContainer mol1 = smilesParser.parseSmiles(smiles1);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol1);
         Assert.assertEquals(5, mol1.getAtomCount());
         Assert.assertEquals("Pt.4", mol1.getAtom(0).getAtomTypeName());
     }
@@ -170,6 +174,8 @@ public class CDKAtomTypeMatcherSMILESTest extends AbstractCDKAtomTypeTest {
         String smiles = "CN(C)(=O)CCC=C2c1ccccc1CCc3ccccc23";
 
         IAtomContainer mol = smilesParser.parseSmiles(smiles);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+
         Assert.assertEquals("N.oxide", mol.getAtom(1).getAtomTypeName());
     }
 
@@ -177,7 +183,7 @@ public class CDKAtomTypeMatcherSMILESTest extends AbstractCDKAtomTypeTest {
         String smiles = "CCCN1CC(CSC)CC2C1Cc3c[nH]c4cccc2c34";
 
         IAtomContainer mol = smilesParser.parseSmiles(smiles);
-        IAtomType[] types = atomTypeMatcher.findMatchingAtomType(mol);
+        IAtomType[] types = atomTypeMatcher.findMatchingAtomTypes(mol);
         for (IAtomType type : types) {
             Assert.assertNotNull(type.getAtomTypeName());
         }
@@ -187,7 +193,7 @@ public class CDKAtomTypeMatcherSMILESTest extends AbstractCDKAtomTypeTest {
         String smiles = "Br.Br.CS(CCC(N)C#N)C[C@H]1OC([C@H](O)[C@@H]1O)n2cnc3c(N)ncnc23";
 
         IAtomContainer mol = smilesParser.parseSmiles(smiles);
-        IAtomType[] types = atomTypeMatcher.findMatchingAtomType(mol);
+        IAtomType[] types = atomTypeMatcher.findMatchingAtomTypes(mol);
         for (IAtomType type : types) {
             Assert.assertNotNull(type.getAtomTypeName());
         }

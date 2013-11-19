@@ -31,22 +31,23 @@ import org.openscience.cdk.atomtype.CDKAtomTypeMatcherTest;
 import org.openscience.cdk.atomtype.CDKAtomTypeMatcherTestFileReposTest;
 import org.openscience.cdk.atomtype.RepeatedCDKAtomTypeMatcherSMILESTest;
 import org.openscience.cdk.config.AtomTypeFactoryTest;
+import org.openscience.cdk.config.BODRIsotopeTest;
+import org.openscience.cdk.config.IsotopesTest;
 import org.openscience.cdk.config.CDKBasedAtomTypeConfiguratorTest;
-import org.openscience.cdk.config.IsotopeFactoryTest;
 import org.openscience.cdk.config.OWLBasedAtomTypeConfiguratorTest;
 import org.openscience.cdk.config.TXTBasedAtomTypeConfiguratorTest;
 import org.openscience.cdk.config.atomtypes.AtomTypeHandlerTest;
 import org.openscience.cdk.config.atomtypes.AtomTypeReaderTest;
 import org.openscience.cdk.config.atomtypes.OWLAtomTypeHandlerTest;
 import org.openscience.cdk.config.atomtypes.OWLAtomTypeReaderTest;
-import org.openscience.cdk.config.isotopes.IsotopeHandlerTest;
-import org.openscience.cdk.config.isotopes.IsotopeReaderTest;
 import org.openscience.cdk.coverage.CoreCoverageTest;
 import org.openscience.cdk.exception.CDKExceptionTest;
 import org.openscience.cdk.exception.NoSuchAtomExceptionTest;
 import org.openscience.cdk.exception.NoSuchAtomTypeExceptionTest;
 import org.openscience.cdk.graph.AllPairsShortestPathsTest;
 import org.openscience.cdk.graph.BitMatrixTest;
+import org.openscience.cdk.graph.Cycles;
+import org.openscience.cdk.graph.CyclesTest;
 import org.openscience.cdk.graph.EssentialCyclesTest;
 import org.openscience.cdk.graph.GreedyBasisTest;
 import org.openscience.cdk.graph.InitialCyclesTest;
@@ -61,8 +62,8 @@ import org.openscience.cdk.graph.matrix.AdjacencyMatrixTest;
 import org.openscience.cdk.ringsearch.JumboCyclicVertexSearchTest;
 import org.openscience.cdk.ringsearch.RegularCyclicVertexSearchTest;
 import org.openscience.cdk.ringsearch.RingSearchTest;
-import org.openscience.cdk.stereo.TetrahedralChiralityTest;
 import org.openscience.cdk.stereo.DoubleBondStereochemistryTest;
+import org.openscience.cdk.stereo.TetrahedralChiralityTest;
 import org.openscience.cdk.tools.DataFeaturesTest;
 import org.openscience.cdk.tools.LoggingToolFactoryTest;
 import org.openscience.cdk.tools.SystemOutLoggingToolTest;
@@ -86,7 +87,8 @@ import org.openscience.cdk.tools.periodictable.PeriodicTableTest;
     DataFeaturesTest.class,
 
     // cdk.config
-    IsotopeFactoryTest.class,
+    IsotopesTest.class,
+    BODRIsotopeTest.class,
     AtomTypeFactoryTest.class,
     CDKBasedAtomTypeConfiguratorTest.class,
     TXTBasedAtomTypeConfiguratorTest.class,
@@ -95,8 +97,6 @@ import org.openscience.cdk.tools.periodictable.PeriodicTableTest;
     AtomTypeHandlerTest.class,
     OWLAtomTypeReaderTest.class,
     OWLAtomTypeHandlerTest.class,
-    IsotopeReaderTest.class,
-    IsotopeHandlerTest.class,        
     PeriodicTableElementTest.class,
     PeriodicTableTest.class,
     ElementPTFactoryTest.class,
@@ -136,7 +136,8 @@ import org.openscience.cdk.tools.periodictable.PeriodicTableTest;
     MinimumCycleBasisTest.class,
     EssentialCyclesTest.class,
     RegularPathGraphTest.class,
-    JumboPathGraphTest.class
+    JumboPathGraphTest.class,
+    CyclesTest.class
 
 })
 public class McoreTests {}

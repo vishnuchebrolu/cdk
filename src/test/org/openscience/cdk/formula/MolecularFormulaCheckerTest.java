@@ -27,12 +27,13 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openscience.cdk.CDKTestCase;
+import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.config.IsotopeFactory;
 import org.openscience.cdk.formula.rules.ChargeRule;
 import org.openscience.cdk.formula.rules.IRule;
 import org.openscience.cdk.formula.rules.MMElementRule;
-import org.openscience.cdk.interfaces.IMolecularFormula;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
+import org.openscience.cdk.interfaces.IMolecularFormula;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 
 /**
@@ -53,7 +54,7 @@ public class MolecularFormulaCheckerTest extends CDKTestCase {
 		
 		super();
     	try {
-			ifac = IsotopeFactory.getInstance(builder);
+			ifac = Isotopes.getInstance();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

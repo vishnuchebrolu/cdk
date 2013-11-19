@@ -39,6 +39,7 @@ import org.openscience.cdk.qsar.result.DoubleResult;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.LonePairElectronChecker;
+import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 /**
  * TestSuite that runs all QSAR tests.
@@ -80,6 +81,7 @@ public class PartialPiChargeDescriptorTest extends AtomicDescriptorTest {
         molecule.addAtom(new Atom("C"));
         molecule.addBond(0, 1, IBond.Order.SINGLE);
         
+		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule);
 		addExplicitHydrogens(molecule);
 		lpcheck.saturate(molecule);
 		
@@ -114,6 +116,7 @@ public class PartialPiChargeDescriptorTest extends AtomicDescriptorTest {
 		 molecule.addAtom(builder.newInstance(IAtom.class,"C"));
 		 molecule.addBond(1, 2, IBond.Order.DOUBLE);
 		 
+		 AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule);
 		addExplicitHydrogens(molecule);
 		lpcheck.saturate(molecule);
 		
@@ -148,6 +151,7 @@ public class PartialPiChargeDescriptorTest extends AtomicDescriptorTest {
 		molecule.addAtom(builder.newInstance(IAtom.class,"O"));
 		molecule.addBond(0, 2, IBond.Order.SINGLE);
 		
+		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule);
 		addExplicitHydrogens(molecule);
 		lpcheck.saturate(molecule);
 		
@@ -190,6 +194,7 @@ public class PartialPiChargeDescriptorTest extends AtomicDescriptorTest {
 		molecule.addBond(5, 6, IBond.Order.DOUBLE);
 		molecule.addBond(6, 1, IBond.Order.SINGLE);
 
+		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule);
 		addExplicitHydrogens(molecule);
 		lpcheck.saturate(molecule);
 		
@@ -228,7 +233,8 @@ public class PartialPiChargeDescriptorTest extends AtomicDescriptorTest {
 		molecule.addBond(1, 2, IBond.Order.SINGLE);
 		molecule.addAtom(builder.newInstance(IAtom.class,"C"));
 		molecule.addBond(2, 3, IBond.Order.SINGLE);
-		
+
+		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule);
 		addExplicitHydrogens(molecule);
 		lpcheck.saturate(molecule);
 		
@@ -272,6 +278,7 @@ public class PartialPiChargeDescriptorTest extends AtomicDescriptorTest {
 		molecule.addAtom(builder.newInstance(IAtom.class,"C"));
 		molecule.addBond(4, 5, IBond.Order.SINGLE);
 		
+		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule);
 		addExplicitHydrogens(molecule);
 		lpcheck.saturate(molecule);
 		
@@ -310,6 +317,7 @@ public class PartialPiChargeDescriptorTest extends AtomicDescriptorTest {
 		IAtomicDescriptor descriptor = new PartialPiChargeDescriptor();
 		SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
 		IAtomContainer mol = sp.parseSmiles("F[C+]([H])[C-]([H])[H]");
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
 
 		lpcheck.saturate(mol);
 		
@@ -353,6 +361,7 @@ public class PartialPiChargeDescriptorTest extends AtomicDescriptorTest {
 		mol.addBond(4, 5, Order.SINGLE);
 		mol.addBond(5, 0, Order.DOUBLE);
 
+		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
 		addExplicitHydrogens(mol);
 		lpcheck.saturate(mol);
 		
@@ -380,7 +389,7 @@ public class PartialPiChargeDescriptorTest extends AtomicDescriptorTest {
 		IAtomicDescriptor descriptor = new PartialPiChargeDescriptor();
 		SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
 		IAtomContainer mol = sp.parseSmiles("O=C([H])[C+]([H])[C-]([H])[H]");
-		
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
 		lpcheck.saturate(mol);
 		
 		for (int i = 0 ; i < mol.getAtomCount(); i++){
@@ -410,6 +419,7 @@ public class PartialPiChargeDescriptorTest extends AtomicDescriptorTest {
         
 		SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
 		IAtomContainer mol = sp.parseSmiles("CCOCCCO");
+		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
 		addExplicitHydrogens(mol);
 		
 		lpcheck.saturate(mol);
@@ -430,6 +440,7 @@ public class PartialPiChargeDescriptorTest extends AtomicDescriptorTest {
         double[] testResult = {0.0,0.0216,-0.1644,0.1428,0.0,0.0,0.0,0.0,0.0,0.0}; /* from Petra online: http://www2.chemie.uni-erlangen.de/services/petra/smiles.phtml*/
 		SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
 		IAtomContainer mol = sp.parseSmiles("CC(=O)N");
+		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
 		addExplicitHydrogens(mol);
 		Object[] object = {6,true};
 		descriptor.setParameters(object);
@@ -488,6 +499,7 @@ public class PartialPiChargeDescriptorTest extends AtomicDescriptorTest {
 		mol.addAtom(builder.newInstance(IAtom.class,"C"));
 		mol.addBond(11,12,Order.SINGLE);
 		
+		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
 		addExplicitHydrogens(mol);
 		Object[] object = {6,true};
 		descriptor.setParameters(object);
@@ -520,6 +532,7 @@ public class PartialPiChargeDescriptorTest extends AtomicDescriptorTest {
         double[] testResult = {0.0,0.0004,0.0,-0.0004,0.0,0.0,0.0,0.0,0.0277,0.0,-0.0277}; /* from Petra online: http://www2.chemie.uni-erlangen.de/services/petra/smiles.phtml*/
 		SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
 		IAtomContainer mol = sp.parseSmiles("[H]C([H])=C([H])C([H])([H])C([H])=O");
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
 		Object[] object = {6,true};
 		descriptor.setParameters(object);
 		
@@ -548,10 +561,12 @@ public class PartialPiChargeDescriptorTest extends AtomicDescriptorTest {
     public void testDifferentStarts() throws ClassNotFoundException, CDKException, java.lang.Exception {
 		SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
 		IAtomContainer mol1 = sp.parseSmiles("C=CCC=O");
+		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol1);
 		addExplicitHydrogens(mol1);
 		lpcheck.saturate(mol1);
 		
 		IAtomContainer mol2 = sp.parseSmiles("O=CCC=C");
+		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol2);
 		addExplicitHydrogens(mol2);
 		lpcheck.saturate(mol2);
 		
@@ -579,6 +594,7 @@ public class PartialPiChargeDescriptorTest extends AtomicDescriptorTest {
         double[] testResult = {0.0,-0.0009,0.0,0.0009,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0}; /* from Petra online: http://www2.chemie.uni-erlangen.de/services/petra/smiles.phtml*/
 		SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
 		IAtomContainer mol = sp.parseSmiles("[H]C([H])=C([H])C([H])([H])[H]");
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
 		Object[] object = {6,true};
 		descriptor.setParameters(object);
 		
@@ -606,6 +622,7 @@ public class PartialPiChargeDescriptorTest extends AtomicDescriptorTest {
         double[] testResult = {0.0,0.25,0.0,0.0,0.0,0.25,0.0,0.0,0.0,0.0,0.0,0.0,}; /* from Petra online: http://www2.chemie.uni-erlangen.de/services/petra/smiles.phtml*/
 		SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
 		IAtomContainer mol = sp.parseSmiles("[H]C([H])=C([H])[C+]([H])[H]");
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
 		Object[] object = {6,true};
 		descriptor.setParameters(object);
 		
@@ -637,6 +654,7 @@ public class PartialPiChargeDescriptorTest extends AtomicDescriptorTest {
 		IAtomicDescriptor descriptor = new PartialPiChargeDescriptor();
 		SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
 		IAtomContainer mol = sp.parseSmiles("c1ccc(cc1)n3c4ccccc4(c2ccccc23)");
+		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
 		addExplicitHydrogens(mol);
 		lpcheck.saturate(mol);
 		

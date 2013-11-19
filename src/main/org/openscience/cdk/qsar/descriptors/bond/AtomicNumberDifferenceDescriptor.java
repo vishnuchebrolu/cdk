@@ -24,6 +24,7 @@ import java.io.IOException;
 
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
+import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.config.IsotopeFactory;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
@@ -60,7 +61,7 @@ public class AtomicNumberDifferenceDescriptor extends AbstractBondDescriptor imp
     private void ensureIsotopeFactory(IChemObjectBuilder builder) {
     	if (factory == null) {
     		try {
-	            factory = IsotopeFactory.getInstance(builder);
+	            factory = Isotopes.getInstance();
             } catch (IOException e) {
 	            // TODO Auto-generated catch block
 	            e.printStackTrace();
