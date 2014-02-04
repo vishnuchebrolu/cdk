@@ -20,6 +20,7 @@
  */
 package org.openscience.cdk.inchi;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,13 +41,17 @@ import net.sf.jniinchi.JniInchiWrapper;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
+import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.interfaces.ITetrahedralChirality;
+import org.openscience.cdk.stereo.DoubleBondStereochemistry;
 import org.openscience.cdk.tools.periodictable.PeriodicTable;
+
+import static org.openscience.cdk.interfaces.IDoubleBondStereochemistry.Conformation;
 
 /**
  * <p>This class generates a CDK IAtomContainer from an InChI string.  It places 
@@ -91,6 +96,9 @@ protected JniInchiInputInchi input;
     protected JniInchiOutputStructure output;
     
     protected IAtomContainer molecule;
+    
+    // magic number - indicates isotope mass is relative
+    private static final int ISOTOPIC_SHIFT_FLAG = 10000;
     
     /**
      * Constructor. Generates CDK AtomContainer from InChI.
@@ -163,23 +171,34 @@ protected JniInchiInputInchi input;
             inchiCdkAtomMap.put(iAt, cAt);
             
             cAt.setID("a" + i);
-            cAt.setSymbol(iAt.getElementType());
+            cAt.setSymbol(iAt.getElementType());                
             cAt.setAtomicNumber(PeriodicTable.getAtomicNumber(cAt.getSymbol()));
             
-            // Ignore coordinates - all zero
-
-            int charge = iAt.getCharge();
-            if (charge != 0) {
-                cAt.setFormalCharge(charge);
-            }
+            // Ignore coordinates - all zero - unless aux info was given... but
+            // the CDK doesn't have an API to provide that
+           
+            // InChI does not have unset properties so we set charge, 
+            // hydrogen count (implicit) and isotopic mass
+            cAt.setFormalCharge(iAt.getCharge());
+            cAt.setImplicitHydrogenCount(iAt.getImplicitH());
             
-            // hydrogenCount contains number of implict hydrogens, not
-            // total number
-            // Ref: Posting to cdk-devel list by Egon Willighagen 2005-09-17
-            int numH = iAt.getImplicitH();
-            if (numH != 0) {
-                cAt.setImplicitHydrogenCount(numH);
-            }
+            int isotopicMass = iAt.getIsotopicMass();
+            
+            if (isotopicMass != 0) {
+                if (ISOTOPIC_SHIFT_FLAG == (isotopicMass & ISOTOPIC_SHIFT_FLAG)) {
+                    try {
+                        int massNumber = Isotopes.getInstance()
+                                           .getMajorIsotope(cAt.getAtomicNumber())
+                                           .getMassNumber();
+                        cAt.setMassNumber(massNumber + (isotopicMass - ISOTOPIC_SHIFT_FLAG));
+                    } catch (IOException e) {
+                        throw new CDKException("Could not load Isotopes data", e);
+                    }
+                }
+                else {
+                    cAt.setMassNumber(isotopicMass);     
+                }
+            } 
             
             molecule.addAtom(cAt);
         }
@@ -270,6 +289,46 @@ protected JniInchiInputInchi input;
                                                                                  new IAtom[]{at0, at1, at2, at3},
                                                                                  stereo);
                 molecule.addStereoElement(tetrahedralChirality);
+            } else if (stereo0d.getStereoType() == INCHI_STEREOTYPE.DOUBLEBOND) {
+                JniInchiAtom[] neighbors = stereo0d.getNeighbors();
+
+                // from JNI InChI doc
+                //                            neighbor[4]  : {#X,#A,#B,#Y} in this order
+                // X                          central_atom : NO_ATOM
+                //  \            X        Y   type         : INCHI_StereoType_DoubleBond
+                //   A == B       \      /
+                //         \       A == B
+                //          Y
+                IAtom x = inchiCdkAtomMap.get(neighbors[0]);
+                IAtom a = inchiCdkAtomMap.get(neighbors[1]);
+                IAtom b = inchiCdkAtomMap.get(neighbors[2]);
+                IAtom y = inchiCdkAtomMap.get(neighbors[3]);
+                
+                // XXX: AtomContainer is doing slow lookup
+                IBond stereoBond = molecule.getBond(a, b);
+                stereoBond.setAtoms(new IAtom[]{a, b}); // ensure a is first atom
+
+                Conformation conformation = null;
+                
+                switch (stereo0d.getParity()) {
+                    case ODD:
+                        conformation = Conformation.TOGETHER;
+                        break;
+                    case EVEN:
+                        conformation = Conformation.OPPOSITE;
+                        break;
+                }
+                
+                // unspecified not stored
+                if (conformation == null)
+                    continue;
+
+                molecule.addStereoElement(new DoubleBondStereochemistry(stereoBond,
+                                                                        new IBond[]{
+                                                                                molecule.getBond(x, a),
+                                                                                molecule.getBond(b, y)
+                                                                        },
+                                                                        conformation));
             } else {
                 // TODO - other types of atom parity - double bond, etc
             }

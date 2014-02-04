@@ -26,11 +26,9 @@ package org.openscience.cdk.fingerprint;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -38,13 +36,17 @@ import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.graph.ConnectivityChecker;
+import org.openscience.cdk.graph.ConnectedComponents;
+import org.openscience.cdk.graph.GraphUtil;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IAtomContainerSet;
 import org.openscience.cdk.interfaces.IBond;
+import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.interfaces.IRingSet;
+import org.openscience.cdk.isomorphism.Pattern;
+import org.openscience.cdk.isomorphism.Ullmann;
+import org.openscience.cdk.isomorphism.matchers.smarts.SmartsMatchers;
 import org.openscience.cdk.ringsearch.AllRingsFinder;
-import org.openscience.cdk.smiles.smarts.SMARTSQueryTool;
+import org.openscience.cdk.smiles.smarts.parser.SMARTSParser;
 import org.openscience.cdk.tools.ILoggingTool;
 import org.openscience.cdk.tools.LoggingToolFactory;
 
@@ -78,13 +80,19 @@ import org.openscience.cdk.tools.LoggingToolFactory;
 @TestClass("org.openscience.cdk.fingerprint.MACCSFingerprinterTest")
 public class MACCSFingerprinter implements IFingerprinter {
     private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(MACCSFingerprinter.class);
-    private MaccsKey[] keys = null;
+            LoggingToolFactory.createLoggingTool(MACCSFingerprinter.class);
 
+    private static final String KEY_DEFINITIONS = "data/maccs.txt";
+
+    private volatile MaccsKey[] keys = null;
+    
     @TestMethod("testFingerprint")
     public MACCSFingerprinter() {
+    }
+
+    public MACCSFingerprinter(IChemObjectBuilder builder) {
         try {
-            keys = readKeyDef();
+            keys = readKeyDef(builder);
         } catch (IOException e) {
             logger.debug(e);
         } catch (CDKException e) {
@@ -94,62 +102,61 @@ public class MACCSFingerprinter implements IFingerprinter {
 
     /** {@inheritDoc} */
     @TestMethod("testFingerprint,testfp2")
-    public IBitFingerprint getBitFingerprint(IAtomContainer atomContainer) 
-                  throws CDKException {
-        if (keys == null) 
-            throw new CDKException("Could not setup key definitions");
+    public IBitFingerprint getBitFingerprint(IAtomContainer container) throws CDKException {
 
-        int bitsetLength = keys.length;
-        BitSet fingerPrint = new BitSet(bitsetLength);
+        MaccsKey[] keys = keys(container.getBuilder());
+        BitSet     fp   = new BitSet(keys.length);
 
-        SMARTSQueryTool sqt = new SMARTSQueryTool("C", atomContainer.getBuilder());
+        // init SMARTS invariants (connectivity, degree, etc)
+        SmartsMatchers.prepare(container, false);
+        
         for (int i = 0; i < keys.length; i++) {
-            String smarts = keys[i].getSmarts();
-            if (smarts.equals("?")) continue;
-            int count = keys[i].getCount();
+            Pattern pattern = keys[i].pattern;
+            if (pattern == null)
+                continue;
 
-            sqt.setSmarts(smarts);
-            boolean status = sqt.matches(atomContainer);
-            if (status) {
-                if (count == 0) fingerPrint.set(i, true);
-                else {
-                   List<List<Integer>> matches = sqt.getUniqueMatchingAtoms();
-                    if (matches.size() > count) fingerPrint.set(i, true);
-                }
-            }
+            // check if there are at least 'count' unique hits, key.count = 0
+            // means find at least one match hence we add 1 to out limit
+            if (pattern.matchAll(container)
+                       .uniqueAtoms()
+                       .atLeast(keys[i].count + 1))
+                fp.set(i);
         }
 
         // at this point we have skipped the entries whose pattern is "?"
         // (bits 1,44,125,166) so let try and do those features by hand
 
         // bit 125 aromatic ring count > 1
+        // bit 101 a ring with more than 8 members
         AllRingsFinder ringFinder = new AllRingsFinder();
-        IRingSet rings = ringFinder.findAllRings(atomContainer);
+        IRingSet       rings      = ringFinder.findAllRings(container);
         int ringCount = 0;
         for (int i = 0; i < rings.getAtomContainerCount(); i++) {
             IAtomContainer ring = rings.getAtomContainer(i);
             boolean allAromatic = true;
-            Iterator<IBond> bonds = ring.bonds().iterator();
-            while (bonds.hasNext()) {
-                IBond bond = bonds.next();
-                if (!bond.getFlag(CDKConstants.ISAROMATIC)) {
-                    allAromatic = false;
-                    break;
+            if (ringCount < 2) { // already found enough aromatic rings
+                for (IBond bond : ring.bonds()) {
+                    if (!bond.getFlag(CDKConstants.ISAROMATIC)) {
+                        allAromatic = false;
+                        break;
+                    }
                 }
             }
             if (allAromatic) ringCount++;
-            if (ringCount > 1) {
-                fingerPrint.set(124, true);
-                break;
-            }
+            if (ringCount > 1)
+                fp.set(124);
+            if (ring.getAtomCount() >= 8)
+                fp.set(100);
         }
-        // bit 166 (*).(*)
-        IAtomContainerSet part 
-            = ConnectivityChecker.partitionIntoMolecules(atomContainer);
-        if (part.getAtomContainerCount() > 1)  fingerPrint.set(165,true);
+        
+        // bit 166 (*).(*) we can match this in SMARTS but it's faster to just
+        // count the number of component
+        ConnectedComponents cc = new ConnectedComponents(GraphUtil.toAdjList(container));
+        if (cc.nComponents() > 1) 
+            fp.set(165);
 
 
-        return new BitSetFingerprint(fingerPrint);
+        return new BitSetFingerprint(fp);
     }
 
     /** {@inheritDoc} */
@@ -163,39 +170,40 @@ public class MACCSFingerprinter implements IFingerprinter {
     public int getSize() {
         if (keys != null)
             return keys.length;
-        else return 0;
+        else return 0; // throw exception when keys aren't loaded?
     }
 
-    private MaccsKey[] readKeyDef() throws IOException, CDKException {
-        List<MaccsKey> keys = new ArrayList<MaccsKey>();
-        String filename = "org/openscience/cdk/fingerprint/data/maccs.txt";
-        InputStream ins 
-            = this.getClass().getClassLoader().getResourceAsStream(filename);
-        BufferedReader reader 
-            = new BufferedReader(new InputStreamReader(ins));
-
-        for (int i = 0; i < 32; i++) reader.readLine();
+    private MaccsKey[] readKeyDef(final IChemObjectBuilder builder) throws IOException, CDKException {
+        List<MaccsKey> keys   = new ArrayList<MaccsKey>(166);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(KEY_DEFINITIONS)));
 
         // now process the keys
         String line;
         while ((line = reader.readLine()) != null) {
-            String data = line.trim().split("\\|")[0];
-            String[] toks = data.trim().split("\\s");
-            keys.add(new MaccsKey(toks[1], Integer.parseInt(toks[2])));
+            if (line.charAt(0) == '#')
+                continue;
+            String   data = line.substring(0, line.indexOf('|')).trim();
+            String[] toks = data.split("\\s");
+
+            keys.add(new MaccsKey(toks[1],
+                                  createPattern(toks[1], builder),
+                                  Integer.parseInt(toks[2])));
         }
         if (keys.size() != 166) 
             throw new CDKException("Found " + keys.size() 
                                    + " keys during setup. Should be 166");
-        return keys.toArray(new MaccsKey[]{});
+        return keys.toArray(new MaccsKey[166]);
     }
 
     private class MaccsKey {
         private String smarts;
         private int count;
+        private Pattern pattern;
 
-        private MaccsKey(String smarts, int count) {
-            this.smarts = smarts;
-            this.count = count;
+        private MaccsKey(String smarts, Pattern pattern, int count) {
+            this.smarts  = smarts;
+            this.pattern = pattern;
+            this.count   = count;
         }
 
         public String getSmarts() {
@@ -214,5 +222,43 @@ public class MACCSFingerprinter implements IFingerprinter {
 			throws CDKException {
 		throw new UnsupportedOperationException();
 	}
+    
+    private final Object lock = new Object();
 
+    /**
+     * Access MACCS keys definitions.
+     * 
+     * @return array of MACCS keys.
+     * @throws CDKException maccs keys could not be loaded
+     */
+    private MaccsKey[] keys(final IChemObjectBuilder builder) throws CDKException {
+        MaccsKey[] result = keys;
+        if (result == null) {
+            synchronized (lock) {
+                result = keys;
+                if (result == null) {
+                    try {
+                        keys = result = readKeyDef(builder);
+                    } catch (IOException e) {
+                        throw new CDKException("could not read MACCS definitions", e);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Create a pattern for the provided SMARTS - if the SMARTS is '?' a pattern
+     * is not created.
+     * 
+     * @param smarts  a smarts pattern
+     * @param builder chem object builder
+     * @return the pattern to match
+     */
+    private Pattern createPattern(String smarts, IChemObjectBuilder builder) {
+        if (smarts.equals("?"))
+            return null;
+        return Ullmann.findSubstructure(SMARTSParser.parse(smarts, builder));
+    }
 }

@@ -27,17 +27,16 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.openscience.cdk.CDKConstants;
+import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.fingerprint.HybridizationFingerprinter;
 import org.openscience.cdk.fingerprint.IFingerprinter;
 import org.openscience.cdk.fingerprint.BitSetFingerprint;
-import org.openscience.cdk.fingerprint.Fingerprinter;
 import org.openscience.cdk.fingerprint.IBitFingerprint;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
@@ -52,6 +51,7 @@ import org.openscience.cdk.ringsearch.RingPartitioner;
 import org.openscience.cdk.ringsearch.SSSRFinder;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesGenerator;
+import org.openscience.cdk.tools.LoggingToolFactory;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import org.openscience.cdk.tools.manipulator.RingSetManipulator;
 
@@ -235,7 +235,13 @@ public class TemplateExtractor {
 						(ac.getAtom(j)).setSymbol("C");
 					}
 
-					key = smilesGenerator.createSMILES(builder.newInstance(IAtomContainer.class,ac));
+                    try {
+					    key = smilesGenerator.create(builder.newInstance(IAtomContainer.class, ac));
+                    } catch (CDKException e) {
+                        LoggingToolFactory.createLoggingTool(getClass()).error(e);
+                        return;
+                    }
+                    
 					// System.out.println("OrgKey:"+key+" For
 					// Molecule:"+counter);
 					if (hashRingSystems.containsKey(key)) {
@@ -336,7 +342,7 @@ public class TemplateExtractor {
 			// Molecule(m)));
 			try {
 
-				data.add((String) smiles.createSMILES(builder.newInstance(IAtomContainer.class,m)));
+				data.add((String) smiles.create(builder.newInstance(IAtomContainer.class, m)));
 			} catch (Exception exc1) {
 				System.out.println("Could not create smile due to: "
 						+ exc1.getMessage());
@@ -375,7 +381,7 @@ public class TemplateExtractor {
 	public List<IBitFingerprint> makeFingerprintsFromSdf(boolean anyAtom, boolean anyAtomAnyBond,
 	        Map<String,Integer> timings, BufferedReader fin, int limit) throws Exception {
 		AllRingsFinder allRingsFinder = new AllRingsFinder();
-		allRingsFinder.setTimeout(10000); // 10 seconds
+		
 
 		IFingerprinter fingerPrinter = new HybridizationFingerprinter(
 		    HybridizationFingerprinter.DEFAULT_SIZE, HybridizationFingerprinter.DEFAULT_SEARCH_DEPTH

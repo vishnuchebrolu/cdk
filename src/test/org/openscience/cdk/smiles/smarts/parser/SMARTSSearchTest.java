@@ -32,9 +32,12 @@ import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.ChemObject;
 import org.openscience.cdk.DefaultChemObjectBuilder;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.ElectronDonation;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
+import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.io.DefaultChemObjectReader;
@@ -74,13 +77,20 @@ public class SMARTSSearchTest extends CDKTestCase {
                                                         InvalidSmilesException {
         return smiles(smiles, false);
     }
+    
+    static IAtomContainer smilesAtomTyped(String smiles) throws
+                                                         CDKException {
+        IAtomContainer molecule = smiles(smiles, false);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule);
+        return molecule;
+    }
 
     static IAtomContainer smiles(String smiles,
                                          boolean perserveAromaticity) throws
                                                                       InvalidSmilesException {
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder
                                                    .getInstance());
-        sp.setPreservingAromaticity(perserveAromaticity);
+        sp.kekulise(!perserveAromaticity);
         return sp.parseSmiles(smiles);
     }
 
@@ -102,7 +112,7 @@ public class SMARTSSearchTest extends CDKTestCase {
         }
     }
 
-    private int[] match(String smarts, String smiles) throws Exception {
+    static int[] match(String smarts, String smiles) throws Exception {
         return match(smarts(smarts), smiles(smiles));
     }
 
@@ -144,7 +154,7 @@ public class SMARTSSearchTest extends CDKTestCase {
         QueryAtomContainer query = SMARTSParser.parse("c:c", DefaultChemObjectBuilder.getInstance());
         logger.debug("Query c:c: " + query.toString());
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
-        sp.setPreservingAromaticity(true);
+        sp.kekulise(false);
         IAtomContainer atomContainer = sp.parseSmiles("c1ccccc1"); // benzene, aromatic
         Assert.assertTrue(uiTester.isSubgraph(atomContainer, query));
 
@@ -247,7 +257,7 @@ public class SMARTSSearchTest extends CDKTestCase {
         QueryAtomContainer query = SMARTSParser.parse("aaa", DefaultChemObjectBuilder.getInstance());
         logger.debug("Query CaC: " + query.toString());
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
-        sp.setPreservingAromaticity(true);
+        sp.kekulise(false);
         
         IAtomContainer atomContainer = sp.parseSmiles("CCC");
         Assert.assertFalse(uiTester.isSubgraph(atomContainer, query));
@@ -466,6 +476,7 @@ public class SMARTSSearchTest extends CDKTestCase {
 
     }
 
+    @Ignore("This feature was removed - essential rings aren't useful really")
     @Test
     public void testPropertyR2_essentialRings() throws Exception {
         SMARTSQueryTool sqt = smarts("[R2]");
@@ -475,6 +486,8 @@ public class SMARTSSearchTest extends CDKTestCase {
         Assert.assertEquals(2, results[1]);
     }
 
+    @Ignore("This feature is pending but will be the combinded in an 'OpenSMARTS'" +
+                    " configuration which uses the relevant rings.")
     @Test
     public void testPropertyR2_relevantRings() throws Exception {
         SMARTSQueryTool sqt = smarts("[R2]");
@@ -989,26 +1002,23 @@ public class SMARTSSearchTest extends CDKTestCase {
         Assert.assertEquals(22, results[1]);
     }
 
-    //TODO: Stereo bond not implemented in smiles parser. Will fail
-    @Ignore
     @Test public void testBondStereo1() throws Exception { 
     	int[] results = match("F/?C=C/Cl", "F/C=C/Cl");
     	Assert.assertEquals(1, results[0]);
     	Assert.assertEquals(1, results[1]);
     }
-    @Ignore
     @Test public void testBondStereo2() throws Exception {
     	int[] results = match("F/?C=C/Cl", "FC=C/Cl");
     	Assert.assertEquals(1, results[0]);
     	Assert.assertEquals(1, results[1]);
     }
-    @Ignore
+    
     @Test public void testBondStereo3() throws Exception {
     	int[] results = match("F/?C=C/Cl", "FC=CCl");
     	Assert.assertEquals(1, results[0]);
     	Assert.assertEquals(1, results[1]);
     }
-    @Ignore
+    
     @Test public void testBondStereo4() throws Exception {
     	int[] results = match("F/?C=C/Cl", "F\\C=C/Cl");
     	Assert.assertEquals(0, results[0]);
@@ -1211,16 +1221,17 @@ public class SMARTSSearchTest extends CDKTestCase {
      *  aromaticity from the SMILES we can match correctly.  */
     @Test public void testLogicalOrLowAnd6() throws Exception {
         SMARTSQueryTool sqt = smarts("[#7,C;+0,+1]");
-        sqt.preserveAtomType();
-        IAtomContainer  smi = smiles("[Na+].[Na+].[O-]C(=O)c1ccccc1c2c3ccc([O-])cc3oc4cc(=O)ccc24", true);
+        IAtomContainer  smi = smiles("[Na+].[Na+].[O-]C(=O)c1ccccc1c2c3ccc([O-])cc3oc4cc(=O)ccc24");
     	int[] results = match(sqt, smi);
     	Assert.assertEquals(1, results[0]);
     }
 
     @Test public void testLogicalOrLowAnd6_cdkAromaticity() throws Exception {
         SMARTSQueryTool sqt = smarts("[#7,C;+0,+1]");
-        sqt.perceiveAtomType();
-        IAtomContainer  smi = smiles("[Na+].[Na+].[O-]C(=O)c1ccccc1c2c3ccc([O-])cc3oc4cc(=O)ccc24", false);
+        IAtomContainer  smi = smiles("[Na+].[Na+].[O-]C(=O)c1ccccc1c2c3ccc([O-])cc3oc4cc(=O)ccc24");
+        sqt.setAromaticity(new Aromaticity(ElectronDonation.cdk(),
+                                           Cycles.cdkAromaticSet()));
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(smi);
         int[] results = match(sqt, smi);
         Assert.assertEquals(8, results[0]);
     }
@@ -1261,6 +1272,24 @@ public class SMARTSSearchTest extends CDKTestCase {
         int[] results = match("C1CCCCC1", "c1ccccc1CCCCCC");
         Assert.assertEquals(0, results[0]);
         Assert.assertEquals(0, results[1]);
+    }
+
+    @Test public void testRing_large() throws Exception {
+        int[] results = match("C%10CCCCC%10", "C1CCCCC1O");
+        Assert.assertEquals(12, results[0]);
+        Assert.assertEquals(1, results[1]);
+    }
+
+    @Test public void testRing_large2() throws Exception {
+        int[] results = match("C%99CCCCC%99", "C1CCCCC1O");
+        Assert.assertEquals(12, results[0]);
+        Assert.assertEquals(1, results[1]);
+    }
+
+    @Test public void testRing_large3() throws Exception {
+        int[] results = match("C%991CCCCC%99CCCC1", "C12CCCCC2CCCC1");
+        Assert.assertEquals(4, results[0]);
+        Assert.assertEquals(1, results[1]);
     }
 
     @Test public void testRing6() throws Exception {
@@ -1537,23 +1566,28 @@ public class SMARTSSearchTest extends CDKTestCase {
     }
 
     @Test public void testHybridizationNumber() throws Exception {
-        int[] results = match("[^1]", "CCN");
+        int[] results = match(smarts("[^1]"),
+                              smilesAtomTyped("CCN"));
         Assert.assertEquals(0, results[0]);
         Assert.assertEquals(0, results[1]);
 
-        results = match("[^1]", "N#N");
+        results = match(smarts("[^1]"),
+                        smilesAtomTyped("N#N"));
         Assert.assertEquals(2, results[0]);
         Assert.assertEquals(2, results[1]);
 
-        results = match("[^1&N]", "CC#C");
+        results = match(smarts("[^1&N]"),
+                        smilesAtomTyped("CC#C"));
         Assert.assertEquals(0, results[0]);
         Assert.assertEquals(0, results[1]);
 
-        results = match("[^1&N]", "CC#N");
+        results = match(smarts("[^1&N]"),
+                        smilesAtomTyped("CC#N"));
         Assert.assertEquals(1, results[0]);
         Assert.assertEquals(1, results[1]);
 
-        results = match("[^1&N,^2&C]", "CC(=O)CC(=O)CC#N");
+        results = match(smarts("[^1&N,^2&C]"),
+                        smilesAtomTyped("CC(=O)CC(=O)CC#N"));
         Assert.assertEquals(3, results[0]);
         Assert.assertEquals(3, results[1]);
 
@@ -1655,7 +1689,7 @@ public class SMARTSSearchTest extends CDKTestCase {
         Assert.assertEquals(0, results[1]);
 
         results = match("c-C", "CCc1ccccc1");
-        Assert.assertEquals(2, results[0]);
+        Assert.assertEquals(1, results[0]);
         Assert.assertEquals(1, results[1]);
     }
 
@@ -1756,7 +1790,28 @@ public class SMARTSSearchTest extends CDKTestCase {
         
     @Test public void cyclopropane() throws Exception {
         assertThat(match("**(*)*", "C1CC1"),
-                   is(new int[]{0, 0}));        
+                   is(new int[]{0, 0}));
+    }
+    
+    @Test public void componentGrouping1() throws Exception {
+        assertThat(match("[#8].[#8]", "O"),     is(new int[]{0, 0}));
+        assertThat(match("[#8].[#8]", "O=O"),   is(new int[]{2, 1}));
+        assertThat(match("[#8].[#8]", "OCCO"),  is(new int[]{2, 1}));
+        assertThat(match("[#8].[#8]", "O.CCO"), is(new int[]{2, 1}));
+    }
+
+    @Test public void componentGrouping2() throws Exception {
+        assertThat(match("([#8].[#8])", "O"),     is(new int[]{0, 0}));
+        assertThat(match("([#8].[#8])", "O=O"),   is(new int[]{2, 1}));
+        assertThat(match("([#8].[#8])", "OCCO"),  is(new int[]{2, 1}));
+        assertThat(match("([#8].[#8])", "O.CCO"), is(new int[]{0, 0}));
+    }
+
+    @Test public void componentGrouping3() throws Exception {
+        assertThat(match("([#8]).([#8])", "O"),     is(new int[]{0, 0}));
+        assertThat(match("([#8]).([#8])", "O=O"),   is(new int[]{0, 0}));
+        assertThat(match("([#8]).([#8])", "OCCO"),  is(new int[]{0, 0}));
+        assertThat(match("([#8]).([#8])", "O.CCO"), is(new int[]{2, 1}));
     }
 }
 

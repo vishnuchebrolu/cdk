@@ -24,13 +24,26 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 import org.openscience.cdk.coverage.SmartsCoverageTest;
+import org.openscience.cdk.isomorphism.MappingPredicatesTest;
 import org.openscience.cdk.isomorphism.SMARTSTest;
+import org.openscience.cdk.isomorphism.matchers.smarts.AnyOrderQueryBondTest;
+import org.openscience.cdk.isomorphism.matchers.smarts.DaylightSMARTSAtomInvariantsTest;
+import org.openscience.cdk.isomorphism.matchers.smarts.ExplicitConnectionAtomTest;
+import org.openscience.cdk.isomorphism.matchers.smarts.RingMembershipAtomTest;
+import org.openscience.cdk.isomorphism.matchers.smarts.SmallestRingAtomTest;
+import org.openscience.cdk.isomorphism.matchers.smarts.TotalHCountAtomTest;
+import org.openscience.cdk.isomorphism.matchers.smarts.TotalRingConnectionAtomTest;
+import org.openscience.cdk.isomorphism.matchers.smarts.TotalValencyAtomTest;
+
+import org.openscience.cdk.isomorphism.UllmannSubstructureTest;
+import org.openscience.cdk.isomorphism.VFSubstructureTest;
+
 import org.openscience.cdk.smiles.smarts.SMARTSQueryToolTest;
 import org.openscience.cdk.smiles.smarts.parser.ParserTest;
 import org.openscience.cdk.smiles.smarts.parser.RecursiveTest;
 import org.openscience.cdk.smiles.smarts.parser.SMARTSSearchTest;
-import org.openscience.cdk.smiles.smarts.parser.visitor.SmartsDumpVisitorTest;
-import org.openscience.cdk.smiles.smarts.parser.visitor.SmartsQueryVisitorTest;
+import org.openscience.cdk.smiles.smarts.parser.SmartsDumpVisitorTest;
+import org.openscience.cdk.smiles.smarts.parser.SmartsQueryVisitorTest;
 
 /**
  * TestSuite that runs all the sample tests for experimental classes.
@@ -46,6 +59,19 @@ import org.openscience.cdk.smiles.smarts.parser.visitor.SmartsQueryVisitorTest;
     RecursiveTest.class,
     SmartsDumpVisitorTest.class,
     SmartsQueryVisitorTest.class,
-    SMARTSQueryToolTest.class
+    SMARTSQueryToolTest.class,
+    AnyOrderQueryBondTest.class,
+    DaylightSMARTSAtomInvariantsTest.class,
+    SmallestRingAtomTest.class,
+    RingMembershipAtomTest.class,
+    TotalRingConnectionAtomTest.class,
+    TotalHCountAtomTest.class,
+    ExplicitConnectionAtomTest.class,
+    TotalValencyAtomTest.class,
+
+    // need these here to avoid circular dependencies
+    VFSubstructureTest.class,
+    UllmannSubstructureTest.class,
+    MappingPredicatesTest.class
 })
 public class MsmartsTests {}

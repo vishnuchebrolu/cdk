@@ -29,9 +29,9 @@ import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.isomorphism.matchers.IQueryAtom;
 
 /**
- * This matches an aromatic or a single bond, used when no bond is specified between an atom
+ * This matches an aromatic or a single bond, used when no bond is specified between an atom.
  *
- * @cdk.module  isomorphism
+ * @cdk.module  smarts
  * @cdk.githash
  * @cdk.keyword SMARTS
  */
@@ -40,7 +40,7 @@ public class AromaticOrSingleQueryBond extends SMARTSBond {
     private static final long serialVersionUID = 6941220923564432716L;
 
     /**
-     * Creates a new instance
+     * Creates a new instance.
      *
      */
     public AromaticOrSingleQueryBond(IChemObjectBuilder builder) {

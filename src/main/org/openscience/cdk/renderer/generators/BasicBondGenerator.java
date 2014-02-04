@@ -104,19 +104,6 @@ public class BasicBondGenerator implements IGenerator<IAtomContainer> {
     private IGeneratorParameter<Color> defaultBondColor = new DefaultBondColor();
 
     /**
-     * The length on the screen of a typical bond.
-     */
-    public static class BondLength extends
-    AbstractGeneratorParameter<Double> {
-    	/** Returns the default value.
-    	 * @return 40.0 */
-        public Double getDefault() {
-            return 40.0;
-        }
-    }
-    private IGeneratorParameter<Double> bondLength = new BondLength();
-
-    /**
      * The width on screen of the fat end of a wedge bond.
      */
     public static class WedgeWidth extends AbstractGeneratorParameter<Double> {
@@ -198,7 +185,7 @@ public class BasicBondGenerator implements IGenerator<IAtomContainer> {
      * Determine the ring set for this atom container. 
      * 
      * @param atomContainer the atom container to find rings in.
-     * @return
+     * @return the rings of the molecule
      */
     protected IRingSet getRingSet(IAtomContainer atomContainer) {
 
@@ -547,7 +534,6 @@ public class BasicBondGenerator implements IGenerator<IAtomContainer> {
                 new IGeneratorParameter<?>[] {
                         bondWidth,
                         defaultBondColor,
-                        bondLength,
                         wedgeWidth,
                         bondDistance,
                         ringCenterProportion

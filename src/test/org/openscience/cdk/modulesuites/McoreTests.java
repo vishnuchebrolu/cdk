@@ -46,7 +46,7 @@ import org.openscience.cdk.exception.NoSuchAtomExceptionTest;
 import org.openscience.cdk.exception.NoSuchAtomTypeExceptionTest;
 import org.openscience.cdk.graph.AllPairsShortestPathsTest;
 import org.openscience.cdk.graph.BitMatrixTest;
-import org.openscience.cdk.graph.Cycles;
+import org.openscience.cdk.graph.ConnectedComponentsTest;
 import org.openscience.cdk.graph.CyclesTest;
 import org.openscience.cdk.graph.EssentialCyclesTest;
 import org.openscience.cdk.graph.GreedyBasisTest;
@@ -68,9 +68,6 @@ import org.openscience.cdk.tools.DataFeaturesTest;
 import org.openscience.cdk.tools.LoggingToolFactoryTest;
 import org.openscience.cdk.tools.SystemOutLoggingToolTest;
 import org.openscience.cdk.tools.manipulator.BondManipulatorTest;
-import org.openscience.cdk.tools.periodictable.ElementPTFactoryTest;
-import org.openscience.cdk.tools.periodictable.ElementPTReaderTest;
-import org.openscience.cdk.tools.periodictable.PeriodicTableElementTest;
 import org.openscience.cdk.tools.periodictable.PeriodicTableTest;
 
 /**
@@ -97,10 +94,7 @@ import org.openscience.cdk.tools.periodictable.PeriodicTableTest;
     AtomTypeHandlerTest.class,
     OWLAtomTypeReaderTest.class,
     OWLAtomTypeHandlerTest.class,
-    PeriodicTableElementTest.class,
     PeriodicTableTest.class,
-    ElementPTFactoryTest.class,
-    ElementPTReaderTest.class,
 
     // the CDK atom typer
     CDKAtomTypeMatcherTest.class,
@@ -124,6 +118,7 @@ import org.openscience.cdk.tools.periodictable.PeriodicTableTest;
     AllPairsShortestPathsTest.class,
     ShortestPathsTest.class,
     DynamicFactoryTest.class,
+    ConnectedComponentsTest.class,
 
     // ring search (more in test-standard)
     RegularCyclicVertexSearchTest.class,

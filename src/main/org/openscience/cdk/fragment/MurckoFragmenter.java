@@ -36,6 +36,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IRingSet;
+import org.openscience.cdk.interfaces.IStereoElement;
 import org.openscience.cdk.ringsearch.AllRingsFinder;
 import org.openscience.cdk.smiles.SmilesGenerator;
 import org.openscience.cdk.tools.CDKHydrogenAdder;
@@ -133,7 +134,8 @@ public class MurckoFragmenter implements IFragmenter {
                     .molecular();
         else this.generator = generator;
 
-        smigen = new SmilesGenerator();
+        smigen = SmilesGenerator.unique()
+                                .aromatic();
     }
 
     /**
@@ -173,6 +175,7 @@ public class MurckoFragmenter implements IFragmenter {
 
         // need to keep the side chains somewhere
         IAtomContainer clone = removeSideChains(atomContainer);
+        clone.setStereoElements(new ArrayList<IStereoElement>());
 
         IAtomContainer currentFramework; // needed for recursion
         try {
@@ -334,7 +337,7 @@ public class MurckoFragmenter implements IFragmenter {
                 AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
                 CDKHydrogenAdder.getInstance(mol.getBuilder()).addImplicitHydrogens(mol);
                 DoubleBondAcceptingAromaticityDetector.detectAromaticity(mol);
-                smis.add(smigen.createSMILES(mol));
+                smis.add(smigen.create(mol));
             } catch (CDKException e) {
                 LoggingToolFactory.createLoggingTool(getClass()).error(e);
             }

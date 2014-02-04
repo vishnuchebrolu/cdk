@@ -173,6 +173,17 @@
       <bibtex:pages>309-314</bibtex:pages>
     </bibtex:article>
   </bibtex:entry>
+    
+  <bibtex:entry id="Cordella04">
+    <bibtex:article>
+      <bibtex:author>Cordella Luigi P and Foggia Pasquale and Carlo Sansone and Vento Mario </bibtex:author>
+      <bibtex:title>A (Sub)Graph Isomorphism Algorithm for Matching Large Graphs</bibtex:title>
+      <bibtex:journal>IEEE TRANSACTIONS ON PATTERN ANALYSIS AND MACHINE INTELLIGENCE</bibtex:journal>
+      <bibtex:year>2004</bibtex:year>
+      <bibtex:volume>26</bibtex:volume>
+      <bibtex:pages>10</bibtex:pages>
+    </bibtex:article>
+  </bibtex:entry>
   
   <bibtex:entry id="CHE03">
     <bibtex:article>
@@ -1255,6 +1266,18 @@ Method </bibtex:title>
   	</bibtex:article>
   </bibtex:entry>
 
+    <bibtex:entry id="Ullmann76">
+        <bibtex:article>
+            <bibtex:author>Ullmann J R</bibtex:author>
+            <bibtex:title>An Algorithm for Subgraph Isomorphism</bibtex:title>
+            <bibtex:year>1976</bibtex:year>
+            <bibtex:url>http://www.engr.uconn.edu/~vkk06001/GraphIsomorphism/Papers/Ullman_Algorithm.pdf</bibtex:url>
+            <bibtex:journal>Journal of the Association for Computing Machinery</bibtex:journal>
+            <bibtex:volume>23</bibtex:volume>
+            <bibtex:number>1</bibtex:number>
+        </bibtex:article>
+    </bibtex:entry>  
+    
   <bibtex:entry id="Vismara97">
     <bibtex:article>
       <bibtex:author>Vismara, Philippe</bibtex:author>
@@ -1267,4 +1290,42 @@ Method </bibtex:title>
       <bibtex:number>1</bibtex:number>
     </bibtex:article>
   </bibtex:entry>
+
+    <bibtex:entry id="InChITechManual">
+        <bibtex:manual>
+            <bibtex:title>IUPAC International Chemical Identifier (InChI), InChI
+                version 1, software version 1.04 (2011), Technical Manual
+            </bibtex:title>
+            <bibtex:author>Stein, Stephen and Heller, Stephen and Tchekhovskoi,
+                Dmitrii and Pletnev, Igor
+            </bibtex:author>
+            <bibtex:year>2011</bibtex:year>
+            <bibtex:url>
+                http://www.inchi-trust.org/fileadmin/user_upload/software/inchi-v1.04/InChI_TechMan.pdf
+            </bibtex:url>
+        </bibtex:manual>
+    </bibtex:entry>
+
+    <bibtex:entry id="Razinger93">
+        <bibtex:article>
+            <bibtex:title>Stereoisomer Generation in Computer-Enhanced Structure Elucidation</bibtex:title>
+            <bibtex:author>Razinger, Marko and Balasubramaniam, Krishnan and Perdih, Marko and Munk, Morton</bibtex:author>
+            <bibtex:year>1993</bibtex:year>
+            <bibtex:journal>J. Chem. Inf. Comput. Sci</bibtex:journal>
+            <bibtex:volume>33</bibtex:volume>
+            <bibtex:pages>812-825</bibtex:pages>
+        </bibtex:article>
+    </bibtex:entry>  
+    
+    <bibtex:entry id="OBoyle12">
+        <bibtex:article>
+            <bibtex:title>Towards a Universal SMILES representation - A standard method to generate canonical SMILES based on the InChI</bibtex:title>
+            <bibtex:author>O’Boyle, Noel</bibtex:author>
+            <bibtex:year>2012</bibtex:year>
+            <bibtex:journal>Journal of Cheminformatics</bibtex:journal>
+            <bibtex:volume>4</bibtex:volume>
+            <bibtex:number>22</bibtex:number>
+        </bibtex:article>
+    </bibtex:entry>
+    
 </bibtex:file>

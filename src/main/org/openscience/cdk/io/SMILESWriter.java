@@ -31,7 +31,6 @@ package org.openscience.cdk.io;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.interfaces.IChemFile;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 import org.openscience.cdk.interfaces.IChemObject;
@@ -121,7 +120,7 @@ public class SMILESWriter extends DefaultChemObjectWriter {
     }
 
     /**
-     * Flushes the output and closes this object
+     * Flushes the output and closes this object.
      */
     @TestMethod("testClose")
     public void close() throws IOException {
@@ -159,7 +158,7 @@ public class SMILESWriter extends DefaultChemObjectWriter {
 	}
 
 	/**
-	 * Writes a list of molecules to an OutputStream
+	 * Writes a list of molecules to an OutputStream.
 	 *
 	 * @param   som  MoleculeSet that is written to an OutputStream
 	 */
@@ -181,10 +180,11 @@ public class SMILESWriter extends DefaultChemObjectWriter {
      */
     public void writeAtomContainer(IAtomContainer molecule) {
         SmilesGenerator sg = new SmilesGenerator();
-        sg.setUseAromaticityFlag(useAromaticityFlag.isSet());
+        if (useAromaticityFlag.isSet())
+            sg = sg.aromatic();
         String smiles = "";
         try {
-            smiles = sg.createSMILES(molecule);
+            smiles = sg.create(molecule);
             logger.debug("Generated SMILES: " + smiles);
             writer.write(smiles);
             writer.newLine();

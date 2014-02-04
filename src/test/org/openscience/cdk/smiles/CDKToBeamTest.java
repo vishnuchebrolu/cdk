@@ -27,6 +27,7 @@ package org.openscience.cdk.smiles;
 import org.junit.Test;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
@@ -173,7 +174,7 @@ public class CDKToBeamTest {
     }
 
     @SuppressWarnings("unchecked")
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = CDKException.class)
     public void unsetBondOrder() throws Exception {
         IAtom u = mock(IAtom.class);
         IAtom v = mock(IAtom.class);
@@ -185,7 +186,7 @@ public class CDKToBeamTest {
     }
 
     @SuppressWarnings("unchecked")
-    @Test(expected = NullPointerException.class)
+    @Test(expected = CDKException.class)
     public void undefBondOrder() throws Exception {
         IAtom u = mock(IAtom.class);
         IAtom v = mock(IAtom.class);
@@ -281,16 +282,12 @@ public class CDKToBeamTest {
     @Test public void adeneine() throws Exception {
         Graph g = convert(TestMoleculeFactory.makeAdenine());
         assertThat(g.toSmiles(),
-                   is("[C]-1-2=[C](-[N]=[CH]-[N]=[C]1-[NH2])-[NH]-[CH]=[N]2"));
-        assertThat(Functions.collapse(g).toSmiles(),
                    is("C12=C(N=CN=C1N)NC=N2"));
     }
 
     @Test public void benzene_kekule() throws Exception {
         Graph g = convert(TestMoleculeFactory.makeBenzene());
         assertThat(g.toSmiles(),
-                   is("[CH]=1-[CH]=[CH]-[CH]=[CH]-[CH]1"));
-        assertThat(Functions.collapse(g).toSmiles(),
                    is("C=1C=CC=CC1"));
     }
 
@@ -298,8 +295,6 @@ public class CDKToBeamTest {
         IAtomContainer ac = TestMoleculeFactory.makeBenzene();
         Graph g = convert(ac, true, true);
         assertThat(g.toSmiles(),
-                   is("[cH]:1:[cH]:[cH]:[cH]:[cH]:[cH]1"));
-        assertThat(Functions.collapse(g).toSmiles(),
                    is("c1ccccc1"));
     }
 
@@ -307,8 +302,6 @@ public class CDKToBeamTest {
         Graph g = convert(TestMoleculeFactory
                                           .makeImidazole(), false, true);
         assertThat(g.toSmiles(),
-                   is("[CH]=1-[NH]-[CH]=[N]-[CH]1"));
-        assertThat(Functions.collapse(g).toSmiles(),
                    is("C=1NC=NC1"));
     }
 
@@ -316,9 +309,13 @@ public class CDKToBeamTest {
         Graph g = convert(TestMoleculeFactory
                                           .makeImidazole(), true, true);
         assertThat(g.toSmiles(),
-                   is("[cH]:1:[nH]:[cH]:[n]:[cH]1"));
-        assertThat(Functions.collapse(g).toSmiles(),
                    is("c1[nH]cnc1"));
+    }
+
+    @Test public void imidazole_ignoreAromatic() throws Exception {
+        Graph g = convert(TestMoleculeFactory.makeImidazole(), true, true, false, true);
+        assertThat(g.toSmiles(),
+                   is("C=1NC=NC1"));
     }
 
     @Test public void C13_isomeric() throws Exception {
@@ -338,7 +335,7 @@ public class CDKToBeamTest {
         ac.addAtom(a);
         Graph g = convert(ac, false, false); // non-isomeric
         assertThat(g.atom(0).isotope(), is(-1));
-        assertThat(g.toSmiles(), is("[CH4]"));
+        assertThat(g.toSmiles(), is("C"));
     }
 
     @Test public void azanium() throws Exception {
@@ -395,8 +392,6 @@ public class CDKToBeamTest {
                                                           OPPOSITE));
         Graph g = convert(ac);
         assertThat(g.toSmiles(),
-                   is("[F]/[CH]=[CH]/[F]"));
-        assertThat(Functions.collapse(g).toSmiles(),
                    is("F/C=C/F"));
     }
 
@@ -424,8 +419,6 @@ public class CDKToBeamTest {
                                                           TOGETHER));
         Graph g = convert(ac);
         assertThat(g.toSmiles(),
-                   is("[F]/[CH]=[CH]\\[F]"));
-        assertThat(Functions.collapse(g).toSmiles(),
                    is("F/C=C\\F"));
     }
 
@@ -460,8 +453,6 @@ public class CDKToBeamTest {
 
         Graph g = convert(ac);
         assertThat(g.toSmiles(),
-                   is("[CH3]-[CH2]-[C@@](-[CH3])(-[OH])-[H]"));
-        assertThat(Functions.collapse(g).toSmiles(),
                    is("CC[C@@](C)(O)[H]"));
     }
 
@@ -496,9 +487,55 @@ public class CDKToBeamTest {
 
         Graph g = convert(ac);
         assertThat(g.toSmiles(),
-                   is("[CH3]-[CH2]-[C@](-[CH3])(-[OH])-[H]"));
-        assertThat(Functions.collapse(g).toSmiles(),
                    is("CC[C@](C)(O)[H]"));
+    }
+
+    /**
+     * This is a mock test where we don't want aromatic bonds to have a
+     * configuration. (Z)-1,2-difluoroethene is not aromatic but a 'real'
+     * example would be porphyrins. 
+     *
+     * @cdk.inchi InChI=1/C2H2F2/c3-1-2-4/h1-2H/b2-1-
+     */
+    @Test public void z_1_2_difluoroethene_aromatic() throws Exception {
+
+        IAtomContainer ac = new AtomContainer();
+        ac.addAtom(new Atom("F"));
+        ac.addAtom(new Atom("C"));
+        ac.addAtom(new Atom("C"));
+        ac.addAtom(new Atom("F"));
+        ac.addBond(0, 1, SINGLE);
+        ac.addBond(1, 2, DOUBLE);
+        ac.addBond(2, 3, SINGLE);
+
+        ac.getBond(1).setFlag(CDKConstants.ISAROMATIC, true);
+        
+        ac.addStereoElement(new DoubleBondStereochemistry(ac.getBond(1),
+                                                          new IBond[]{
+                                                                  ac.getBond(0),
+                                                                  ac.getBond(2)
+                                                          },
+                                                          TOGETHER));
+        Graph g = convert(ac);
+        assertThat(g.toSmiles(),
+                   is("F[CH]:[CH]F"));
+    }
+    
+    @Test public void writeAtomClass() throws Exception {
+        IAtomContainer ac = new AtomContainer();
+        ac.addAtom(new Atom("C"));
+        ac.addAtom(new Atom("C"));
+        ac.addAtom(new Atom("O"));
+        ac.addBond(0, 1, SINGLE);
+        ac.addBond(1, 2, SINGLE);
+        ac.getAtom(0).setProperty(CDKConstants.ATOM_ATOM_MAPPING,
+                                  3);
+        ac.getAtom(1).setProperty(CDKConstants.ATOM_ATOM_MAPPING,
+                                  1);
+        ac.getAtom(2).setProperty(CDKConstants.ATOM_ATOM_MAPPING,
+                                  2);
+        assertThat(convert(ac).toSmiles(),
+                   is("[CH3:3][CH2:1][OH:2]"));
     }
     
     static Graph convert(IAtomContainer ac) throws Exception {
@@ -506,14 +543,22 @@ public class CDKToBeamTest {
     }
 
     static Graph convert(IAtomContainer ac,
+                         boolean perceiveAromaticity,
+                         boolean isomeric) throws Exception {
+        return convert(ac, perceiveAromaticity, isomeric, true, true);
+    }
+
+    static Graph convert(IAtomContainer ac,
+                                 boolean perceiveAromaticity,
+                                 boolean isomeric,
                                  boolean aromatic,
-                                 boolean isomeric) throws
+                                 boolean atomClasses) throws
                                                    Exception {
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(ac);
         CDKHydrogenAdder.getInstance(SilentChemObjectBuilder.getInstance())
                         .addImplicitHydrogens(ac);
-        if (aromatic)
+        if (perceiveAromaticity)
             CDKHueckelAromaticityDetector.detectAromaticity(ac);
-        return new CDKToBeam(isomeric).toBeamGraph(ac);
+        return new CDKToBeam(isomeric, aromatic, atomClasses).toBeamGraph(ac);
     }
 }

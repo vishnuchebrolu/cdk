@@ -57,6 +57,7 @@ import org.openscience.cdk.ringsearch.RingSearch;
  *
  * @author John May
  * @cdk.module standard
+ * @cdk.githash
  */
 public abstract class ElectronDonation {
 
@@ -68,7 +69,7 @@ public abstract class ElectronDonation {
      *
      * @param container  molecule
      * @param ringSearch ring information
-     * @return
+     * @return electron contribution of each atom (-1=none)
      */
     abstract int[] contribution(IAtomContainer container, RingSearch ringSearch);
                  

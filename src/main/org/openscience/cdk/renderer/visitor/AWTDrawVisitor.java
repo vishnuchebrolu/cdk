@@ -24,11 +24,15 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.font.TextAttribute;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -41,6 +45,7 @@ import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.renderer.RendererModel;
 import org.openscience.cdk.renderer.elements.ArrowElement;
 import org.openscience.cdk.renderer.elements.AtomSymbolElement;
+import org.openscience.cdk.renderer.elements.Bounds;
 import org.openscience.cdk.renderer.elements.ElementGroup;
 import org.openscience.cdk.renderer.elements.GeneralPath;
 import org.openscience.cdk.renderer.elements.IRenderingElement;
@@ -145,23 +150,30 @@ public class AWTDrawVisitor extends AbstractAWTDrawVisitor {
     private void visit(LineElement line) {
         Stroke savedStroke = this.graphics.getStroke();
         
-        int width = (int) (line.width * this.rendererModel.getParameter(
-            	Scale.class).getValue());
-        if (width < 1) width = 1;
-        if (strokeMap.containsKey(width)) {
-            this.graphics.setStroke(strokeMap.get(width));
+        // scale the stroke by zoom + scale (both included in the AffineTransform) 
+        float width = (float) (line.width * transform.getScaleX());
+        if (width < 1.5f) width = 1.5f;
+
+        int key   = (int) (width * 4); // store 2.25, 2.5, 2.75 etc to separate keys
+        
+        if (strokeMap.containsKey(key)) {
+            this.graphics.setStroke(strokeMap.get(key));
         } else {
-            BasicStroke stroke = new BasicStroke(width);
+            BasicStroke stroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.CAP_ROUND);
             this.graphics.setStroke(stroke);
-            strokeMap.put(width, stroke);
+            strokeMap.put(key, stroke);
         }
         
-        this.graphics.setColor(line.color);
-        int[] startPoint = this.transformPoint(line.firstPointX, line.firstPointY);
-        int[] endPoint = this.transformPoint(line.secondPointX, line.secondPointY);
-        this.graphics.drawLine(startPoint[0], startPoint[1], endPoint[0], endPoint[1]);
+        double[] coordinates = new double[]{
+                line.firstPointX, line.firstPointY,
+                line.secondPointX, line.secondPointY
+        };
         
-        this.graphics.setStroke(savedStroke);
+        graphics.setColor(line.color);
+        transform.transform(coordinates, 0, coordinates, 0, 2);
+        graphics.draw(new Line2D.Double(coordinates[0], coordinates[1],
+                                        coordinates[2], coordinates[3]));
+        graphics.setStroke(savedStroke);
     }
 
     private void visit(OvalElement oval) {
@@ -184,6 +196,10 @@ public class AWTDrawVisitor extends AbstractAWTDrawVisitor {
     
     private int scaleX(double xCoord) {
         return (int) (xCoord*transform.getScaleX());
+    }
+
+    private int scaleY(double yCoord) {
+        return (int) (yCoord*-transform.getScaleY());
     }
     
     private int transformX(double xCoord) {
@@ -327,15 +343,37 @@ public class AWTDrawVisitor extends AbstractAWTDrawVisitor {
     
     private void visit(AtomSymbolElement atomSymbol) {
         this.graphics.setFont(this.fontManager.getFont());
-        Point point = 
-            super.getTextBasePoint(
-                    atomSymbol.text, atomSymbol.xCoord, atomSymbol.yCoord, graphics);
-        Rectangle2D textBounds = 
-            this.getTextBounds(atomSymbol.text, atomSymbol.xCoord, atomSymbol.yCoord, graphics);
+
+        double[] xy = {atomSymbol.xCoord, atomSymbol.yCoord};
+
+        this.transformPoint(xy);
+        
+        Rectangle2D bounds = getTextBounds(atomSymbol.text, graphics);
+
+        double w = bounds.getWidth();
+        double h = bounds.getHeight();
+        
+        double xOffset = bounds.getX();
+        double yOffset = bounds.getY() + bounds.getHeight();
+        
+        bounds.setRect(xy[0] - (w/2),
+                       xy[1] - (h/2),
+                       w, h);
+        
+        double padding = h / 4;
+        Shape  shape   = new RoundRectangle2D.Double(bounds.getX() - (padding / 2),
+                                                     bounds.getY() - (padding / 2),
+                                                     bounds.getWidth() + padding,
+                                                     bounds.getHeight() + padding,
+                                                     padding,
+                                                     padding);
+
         this.graphics.setColor(getBackgroundColor());
-        this.graphics.fill(textBounds);
+        this.graphics.fill(shape);
         this.graphics.setColor(atomSymbol.color);
-        this.graphics.drawString(atomSymbol.text, point.x, point.y);
+        this.graphics.drawString(atomSymbol.text,
+                                 (int) (bounds.getX() - xOffset),
+                                 (int) (bounds.getY() + h - yOffset));
         
         int offset = 10;    // XXX
         String chargeString;
@@ -354,14 +392,14 @@ public class AWTDrawVisitor extends AbstractAWTDrawVisitor {
             return;
         }
        
-        int xCoord = (int) textBounds.getCenterX();
-        int yCoord = (int) textBounds.getCenterY();
+        int xCoord = (int) bounds.getCenterX();
+        int yCoord = (int) bounds.getCenterY();
         if (atomSymbol.alignment == 1) {           // RIGHT
             this.graphics.drawString(
-                    chargeString, xCoord + offset, (int)textBounds.getMinY());
+                    chargeString, xCoord + offset, (int)bounds.getMinY());
         } else if (atomSymbol.alignment == -1) {   // LEFT
             this.graphics.drawString(
-                    chargeString, xCoord - offset, (int)textBounds.getMinY());
+                    chargeString, xCoord - offset, (int)bounds.getMinY());
         } else if (atomSymbol.alignment == 2) {    // TOP
             this.graphics.drawString(
                     chargeString, xCoord, yCoord - offset);
@@ -373,14 +411,19 @@ public class AWTDrawVisitor extends AbstractAWTDrawVisitor {
     }
     
     private void visit(RectangleElement rectangle) {
-        int[] point1 = this.transformPoint(rectangle.xCoord, rectangle.yCoord);
-        int[] point2 = this.transformPoint(
-                rectangle.xCoord + rectangle.width, rectangle.yCoord + rectangle.height);
         this.graphics.setColor(rectangle.color);
+        int width  = scaleX(rectangle.width);
+        int height = scaleY(rectangle.height);
         if (rectangle.filled) {
-            this.graphics.fillRect(point1[0], point1[1], point2[0] - point1[0], point2[1] - point1[1]);
+            this.graphics.fillRect(transformX(rectangle.xCoord),
+                                   transformY(rectangle.yCoord) - height,
+                                   width,
+                                   height);
         } else {
-            this.graphics.drawRect(point1[0], point1[1], point2[0] - point1[0], point2[1] - point1[1]);
+            this.graphics.drawRect(transformX(rectangle.xCoord),
+                                   transformY(rectangle.yCoord) - height,
+                                   width,
+                                   height);
         }
     }
     
@@ -396,10 +439,18 @@ public class AWTDrawVisitor extends AbstractAWTDrawVisitor {
     }
     
     private void visit(GeneralPath path) {
-        this.graphics.setColor( path.color );
-        java.awt.geom.GeneralPath generalPath = new java.awt.geom.GeneralPath();
-        generalPath.append( getPathIterator( path, transform) , false );
-        this.graphics.draw( generalPath );
+        this.graphics.setColor(path.color);
+        Path2D cpy = new Path2D.Double();
+        cpy.append(getPathIterator(path, transform), false);
+        
+        if (path.fill) {
+            this.graphics.fill(cpy);
+        } else {
+            Stroke stroke = this.graphics.getStroke();
+            this.graphics.setStroke(new BasicStroke((float) (path.stroke * transform.getScaleX()), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            this.graphics.draw(cpy);
+            this.graphics.setStroke(stroke);
+        }
     }
 
     private static PathIterator getPathIterator(final GeneralPath path,final AffineTransform transform) {
@@ -426,18 +477,13 @@ public class AWTDrawVisitor extends AbstractAWTDrawVisitor {
             }
 
             public int getWindingRule() {
-
-                return WIND_EVEN_ODD;
+                return path.winding;
             }
 
-            public int currentSegment( double[] coords ) {
-                float[] src = new float[6];
-                int type = currentSegment( src );
-                double[] srcD = coords;
-                for(int i=0;i<src.length;i++){
-                    srcD[i] = (double) src[i];
-                }
-                return type;
+            public int currentSegment(double[] coords) {
+                path.elements.get(index).points(coords);
+                transform.transform(coords, 0, coords, 0, 3);
+                return type(path.elements.get(index).type);
             }
 
             public int currentSegment( float[] coords ) {
@@ -587,7 +633,9 @@ public class AWTDrawVisitor extends AbstractAWTDrawVisitor {
             visit((GeneralPath)element);
         else if (element instanceof ArrowElement)
             visit((ArrowElement) element);
-        else
+        else if (element instanceof Bounds) {
+            // ignore  
+        } else
             System.err.println("Visitor method for "
                     + element.getClass().getName() + " is not implemented");
         this.graphics.setColor(savedColor);

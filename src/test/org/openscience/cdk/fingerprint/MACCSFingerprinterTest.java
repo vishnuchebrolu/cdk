@@ -36,6 +36,9 @@ import org.openscience.cdk.tools.ILoggingTool;
 import org.openscience.cdk.tools.LoggingToolFactory;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 /**
  * @cdk.module test-fingerprint
  */
@@ -50,7 +53,7 @@ public class MACCSFingerprinterTest extends AbstractFixedLengthFingerprinterTest
 
     @Test
     public void getsize() throws Exception {
-        IFingerprinter printer = new MACCSFingerprinter();
+        IFingerprinter printer = new MACCSFingerprinter(SilentChemObjectBuilder.getInstance());
         Assert.assertEquals(166, printer.getSize());
     }
 
@@ -114,6 +117,32 @@ public class MACCSFingerprinterTest extends AbstractFixedLengthFingerprinterTest
 
         Assert.assertFalse(FingerprinterTool.isSubset(bs1, bs2));
         Assert.assertTrue(FingerprinterTool.isSubset(bs2, bs3));
+    }
+
+    /**
+     * Using MACCS keys, these molecules are not considered substructures
+     * and should only be used for similarity. This is because the MACCS
+     * fragments match hydrogen counts.
+     */
+    @Test
+    public void testBug706786() throws Exception {
+
+        IAtomContainer superStructure = bug706786_1();
+        IAtomContainer subStructure   = bug706786_2();
+
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(superStructure);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(subStructure);
+        addImplicitHydrogens(superStructure);
+        addImplicitHydrogens(subStructure);
+
+        IFingerprinter fpr = new MACCSFingerprinter();
+        IBitFingerprint superBits = fpr.getBitFingerprint(superStructure);
+        IBitFingerprint subBits   = fpr.getBitFingerprint(subStructure);
+
+        assertThat(superBits.asBitSet(),
+                   is(asBitSet(53, 56, 65, 71, 73, 88, 97, 100, 104, 111, 112, 126, 130, 136, 138, 139, 140, 142, 143, 144, 145, 148, 149, 151, 153, 156, 158, 159, 162, 163, 164)));
+        assertThat(subBits.asBitSet(),
+                   is(asBitSet(56, 97, 100, 104, 108, 112, 117, 127, 131, 136, 143, 144, 146, 151, 152, 156, 162, 163, 164)));
     }
 
 }

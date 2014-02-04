@@ -31,6 +31,7 @@ import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.config.IsotopeFactory;
+import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
@@ -53,6 +54,7 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.openscience.cdk.CDKConstants.ATOM_ATOM_MAPPING;
 import static org.openscience.cdk.interfaces.IDoubleBondStereochemistry.Conformation.TOGETHER;
 import static org.openscience.cdk.interfaces.ITetrahedralChirality.Stereo.CLOCKWISE;
 
@@ -91,15 +93,38 @@ final class CDKToBeam {
      * Isomeric SMILES.
      */
     private final boolean isomeric;
+    
+    /** Use aromatic flags. */
+    private final boolean aromatic;
+    
+    /** Set atom class data. */
+    private final boolean atomClasses;
 
-    /** Create a isomeric converter. */
+    /** Create a isomeric and aromatic converter. */
     CDKToBeam() {
-        this(true);
+        this(true, true);
     }
 
-    /** Create a converter specifying whether to be isomeric or not. */
+    /** Create a aromatic converter specifying whether to be isomeric or not. */
     CDKToBeam(boolean isomeric) {
-        this.isomeric = isomeric;
+        this(isomeric, true);
+    }
+
+    /**
+     * Create a convert which will optionally convert isomeric and aromatic
+     * information from CDK data model.
+     *
+     * @param isomeric convert isomeric information
+     * @param aromatic convert aromatic information
+     */
+    CDKToBeam(boolean isomeric, boolean aromatic) {
+        this(isomeric, aromatic, true);
+    }
+
+    CDKToBeam(boolean isomeric, boolean aromatic, boolean atomClasses) {
+        this.isomeric    = isomeric;
+        this.aromatic    = aromatic;
+        this.atomClasses = atomClasses;
     }
 
     /**
@@ -111,7 +136,7 @@ final class CDKToBeam {
      * @return the Beam ChemicalGraph for additional manipulation
      */
     @TestMethod("adenine,benzene,imidazole")
-    Graph toBeamGraph(IAtomContainer ac) {
+    Graph toBeamGraph(IAtomContainer ac) throws CDKException {
 
         int order = ac.getAtomCount();
 
@@ -154,7 +179,7 @@ final class CDKToBeam {
      */
     @TestMethod("aliphaticAtom,aromaticAtom") Atom toBeamAtom(final IAtom a) {
 
-        final boolean aromatic = a.getFlag(CDKConstants.ISAROMATIC);
+        final boolean aromatic = this.aromatic && a.getFlag(CDKConstants.ISAROMATIC);
         final Integer charge   = a.getFormalCharge();
         final String  symbol   = checkNotNull(a.getSymbol(),
                                               "An atom had an undefined symbol");
@@ -194,9 +219,10 @@ final class CDKToBeam {
             }
         }
 
-        // could also add atom class from property (overhead of ChemObject
-        // HashMap) or perhaps passed atom classes as an array of 'int[]'.
-        // ab.atomClass(a.getProperty("smi:AtomClass")); ?
+        Integer atomClass = a.getProperty(ATOM_ATOM_MAPPING);
+        if (atomClasses && atomClass != null) {
+            ab.atomClass(atomClass);    
+        }
 
         return ab.build();
     }
@@ -212,7 +238,7 @@ final class CDKToBeam {
      * @throws NullPointerException     the bond order was undefined
      */
     @TestMethod("singleBond,doubleBond,tripleBond")
-    Edge toBeamEdge(IBond b, Map<IAtom, Integer> indices) {
+    Edge toBeamEdge(IBond b, Map<IAtom, Integer> indices) throws CDKException {
 
         checkArgument(b.getAtomCount() == 2,
                       "Invalid number of atoms on bond");
@@ -232,13 +258,15 @@ final class CDKToBeam {
      *                                  not-aromatic
      * @throws IllegalArgumentException the bond order could not be converted
      */
-    private Bond toBeamEdgeLabel(IBond b) {
+    private Bond toBeamEdgeLabel(IBond b) throws CDKException {
 
-        if (b.getFlag(CDKConstants.ISAROMATIC))
+        if (this.aromatic && b.getFlag(CDKConstants.ISAROMATIC))
             return Bond.AROMATIC;
 
-        IBond.Order order = checkNotNull(b.getOrder(),
-                                         "A bond had undefined order");
+        if (b.getOrder() == null)
+            throw new CDKException("A bond had undefined order, possible query bond?");
+        
+        IBond.Order order = b.getOrder();
 
         switch (order) {
             case SINGLE:
@@ -250,7 +278,7 @@ final class CDKToBeam {
             case QUADRUPLE:
                 return Bond.QUADRUPLE;
             default:
-                throw new IllegalArgumentException("Unsupported bond order: " + order);
+                throw new CDKException("Unsupported bond order: " + order);
         }
     }
 
@@ -267,6 +295,10 @@ final class CDKToBeam {
 
         IBond   db = dbs.getStereoBond();
         IBond[] bs = dbs.getBonds();
+        
+        // don't try to set a configuration on aromatic bonds
+        if (this.aromatic && db.getFlag(CDKConstants.ISAROMATIC))
+            return;
 
         int u = indices.get(db.getAtom(0));
         int v = indices.get(db.getAtom(1));

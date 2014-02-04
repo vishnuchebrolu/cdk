@@ -453,7 +453,15 @@ public class StructureDiagramGenerator
 		} while (!atomPlacer.allPlaced(molecule) && safetyCounter <= molecule.getAtomCount());
 
 		fixRest();
-		new OverlapResolver().resolveOverlap(molecule, sssr);
+
+        // correct double-bond stereo, this changes the layout and in reality 
+        // should be done during the initial placement
+        CorrectGeometricConfiguration.correct(molecule);
+
+        // assign up/down labels, this doesn't not alter layout and could be
+        // done on-demand (e.g. when writing a MDL Molfile)
+        NonplanarBonds.assign(molecule);
+        
 	}
 
 

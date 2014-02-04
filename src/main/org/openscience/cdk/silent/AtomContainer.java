@@ -20,10 +20,13 @@ package org.openscience.cdk.silent;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtom;
@@ -117,7 +120,7 @@ public class AtomContainer extends ChemObject
     /**
      * Internal list of atom parities.
      */
-    protected List<IStereoElement> stereoElements;
+    protected Set<IStereoElement> stereoElements;
 
 
 	/**
@@ -146,7 +149,7 @@ public class AtomContainer extends ChemObject
 		this.lonePairs = new ILonePair[this.lonePairCount];
 		this.singleElectrons = new ISingleElectron[this.singleElectronCount];
 
-        stereoElements = new ArrayList<IStereoElement>(atomCount / 2);
+        stereoElements = new HashSet<IStereoElement>(atomCount / 2);
 
         for(IStereoElement element : container.stereoElements()){
             addStereoElement(element);
@@ -188,7 +191,7 @@ public class AtomContainer extends ChemObject
 		bonds = new IBond[bondCount];
 		lonePairs = new ILonePair[lpCount];
 		singleElectrons = new ISingleElectron[seCount];
-		stereoElements = new ArrayList<IStereoElement>(atomCount/2);
+		stereoElements = new HashSet<IStereoElement>(atomCount/2);
 	}
 
     /** {@inheritDoc} */
@@ -201,16 +204,13 @@ public class AtomContainer extends ChemObject
      */
     @Override
     public void setStereoElements(List<IStereoElement> elements) {
-        this.stereoElements = elements;
+        this.stereoElements = new HashSet<IStereoElement>();
+        this.stereoElements.addAll(elements);
     }
 
     /** {@inheritDoc} */
     public Iterable<IStereoElement> stereoElements() {
-        return new Iterable<IStereoElement>() {
-            public Iterator<IStereoElement> iterator() {
-                return stereoElements.iterator();
-            }
-        };
+        return Collections.unmodifiableSet(stereoElements);
     }
 	/**
 	 *  Sets the array of atoms of this AtomContainer.
@@ -989,6 +989,8 @@ public class AtomContainer extends ChemObject
 				addSingleElectron(atomContainer.getSingleElectron(f));
 			}
 		}
+        for (IStereoElement se : atomContainer.stereoElements())
+            stereoElements.add(se);
 	}
 
 	/**
@@ -1265,12 +1267,7 @@ public class AtomContainer extends ChemObject
         if (electronContainer instanceof ISingleElectron) removeSingleElectron((ISingleElectron) electronContainer);
 	}
 
-	/**
-	 *  Removes the given atom and all connected electronContainers from the
-	 *  AtomContainer.
-	 *
-	 *@param  atom  The atom to be removed
-	 */
+    /** @inheritDoc */
 	public void removeAtomAndConnectedElectronContainers(IAtom atom)
 	{
 		int position = getAtomNumber(atom);
@@ -1297,7 +1294,13 @@ public class AtomContainer extends ChemObject
 					--i;
 				}
 			}
-			removeAtom(position);
+            List<IStereoElement> atomElements = new ArrayList<IStereoElement>(3);
+            for (IStereoElement element : stereoElements) {
+                if (element.contains(atom))
+                    atomElements.add(element);
+            }
+            stereoElements.removeAll(atomElements);
+            removeAtom(position);
 		}
 	}
 

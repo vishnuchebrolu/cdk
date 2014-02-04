@@ -21,6 +21,8 @@
 package org.openscience.cdk.smiles.smarts;
 
 import static java.util.Collections.sort;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,17 +31,20 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.DefaultChemObjectBuilder;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
 import org.openscience.cdk.aromaticity.DoubleBondAcceptingAromaticityDetector;
+import org.openscience.cdk.aromaticity.ElectronDonation;
 import org.openscience.cdk.config.Elements;
 import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesGenerator;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.templates.MoleculeFactory;
+import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 /**
  * JUnit test routines for the SMARTS substructure search.
@@ -66,7 +71,7 @@ public class SMARTSQueryToolTest extends CDKTestCase {
         SMARTSQueryTool querytool = new SMARTSQueryTool("O=CO", DefaultChemObjectBuilder.getInstance());
 
         boolean status = querytool.matches(atomContainer);
-        Assert.assertTrue(status);
+        assertTrue(status);
 
         int nmatch = querytool.countMatches();
         Assert.assertEquals(2, nmatch);
@@ -102,7 +107,7 @@ public class SMARTSQueryToolTest extends CDKTestCase {
         SMARTSQueryTool querytool = new SMARTSQueryTool("C", DefaultChemObjectBuilder.getInstance());
 
         boolean status = querytool.matches(atomContainer);
-        Assert.assertTrue(status);
+        assertTrue(status);
 
         int nmatch = querytool.countMatches();
         Assert.assertEquals(8, nmatch);
@@ -115,14 +120,14 @@ public class SMARTSQueryToolTest extends CDKTestCase {
         SMARTSQueryTool querytool = new SMARTSQueryTool("C", DefaultChemObjectBuilder.getInstance());
 
         boolean status = querytool.matches(atomContainer);
-        Assert.assertTrue(status);
+        assertTrue(status);
 
         int nmatch = querytool.countMatches();
         Assert.assertEquals(8, nmatch);
 
         querytool.setSmarts("CC");
         status = querytool.matches(atomContainer);
-        Assert.assertTrue(status);
+        assertTrue(status);
 
         nmatch = querytool.countMatches();
         Assert.assertEquals(18, nmatch);
@@ -139,7 +144,7 @@ public class SMARTSQueryToolTest extends CDKTestCase {
         SMARTSQueryTool querytool = new SMARTSQueryTool("c1ccccc1", DefaultChemObjectBuilder.getInstance());
 
         boolean status = querytool.matches(atomContainer);
-        Assert.assertTrue(status);
+        assertTrue(status);
 
         int nmatch = querytool.countMatches();
         Assert.assertEquals(24, nmatch);
@@ -156,7 +161,7 @@ public class SMARTSQueryToolTest extends CDKTestCase {
         SMARTSQueryTool querytool = new SMARTSQueryTool("c12ccccc1cccc2", DefaultChemObjectBuilder.getInstance());
 
         boolean status = querytool.matches(atomContainer);
-        Assert.assertTrue(status);
+        assertTrue(status);
 
         int nmatch = querytool.countMatches();
         Assert.assertEquals(4, nmatch);
@@ -178,15 +183,15 @@ public class SMARTSQueryToolTest extends CDKTestCase {
 
         IAtomContainer indole = MoleculeFactory.makeIndole();
         addImplicitHydrogens(indole);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(indole);
         DoubleBondAcceptingAromaticityDetector.detectAromaticity(indole);
-        SmilesGenerator generator = new SmilesGenerator();        
-        String indoleSmiles = generator.createSMILES(indole);
-
-        SmilesParser smilesParser = new SmilesParser(DefaultChemObjectBuilder.getInstance());
+        SmilesGenerator generator = new SmilesGenerator().aromatic();        
+        String indoleSmiles = generator.create(indole);
+        SmilesParser smilesParser = new SmilesParser(DefaultChemObjectBuilder.getInstance());        
         indole = smilesParser.parseSmiles(indoleSmiles);
 
         SMARTSQueryTool querytool = new SMARTSQueryTool(indoleSmiles, DefaultChemObjectBuilder.getInstance());
-        Assert.assertTrue(querytool.matches(indole));
+        assertTrue(querytool.matches(indole));
     }
 
     /**
@@ -197,11 +202,39 @@ public class SMARTSQueryToolTest extends CDKTestCase {
         IAtomContainer methane =
              SilentChemObjectBuilder.getInstance().newInstance(IAtomContainer.class);
         IAtom carbon = methane.getBuilder().newInstance(IAtom.class,Elements.CARBON);
+        carbon.setImplicitHydrogenCount(4);
         methane.addAtom(carbon);
 
         SMARTSQueryTool sqt = new SMARTSQueryTool("CC", DefaultChemObjectBuilder.getInstance());
         boolean matches = sqt.matches(methane);
-        Assert.assertFalse(matches);
+        assertFalse(matches);
 
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void nullAromaticity() {
+        SMARTSQueryTool sqt = new SMARTSQueryTool("CC", DefaultChemObjectBuilder.getInstance());
+        sqt.setAromaticity(null);
+    }
+    
+    @Test
+    public void setAromaticity() throws Exception {
+        SMARTSQueryTool sqt = new SMARTSQueryTool("[a]", DefaultChemObjectBuilder.getInstance());
+        
+        IAtomContainer furan = smiles("O1C=CC=C1");
+
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(furan);
+        
+        sqt.setAromaticity(new Aromaticity(ElectronDonation.cdk(),
+                                           Cycles.mcb()));         
+        assertTrue(sqt.matches(furan, true));
+
+        sqt.setAromaticity(new Aromaticity(ElectronDonation.piBonds(),
+                                           Cycles.mcb()));
+        assertFalse(sqt.matches(furan, true));
+    }
+    
+    static IAtomContainer smiles(String smi) throws Exception {
+        return new SmilesParser(SilentChemObjectBuilder.getInstance()).parseSmiles(smi);
     }
 }

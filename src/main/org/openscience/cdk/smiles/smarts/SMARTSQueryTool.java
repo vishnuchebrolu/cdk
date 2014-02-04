@@ -20,37 +20,47 @@
  */
 package org.openscience.cdk.smiles.smarts;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.openscience.cdk.CDKConstants;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Sets;
+import com.google.common.primitives.Ints;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
+import org.openscience.cdk.aromaticity.ElectronDonation;
 import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.interfaces.IRingSet;
-import org.openscience.cdk.isomorphism.UniversalIsomorphismTester;
+import org.openscience.cdk.isomorphism.ComponentGrouping;
+import org.openscience.cdk.isomorphism.SmartsStereoMatch;
+import org.openscience.cdk.isomorphism.Ullmann;
+import org.openscience.cdk.isomorphism.VentoFoggia;
 import org.openscience.cdk.isomorphism.matchers.IQueryAtom;
 import org.openscience.cdk.isomorphism.matchers.QueryAtomContainer;
-import org.openscience.cdk.isomorphism.matchers.smarts.HydrogenAtom;
-import org.openscience.cdk.isomorphism.matchers.smarts.LogicalOperatorAtom;
-import org.openscience.cdk.isomorphism.matchers.smarts.RecursiveSmartsAtom;
+import org.openscience.cdk.isomorphism.matchers.smarts.SmartsMatchers;
 import org.openscience.cdk.isomorphism.mcss.RMap;
-import org.openscience.cdk.ringsearch.AllRingsFinder;
 import org.openscience.cdk.ringsearch.SSSRFinder;
 import org.openscience.cdk.smiles.smarts.parser.SMARTSParser;
 import org.openscience.cdk.smiles.smarts.parser.TokenMgrError;
 import org.openscience.cdk.tools.ILoggingTool;
 import org.openscience.cdk.tools.LoggingToolFactory;
-import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * This class provides a easy to use wrapper around SMARTS matching functionality. <p/> User code that wants to do
@@ -115,13 +125,9 @@ public class SMARTSQueryTool {
     private static ILoggingTool logger =
             LoggingToolFactory.createLoggingTool(SMARTSQueryTool.class);
     private String smarts;
-    private IAtomContainer atomContainer = null;
-    private QueryAtomContainer query = null;
-
-    /**
-     * Allow re-perception or preservation of aromaticity information.
-     */
-    private boolean perceiveAtomType = true;
+    private IAtomContainer     atomContainer = null;
+    private QueryAtomContainer query         = null;
+    private List<int[]> mappings;
 
     /**
      * Defines which set of rings to define rings in the target.
@@ -173,7 +179,21 @@ public class SMARTSQueryTool {
 
     private final IChemObjectBuilder builder;
 
-    private List<List<Integer>> matchingAtoms = null;
+    /**
+     * Aromaticity perception - dealing with SMARTS we should use the Daylight
+     * model. This can be set to a different model using {@link #setAromaticity(Aromaticity)}.
+     */
+    private Aromaticity aromaticity = new Aromaticity(ElectronDonation.daylight(),
+                                                      Cycles.allOrVertexShort());
+
+    /**
+     * Logical flag indicates whether the aromaticity model should be skipped.
+     * Generally this should be left as false to ensure the structures being 
+     * matched are all treated the same. The flag can however be turned off if
+     * the molecules being tests are known to all have the same aromaticity 
+     * model.
+     */
+    private boolean skipAromaticity = false;
 
     // a simplistic cache to store parsed SMARTS queries
     private int MAX_ENTRIES = 20;
@@ -247,18 +267,31 @@ public class SMARTSQueryTool {
     }
 
     /**
-     * Indicates the SMARTS search should first re-perceive atom type and
-     * aromaticity of the target molecule.
+     * Set the aromaticity perception to use. Different aromaticity models
+     * may required certain attributes to be set (e.g. atom typing). These 
+     * will not be automatically configured and should be preset before matching.
+     *
+     * <blockquote><pre>
+     * SMARTSQueryTool sqt = new SMARTSQueryTool(...);
+     * sqt.setAromaticity(new Aromaticity(ElectronDonation.cdk(),
+     *                                    Cycles.cdkAromaticSet));
+     * for (IAtomContainer molecule : molecules) {
+     * 
+     *     // CDK Aromatic model needs atom types
+     *     AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule);
+     *     
+     *     sqt.matches(molecule);     
+     * }                                   
+     * </pre></blockquote>
+     * 
+     * @param aromaticity the new aromaticity perception
+     * @see ElectronDonation
+     * @see Cycles
      */
-    public void perceiveAtomType() {
-        this.perceiveAtomType = true;
-    }
-
-    /**
-     * Indicates you which the target atom type and aromaticity to be preserved.
-     */
-    public void preserveAtomType() {
-        this.perceiveAtomType = false;
+    @TestMethod("setAromaticity,nullAromaticity")
+    public void setAromaticity(Aromaticity aromaticity) {
+        this.aromaticity = checkNotNull(aromaticity,
+                                        "aromaticity was not provided");
     }
 
     /**
@@ -325,33 +358,33 @@ public class SMARTSQueryTool {
 
         if (this.atomContainer == atomContainer) {
             if (forceInitialization) initializeMolecule();
-        } else {
+        }
+        else {
             this.atomContainer = atomContainer;
             initializeMolecule();
         }
-
-        // First calculate the recursive smarts
-        initializeRecursiveSmarts(this.atomContainer);
 
         // lets see if we have a single atom query
         if (query.getAtomCount() == 1) {
             // lets get the query atom
             IQueryAtom queryAtom = (IQueryAtom) query.getAtom(0);
 
-            matchingAtoms = new ArrayList<List<Integer>>();
-            for (IAtom atom : this.atomContainer.atoms()) {
-                if (queryAtom.matches(atom)) {
-                    List<Integer> tmp = new ArrayList<Integer>();
-                    tmp.add(this.atomContainer.getAtomNumber(atom));
-                    matchingAtoms.add(tmp);
+            mappings = new ArrayList<int[]>();
+            for (int i = 0; i < atomContainer.getAtomCount(); i++) {
+                if (queryAtom.matches(atomContainer.getAtom(i))) {
+                    mappings.add(new int[]{i});
                 }
             }
-        } else {
-            List bondMapping = new UniversalIsomorphismTester().getSubgraphMaps(this.atomContainer, query);
-            matchingAtoms = getAtomMappings(bondMapping, this.atomContainer);
+        }
+        else {
+            mappings = FluentIterable.from(Ullmann.findSubstructure(query)
+                                                  .matchAll(atomContainer))
+                                     .filter(new SmartsStereoMatch(query, atomContainer))
+                                     .filter(new ComponentGrouping(query, atomContainer))
+                                     .toList();
         }
 
-        return matchingAtoms.size() != 0;
+        return !mappings.isEmpty();
     }
 
     /**
@@ -362,7 +395,7 @@ public class SMARTSQueryTool {
      */
     @TestMethod("testQueryTool")
     public int countMatches() {
-        return matchingAtoms.size();
+        return mappings.size();
     }
 
     /**
@@ -374,7 +407,10 @@ public class SMARTSQueryTool {
      */
     @TestMethod("testQueryTool")
     public List<List<Integer>> getMatchingAtoms() {
-        return matchingAtoms;
+        List<List<Integer>> matched = new ArrayList<List<Integer>>(mappings.size());
+        for (int[] mapping : mappings)
+            matched.add(Ints.asList(mapping));
+         return matched;
     }
 
     /**
@@ -386,33 +422,16 @@ public class SMARTSQueryTool {
      */
     @TestMethod("testUniqueQueries")
     public List<List<Integer>> getUniqueMatchingAtoms() {
-        List<List<Integer>> ret = new ArrayList<List<Integer>>();
-        for (List<Integer> atomMapping : matchingAtoms) {
-            Collections.sort(atomMapping);
-
-            // see if this sequence of atom indices is present
-            // in the return container
-            boolean present = false;
-            for (List<Integer> r : ret) {
-                if (r.size() != atomMapping.size()) continue;
-                Collections.sort(r);
-                boolean matches = true;
-                for (int i = 0; i < atomMapping.size(); i++) {
-                    int index1 = atomMapping.get(i);
-                    int index2 = r.get(i);
-                    if (index1 != index2) {
-                        matches = false;
-                        break;
-                    }
-                }
-                if (matches) {
-                    present = true;
-                    break;
-                }
-            }
-            if (!present) ret.add(atomMapping);
+        List<List<Integer>> matched = new ArrayList<List<Integer>>(mappings.size());
+        Set<BitSet> atomSets = Sets.newHashSetWithExpectedSize(mappings.size());
+        for (int[] mapping : mappings) {
+            BitSet atomSet = new BitSet();
+            for (int x : mapping)
+                atomSet.set(x);
+            if (atomSets.add(atomSet))
+                matched.add(Ints.asList(mapping));
         }
-        return ret;
+        return matched;
     }
 
     /**
@@ -424,176 +443,26 @@ public class SMARTSQueryTool {
      *                      to a timeout in the ring finding code.
      */
     private void initializeMolecule() throws CDKException {
-        // Code copied from
-        // org.openscience.cdk.qsar.descriptors.atomic.AtomValenceDescriptor;
-        Map<String, Integer> valencesTable = new HashMap<String, Integer>();
-        valencesTable.put("H", 1);
-        valencesTable.put("Li", 1);
-        valencesTable.put("Be", 2);
-        valencesTable.put("B", 3);
-        valencesTable.put("C", 4);
-        valencesTable.put("N", 5);
-        valencesTable.put("O", 6);
-        valencesTable.put("F", 7);
-        valencesTable.put("Na", 1);
-        valencesTable.put("Mg", 2);
-        valencesTable.put("Al", 3);
-        valencesTable.put("Si", 4);
-        valencesTable.put("P", 5);
-        valencesTable.put("S", 6);
-        valencesTable.put("Cl", 7);
-        valencesTable.put("K", 1);
-        valencesTable.put("Ca", 2);
-        valencesTable.put("Ga", 3);
-        valencesTable.put("Ge", 4);
-        valencesTable.put("As", 5);
-        valencesTable.put("Se", 6);
-        valencesTable.put("Br", 7);
-        valencesTable.put("Rb", 1);
-        valencesTable.put("Sr", 2);
-        valencesTable.put("In", 3);
-        valencesTable.put("Sn", 4);
-        valencesTable.put("Sb", 5);
-        valencesTable.put("Te", 6);
-        valencesTable.put("I", 7);
-        valencesTable.put("Cs", 1);
-        valencesTable.put("Ba", 2);
-        valencesTable.put("Tl", 3);
-        valencesTable.put("Pb", 4);
-        valencesTable.put("Bi", 5);
-        valencesTable.put("Po", 6);
-        valencesTable.put("At", 7);
-        valencesTable.put("Fr", 1);
-        valencesTable.put("Ra", 2);
-        valencesTable.put("Cu", 2);
-        valencesTable.put("Mn", 2);
-        valencesTable.put("Co", 2);
 
-        // do all ring perception
-        AllRingsFinder arf = new AllRingsFinder();
-        IRingSet allRings;
+        // initialise required invariants - the query has ISINRING set if
+        // the query contains ring queries [R?] [r?] [x?] etc.
+        SmartsMatchers.prepare(atomContainer,
+                               true);
+        
+        // providing skip aromaticity has not be set apply the desired 
+        // aromaticity model
         try {
-            allRings = arf.findAllRings(atomContainer);
+             if (!skipAromaticity) {
+                 aromaticity.apply(atomContainer);
+             }
         } catch (CDKException e) {
             logger.debug(e.toString());
             throw new CDKException(e.toString(), e);
-        }
-
-        // set short cycle information
-        IRingSet sssr = ringSet.ringSet(atomContainer);
-
-        for (IAtom atom : atomContainer.atoms()) {
-
-            // add a property to each ring atom that will be an array of
-            // Integers, indicating what size ring the given atom belongs to
-            // Add SSSR ring counts
-            if (allRings.contains(atom)) { // it's in a ring
-                atom.setFlag(CDKConstants.ISINRING, true);
-                // lets find which ring sets it is a part of
-                List<Integer> ringsizes = new ArrayList<Integer>();
-                IRingSet currentRings = allRings.getRings(atom);
-                int min = 0;
-                for (int i = 0; i < currentRings.getAtomContainerCount(); i++) {
-                    int size = currentRings.getAtomContainer(i).getAtomCount();
-                    if (min > size) min = size;
-                    ringsizes.add(size);
-                }
-                atom.setProperty(CDKConstants.RING_SIZES, ringsizes);
-                atom.setProperty(CDKConstants.SMALLEST_RINGS, sssr.getRings(atom));
-            } else {
-                atom.setFlag(CDKConstants.ISINRING, false);
-            }
-
-            // determine how many rings bonds each atom is a part of
-            int hCount;
-            if (atom.getImplicitHydrogenCount() == CDKConstants.UNSET) hCount = 0;
-            else hCount = atom.getImplicitHydrogenCount();
-
-            List<IAtom> connectedAtoms = atomContainer.getConnectedAtomsList(atom);
-            int total = hCount + connectedAtoms.size();
-            for (IAtom connectedAtom : connectedAtoms) {
-                if (connectedAtom.getSymbol().equals("H")) {
-                    hCount++;
-                }
-            }
-            atom.setProperty(CDKConstants.TOTAL_CONNECTIONS, total);
-            atom.setProperty(CDKConstants.TOTAL_H_COUNT, hCount);
-
-            if (valencesTable.get(atom.getSymbol()) != null) {
-                int formalCharge = atom.getFormalCharge() == CDKConstants.UNSET ? 0 : atom.getFormalCharge();
-                atom.setValency(valencesTable.get(atom.getSymbol()) - formalCharge);
-            }
-        }
-
-        for (IBond bond : atomContainer.bonds()) {
-            if (allRings.getRings(bond).getAtomContainerCount() > 0) {
-                bond.setFlag(CDKConstants.ISINRING, true);
-            }
-        }
-
-        for (IAtom atom : atomContainer.atoms()) {
-            List<IAtom> connectedAtoms = atomContainer.getConnectedAtomsList(atom);
-
-            int counter = 0;
-            IAtom any;
-            for (IAtom connectedAtom : connectedAtoms) {
-                any = connectedAtom;
-                if (any.getFlag(CDKConstants.ISINRING)) {
-                    counter++;
-                }
-            }
-            atom.setProperty(CDKConstants.RING_CONNECTIONS, counter);
-        }
-
-        // check for atomaticity
-        try {
-            if (perceiveAtomType) {
-                AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(atomContainer);
-                CDKHueckelAromaticityDetector.detectAromaticity(atomContainer);
-            }
-        } catch (CDKException e) {
-            logger.debug(e.toString());
-            throw new CDKException(e.toString(), e);
-        }
-    }
-
-    /**
-     * Initializes recursive smarts atoms in the query.
-     * <p/>
-     * We loop over the SMARTS atoms in the query and associate the target molecule with each of the SMARTS atoms that
-     * need it
-     *
-     * @param atomContainer molecule to initialise
-     * @throws CDKException
-     */
-    private void initializeRecursiveSmarts(IAtomContainer atomContainer) throws CDKException {
-        for (IAtom atom : query.atoms()) {
-            initializeRecursiveSmartsAtom(atom, atomContainer);
-        }
-    }
-
-    /**
-     * Recursively initializes recursive smarts atoms
-     *
-     * @param atom the atom to initialise
-     * @param atomContainer the container of the atom to initialise
-     * @throws CDKException
-     */
-    private void initializeRecursiveSmartsAtom(IAtom atom, IAtomContainer atomContainer) throws CDKException {
-        if (atom instanceof LogicalOperatorAtom) {
-            initializeRecursiveSmartsAtom(((LogicalOperatorAtom) atom).getLeft(), atomContainer);
-            if (((LogicalOperatorAtom) atom).getRight() != null) {
-                initializeRecursiveSmartsAtom(((LogicalOperatorAtom) atom).getRight(), atomContainer);
-            }
-        } else if (atom instanceof RecursiveSmartsAtom) {
-            ((RecursiveSmartsAtom) atom).setAtomContainer(atomContainer);
-        } else if (atom instanceof HydrogenAtom) {
-            ((HydrogenAtom) atom).setAtomContainer(atomContainer);
         }
     }
 
     private void initializeQuery() throws CDKException {
-        matchingAtoms = null;
+        mappings = null;
         query = cache.get(smarts);
         if (query == null) {
             query = SMARTSParser.parse(smarts, builder);
@@ -601,20 +470,18 @@ public class SMARTSQueryTool {
         }
     }
 
-
-    private List<List<Integer>> getAtomMappings(List bondMapping, IAtomContainer atomContainer) {
-        List<List<Integer>> atomMapping = new ArrayList<List<Integer>>();
-
+    private List<Set<Integer>> matchedAtoms(List<List<RMap>> bondMapping, IAtomContainer atomContainer) {
+        
+        List<Set<Integer>> atomMapping = new ArrayList<Set<Integer>>();
         // loop over each mapping
-        for (Object aBondMapping : bondMapping) {
-            List list = (List) aBondMapping;
+        for (List<RMap> mapping : bondMapping) {
 
-            List<Integer> tmp = new ArrayList<Integer>();
+            Set<Integer> tmp = new TreeSet<Integer>();
             IAtom atom1 = null;
             IAtom atom2 = null;
             // loop over this mapping
-            for (Object aList : list) {
-                RMap map = (RMap) aList;
+            for (RMap map : mapping) {
+                
                 int bondID = map.getId1();
 
                 // get the atoms in this bond
@@ -631,14 +498,10 @@ public class SMARTSQueryTool {
             if (tmp.size() == query.getAtomCount()) atomMapping.add(tmp);
 
             // If there is only one bond, check if it matches both ways.
-            if (list.size() == 1 && atom1.getAtomicNumber() == atom2.getAtomicNumber()) {
-                List<Integer> tmp2 = new ArrayList<Integer>();
-                tmp2.add(tmp.get(0));
-                tmp2.add(tmp.get(1));
-                atomMapping.add(tmp2);
+            if (mapping.size() == 1 && atom1.getAtomicNumber().equals(atom2.getAtomicNumber())) {
+                atomMapping.add(new TreeSet<Integer>(tmp));
             }
         }
-
 
         return atomMapping;
     }

@@ -30,6 +30,7 @@ import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.IImplementationSpecification;
+import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.io.ISimpleChemObjectReader;
 import org.openscience.cdk.io.MDLV2000Reader;
@@ -63,14 +64,14 @@ public class DescriptorNamesTest extends CDKTestCase {
         List cList = ChemFileManipulator.getAllAtomContainers(content);
         IAtomContainer ac = (IAtomContainer) cList.get(0);
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(ac);
-
+        Isotopes.getInstance().configureAtoms(ac);
         engine.process(ac);
 
         int ncalc = 0;
         List<String> descNames = new ArrayList<String>();
         for (IImplementationSpecification spec : specs) {
             DescriptorValue value = (DescriptorValue) ac.getProperty(spec);
-            if (value == null) continue;
+            if (value == null) Assert.fail(spec.getImplementationTitle() + " was not calculated.");
             ncalc++;
             String[] names = value.getNames();
             descNames.addAll(Arrays.asList(names));

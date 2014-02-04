@@ -32,6 +32,7 @@ import java.util.NoSuchElementException;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
+import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.io.formats.IResourceFormat;
@@ -44,7 +45,9 @@ import org.openscience.cdk.tools.LoggingToolFactory;
  * Iterating SMILES file reader. It allows to iterate over all molecules
  * in the SMILES file, without being read into memory all. Suitable
  * for very large SMILES files. These SMILES files are expected to have one 
- * molecule on each line.
+ * molecule on each line. If a line could not be parsed and empty molecule is
+ * returned and the property {@link #BAD_SMILES_INPUT} is set to the attempted
+ * input. The error is also logged.
  *
  * <p>For parsing each SMILES it still uses the normal SMILESReader.
  *
@@ -66,12 +69,15 @@ extends DefaultIteratingChemObjectReader<IAtomContainer> {
     private BufferedReader input;
     private static ILoggingTool logger =
         LoggingToolFactory.createLoggingTool(IteratingSMILESReader.class);
-    private String currentLine;
     private SmilesParser sp = null;
     
     private boolean nextAvailableIsKnown;
     private boolean hasNext;
     private IAtomContainer nextMolecule;
+    private final IChemObjectBuilder builder;
+    
+    /** Store the problem input as a property. */
+    public static final String BAD_SMILES_INPUT = "bad.smiles.input";
     
     /**
      * Constructs a new IteratingSMILESReader that can read Molecule from a given Reader.
@@ -85,6 +91,7 @@ extends DefaultIteratingChemObjectReader<IAtomContainer> {
     public IteratingSMILESReader(Reader in, IChemObjectBuilder builder) {
         sp = new SmilesParser(builder);
         setReader(in);
+        this.builder = builder;
     }
 
     /**
@@ -119,39 +126,22 @@ extends DefaultIteratingChemObjectReader<IAtomContainer> {
             
             // now try to parse the next Molecule
             try {
-                if (input.ready()) {
-                    currentLine = input.readLine().trim();
-                    logger.debug("Line: ", currentLine);
 
-                    int indexSpace = currentLine.indexOf(" ");
-                    if (indexSpace == -1) indexSpace = currentLine.indexOf("\t");
-
-                    String SMILES = currentLine;
-                    String name = null;
-
-                    if (indexSpace != -1) {
-                        logger.debug("Space found at index: ", indexSpace);
-                        SMILES = currentLine.substring(0,indexSpace);
-                        name = currentLine.substring(indexSpace+1);
-                        name = name.trim();
-                        logger.debug("Line contains SMILES and name: ", SMILES,
-                                     " + " , name);
-                    }
+                final String line = input.readLine();
                 
-                    nextMolecule = sp.parseSmiles(SMILES);
-                    if (name != null) {
-                        nextMolecule.setProperty(CDKConstants.TITLE, name);
-                    }
-                    if (nextMolecule.getAtomCount() > 0) {
-                        hasNext = true;
-                    } else {
-                        hasNext = false;
-                    }
-                } else {
-                    hasNext = false;
+                if (line == null) {
+                    nextAvailableIsKnown = true;
+                    return false;
                 }
+                
+                hasNext = true;
+                final String suffix = suffix(line);
+
+                nextMolecule = readSmiles(line);
+                nextMolecule.setProperty(CDKConstants.TITLE, suffix);
+                
             } catch (Exception exception) {
-                logger.error("Error while reading next molecule: ", exception.getMessage());
+                logger.error("Unexpeced problem: ", exception.getMessage());
                 logger.debug(exception);
                 hasNext = false;
             }
@@ -159,6 +149,40 @@ extends DefaultIteratingChemObjectReader<IAtomContainer> {
             nextAvailableIsKnown = true;
         }
         return hasNext;
+    }
+
+    /**
+     * Obtain the suffix after a line containing SMILES. The suffix follows
+     * any ' ' or '\t' termination characters.
+     * 
+     * @param line input line
+     * @return the suffix - or an empty line
+     */
+    private String suffix(final String line) {
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+            if (c == ' ' || c == '\t')
+                return line.substring(i + 1);
+        }
+        return "";
+    }
+
+    /**
+     * Read the SMILES given in the input line - or return an empty container.
+     * 
+     * @param line input line
+     * @return the read container (or an empty one)
+     */
+    private IAtomContainer readSmiles(final String line) {
+        try {
+            return sp.parseSmiles(line);
+        } catch (CDKException e) {
+            logger.error("Error while reading the SMILES from: " + line + ", ", e);
+            final IAtomContainer empty = builder.newInstance(IAtomContainer.class, 
+                                                             0, 0, 0, 0);
+            empty.setProperty(BAD_SMILES_INPUT, line);
+            return empty;
+        }
     }
 
     /**
@@ -185,7 +209,8 @@ extends DefaultIteratingChemObjectReader<IAtomContainer> {
      */
     @TestMethod("testSMILESFileWithNames,testSMILESFileWithSpacesAndTabs,testClose")
     public void close() throws IOException {
-        input.close();
+        if (input != null)
+            input.close();
     }
 
     @TestMethod("testRemove")

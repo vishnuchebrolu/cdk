@@ -674,7 +674,9 @@ public class DescriptorEngine {
             try {
                 @SuppressWarnings("unchecked")
                 Class<? extends IDescriptor> c = (Class<? extends IDescriptor>) classLoader.loadClass(descriptorName);
-                descriptors.add(instantiate(c));
+                IDescriptor descriptor = instantiate(c);
+                descriptor.initialise(builder);
+                descriptors.add(descriptor);
                 logger.info("Loaded descriptor: ", descriptorName);
             } catch (NoClassDefFoundError error) {
                 logger.error("Could not find this Descriptor: ", descriptorName);
@@ -696,7 +698,6 @@ public class DescriptorEngine {
                                                                     InstantiationException {
         for(Constructor constructor : c.getConstructors()){
             Class<?>[] params = constructor.getParameterTypes();
-            System.out.println(c.getSimpleName() + Arrays.toString(params));
             if(params.length == 0){
                 return (IDescriptor) constructor.newInstance();
             } else if(params.length == 1

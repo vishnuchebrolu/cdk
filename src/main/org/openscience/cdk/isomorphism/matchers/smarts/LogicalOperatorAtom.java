@@ -23,15 +23,17 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.isomorphism.matchers.IQueryAtom;
 
+import java.util.EnumSet;
+
 /**
- * This class matches a logical operator that connects two query atoms
+ * This class matches a logical operator that connects two query atoms. Logical
+ * matchers are created with, {@link #and}, {@link #not} and {@link #or}.
  *
  * @cdk.module  smarts
  * @cdk.githash
  * @cdk.keyword SMARTS 
  */
-public class LogicalOperatorAtom extends SMARTSAtom {
-	private static final long serialVersionUID = -5752396252307536738L;
+public final class LogicalOperatorAtom extends SMARTSAtom {
 
 	/**
 	 * Left child
@@ -51,27 +53,38 @@ public class LogicalOperatorAtom extends SMARTSAtom {
     public LogicalOperatorAtom(IChemObjectBuilder builder){
         super(builder);
     }
-
+    
+    @Deprecated
     public IQueryAtom getLeft() {
         return left;
     }
-
+    
+    @Deprecated
     public String getOperator() {
         return operator;
     }
-
+    
+    @Deprecated
     public IQueryAtom getRight() {
         return right;
     }
-
+    
+    @Deprecated
     public void setLeft(IQueryAtom left) {
         this.left = left;
     }
 
+    /**
+     * 
+     * @deprecated use static utility methods to create logical atom matcher,
+     * {@link #and}, {@link #or} or {@link #not}.
+     */
+    @Deprecated
     public void setOperator(String name) {
         this.operator = name;
     }
-
+    
+    @Deprecated
     public void setRight(IQueryAtom right) {
         this.right = right;
     }
@@ -79,6 +92,7 @@ public class LogicalOperatorAtom extends SMARTSAtom {
     /* (non-Javadoc)
      * @see org.openscience.cdk.isomorphism.matchers.smarts.SMARTSAtom#matches(org.openscience.cdk.interfaces.IAtom)
      */
+    @Deprecated
     public boolean matches(IAtom atom) {
     	boolean val = false;
     	boolean matchesLeft = left.matches(atom);
@@ -103,6 +117,7 @@ public class LogicalOperatorAtom extends SMARTSAtom {
     /* (non-Javadoc)
      * @see org.openscience.cdk.ChemObject#getFlag(int)
      */
+    @Deprecated
     public boolean getFlag(int flagType) {
     	boolean val = false;
     	boolean leftFlag = left.getFlag(flagType);
@@ -122,5 +137,134 @@ public class LogicalOperatorAtom extends SMARTSAtom {
     		}
     	}
     	return val;
+    }
+
+    /**
+     * Conjunction the provided expressions.
+     *
+     * @param left expression
+     * @param right expression
+     * @return conjunction of the left and right expressions
+     */
+    public static SMARTSAtom and(IQueryAtom left, IQueryAtom right) {
+        return new Conjunction(left.getBuilder(), left, right);
+    }
+
+    /**
+     * Disjunction the provided expressions.
+     *
+     * @param left expression
+     * @param right expression
+     * @return disjunction of the left and right expressions
+     */
+    public static SMARTSAtom or(IQueryAtom left, IQueryAtom right) {
+        return new Disjunction(left.getBuilder(), left, right);
+    }
+
+    /**
+     * Negate the provided expression.
+     * 
+     * @param expr expression to negate
+     * @return a SMARTS atom which is the negation of the expression
+     */
+    public static SMARTSAtom not(IQueryAtom expr) {
+        return new Negation(expr.getBuilder(), expr);
+    }
+
+    /** Defines a conjunction (AND) between two query atoms. */
+    private static class Conjunction extends SMARTSAtom {
+
+        /** left and right of the operator. */
+        private SMARTSAtom left, right;
+
+        /**
+         * Create a disjunction of {@code left} or {@code right}.
+         *
+         * @param builder chem object builder
+         * @param left    the expression to negate
+         * @param right   the expression to negate
+         */
+        private Conjunction(IChemObjectBuilder builder, IQueryAtom left, IQueryAtom right) {
+            super(builder);
+            this.left = (SMARTSAtom) left;
+            this.right = (SMARTSAtom) right;
+        }
+
+        /** @inheritDoc */
+        @Override public boolean matches(IAtom atom) {
+            return left.matches(atom) && right.matches(atom);
+        }
+
+        /** @inheritDoc */
+        @Override public boolean chiralityMatches(IAtom target, int tParity, int permParity) {
+            // contract dictates that left.matches() & right.matches() are known to be true
+            return left.chiralityMatches(target, tParity, permParity)
+                    && right.chiralityMatches(target, tParity, permParity);
+        }
+    }
+
+    /** Defines a disjunction (or) between two query atoms. */
+    private static class Disjunction extends SMARTSAtom {
+
+        /** left and right of the operator. */
+        private SMARTSAtom left, right;
+
+        /**
+         * Create a disjunction of {@code left} or {@code right}.
+         *
+         * @param builder chem object builder
+         * @param left    the expression to negate
+         * @param right   the expression to negate
+         */
+        private Disjunction(IChemObjectBuilder builder, IQueryAtom left, IQueryAtom right) {
+            super(builder);
+            this.left = (SMARTSAtom) left;
+            this.right = (SMARTSAtom) right;
+        }
+
+        /** @inheritDoc */
+        @Override public boolean matches(IAtom atom) {
+            return left.matches(atom) || right.matches(atom);
+        }
+
+        /** @inheritDoc */
+        @Override public boolean chiralityMatches(IAtom target, int tParity, int permParity) {
+            // we know the left or right was true, for each side which matched try to verify
+            // the chirality
+            return left.matches(target) && left.chiralityMatches(target, tParity, permParity)
+                    || right.matches(target) && right.chiralityMatches(target, tParity, permParity);
+        }
+    }
+
+    /** Defines a negation (not) of a query atom. */
+    private static class Negation extends SMARTSAtom {
+
+        /** Expression to negate. */
+        private SMARTSAtom expression;
+        
+        /** Is the expression chiral - if so, always true! */
+        private boolean    chiral;
+
+        /**
+         * Create a negation of {@code expression}.
+         *
+         * @param builder    chem object builder
+         * @param expression the expression to negate
+         */
+        private Negation(IChemObjectBuilder builder, IQueryAtom expression) {
+            super(builder);
+            this.expression = (SMARTSAtom) expression;
+            this.chiral     = expression.getClass().equals(ChiralityAtom.class); 
+        }
+
+        /** @inheritDoc */
+        @Override public boolean matches(IAtom atom) {
+            return chiral || !expression.matches(atom);
+        }
+
+        /** @inheritDoc */
+        @Override public boolean chiralityMatches(IAtom target, int tParity, int permParity) {
+            return !expression.chiralityMatches(target, tParity, permParity);
+        }
     }
 }

@@ -39,6 +39,7 @@ import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.io.IChemObjectReader.Mode;
 import org.openscience.cdk.io.MDLV2000Reader;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
+import org.openscience.cdk.smiles.FixBondOrdersTool;
 import org.openscience.cdk.tools.CDKHydrogenAdder;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
@@ -62,8 +63,14 @@ public abstract class AbstractFixedLengthFingerprinterTest extends AbstractFinge
     @Test public void testBug706786() throws Exception {
         // inlined molecules - note this test fails if implicit hydrogens are
         // included. generally MACCS and ESTATE can't be used for substructure filter
+        // check those subclasses which check the bits are set
         IAtomContainer superStructure = bug706786_1();
         IAtomContainer subStructure   = bug706786_2();
+
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(superStructure);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(subStructure);
+        addImplicitHydrogens(superStructure);
+        addImplicitHydrogens(subStructure);
 
         IFingerprinter fingerprinter = getBitFingerprinter();
         BitSet superBS = fingerprinter.getBitFingerprint(superStructure).asBitSet();
@@ -93,7 +100,7 @@ public abstract class AbstractFixedLengthFingerprinterTest extends AbstractFinge
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(superstructure);
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(substructure);
         CDKHueckelAromaticityDetector.detectAromaticity(superstructure);
-        CDKHueckelAromaticityDetector.detectAromaticity(substructure);
+        CDKHueckelAromaticityDetector.detectAromaticity(substructure);        
 
         IFingerprinter fingerprinter = getBitFingerprinter();
         BitSet superBS = fingerprinter.getBitFingerprint(superstructure).asBitSet();
@@ -112,6 +119,11 @@ public abstract class AbstractFixedLengthFingerprinterTest extends AbstractFinge
         // included. generally PubCheMFingerprint can't be used for substructure filter
         IAtomContainer superStructure = bug934819_2();
         IAtomContainer subStructure   = bug934819_1();
+
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(superStructure);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(subStructure);
+        addImplicitHydrogens(superStructure);
+        addImplicitHydrogens(subStructure);
 
         IFingerprinter fingerprinter = getBitFingerprinter();
         BitSet superBS = fingerprinter.getBitFingerprint(superStructure).asBitSet();
@@ -144,6 +156,12 @@ public abstract class AbstractFixedLengthFingerprinterTest extends AbstractFinge
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(structure2);
         CDKHueckelAromaticityDetector.detectAromaticity(structure1);
         CDKHueckelAromaticityDetector.detectAromaticity(structure2);
+        addImplicitHydrogens(structure1);
+        addImplicitHydrogens(structure2);
+
+        FixBondOrdersTool fbot = new FixBondOrdersTool();
+        structure1 = fbot.kekuliseAromaticRings(structure1);
+        structure2 = fbot.kekuliseAromaticRings(structure2);
         
         // hydrogens loaded from MDL mol files if non-query. Structure 2 has
         // query aromatic bonds and the hydrogen counts are not assigned - ensure
@@ -525,5 +543,11 @@ public abstract class AbstractFixedLengthFingerprinterTest extends AbstractFinge
         return mol;
     }
     
+    static BitSet asBitSet(int ... xs) {
+        BitSet bs = new BitSet();
+        for (int x : xs)
+            bs.set(x);
+        return bs;
+    }
 }
 

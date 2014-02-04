@@ -25,6 +25,7 @@
 package org.openscience.cdk.smiles;
 
 import com.google.common.collect.FluentIterable;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.interfaces.IAtom;
@@ -48,10 +49,12 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.openscience.cdk.CDKConstants.ATOM_ATOM_MAPPING;
 import static org.openscience.cdk.interfaces.ITetrahedralChirality.Stereo.ANTI_CLOCKWISE;
 
 /**
@@ -416,8 +419,17 @@ public class BeamToCDKTest {
         assertThat(ses.length, is(2));
         assertThat(ses[0], is(instanceOf(ITetrahedralChirality.class)));
         assertThat(ses[1], is(instanceOf(ITetrahedralChirality.class)));
-
+        
         ITetrahedralChirality tc1 = (ITetrahedralChirality) ses[0];
+        ITetrahedralChirality tc2 = (ITetrahedralChirality) ses[1];
+        
+        // we want the second atom stereo as tc1
+        if (ac.getAtomNumber(tc1.getChiralAtom()) > ac.getAtomNumber(tc2.getChiralAtom())) {
+            ITetrahedralChirality swap = tc1;
+            tc1 = tc2;
+            tc2 = swap;
+        }
+        
         assertThat(tc1.getChiralAtom(), is(ac.getAtom(1)));
         assertThat(tc1.getLigands(), is(new IAtom[]{
                 ac.getAtom(0),
@@ -433,7 +445,7 @@ public class BeamToCDKTest {
         // we order the atoms by their index the tetrahedral configuration goes
         // from clockwise in the SMILES to anti-clockwise ('@'). Writing out the
         // SMILES again one can see it will flip back clockwise ('@@').
-        ITetrahedralChirality tc2 = (ITetrahedralChirality) ses[1];
+        
         assertThat(tc2.getChiralAtom(), is(ac.getAtom(6)));
         assertThat(tc2.getLigands(), is(new IAtom[]{
                 ac.getAtom(1),
@@ -545,6 +557,12 @@ public class BeamToCDKTest {
         // the two 'F' are together but we use a H so they are 'opposite'
         assertThat(dbs.getStereo(),
                    is(IDoubleBondStereochemistry.Conformation.OPPOSITE));
+    }
+    
+    @Test public void readAtomClass() throws Exception {
+        IAtomContainer ac = convert("CC[C:2]C");
+        assertNotNull(ac.getAtom(2).getProperty(ATOM_ATOM_MAPPING));
+        assertThat(ac.getAtom(2).getProperty(ATOM_ATOM_MAPPING, Integer.class), is(2));
     }
 
     IAtomContainer convert(String smi) throws IOException {

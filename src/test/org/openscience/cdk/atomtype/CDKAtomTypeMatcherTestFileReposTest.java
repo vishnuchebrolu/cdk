@@ -168,7 +168,7 @@ public class CDKAtomTypeMatcherTestFileReposTest extends CDKTestCase {
     		"isopropylacetate.mol",
     		"l-ala.mol",
     		"methylbenzol.mol",
-    		"molV3000.mol",
+    		// "molV3000.mol", // can't be read with MDLV2000Reader!
     		"murckoTest10.mol",
     		"murckoTest11.mol",
     		"murckoTest1.mol",
@@ -211,9 +211,13 @@ public class CDKAtomTypeMatcherTestFileReposTest extends CDKTestCase {
     	int failed = 0;
     	ISimpleChemObjectReader reader = new MDLV2000Reader();
         for (String testFile : testFiles) {
-            TestResults results = testFile(DIRNAME, testFile, reader);
-            tested += results.tested;
-            failed += results.failed;
+            try {
+                TestResults results = testFile(DIRNAME, testFile, reader);
+                tested += results.tested;
+                failed += results.failed;
+            } catch (Exception e) {
+                Assert.fail(testFile + " caused an error: " + e);
+            }
         }
     	Assert.assertEquals("Could not match all atom types!", tested, (tested - failed));
     }

@@ -22,10 +22,21 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 import org.openscience.cdk.coverage.IsomorphismCoverageTest;
+import org.openscience.cdk.isomorphism.AbstractVFStateTest;
+import org.openscience.cdk.isomorphism.AtomMatcherTest;
+import org.openscience.cdk.isomorphism.BondMatcherTest;
+import org.openscience.cdk.isomorphism.CompatibilityMatrixTest;
+import org.openscience.cdk.isomorphism.ComponentGroupingTest;
+import org.openscience.cdk.isomorphism.StateStreamTest;
+import org.openscience.cdk.isomorphism.StereoMatchTest;
+import org.openscience.cdk.isomorphism.UllmannStateTest;
+import org.openscience.cdk.isomorphism.UllmannTest;
+import org.openscience.cdk.isomorphism.VFStateTest;
+import org.openscience.cdk.isomorphism.VFSubStateTest;
+import org.openscience.cdk.isomorphism.VentoFoggiaTest;
 import org.openscience.cdk.isomorphism.matchers.QueryAtomContainerCreatorTest;
 import org.openscience.cdk.isomorphism.matchers.RGroupListTest;
 import org.openscience.cdk.isomorphism.matchers.SymbolSetQueryAtomTest;
-import org.openscience.cdk.isomorphism.matchers.smarts.AnyOrderQueryBondTest;
 
 /**
  * TestSuite that runs all the tests for the CDK core module.
@@ -38,6 +49,18 @@ import org.openscience.cdk.isomorphism.matchers.smarts.AnyOrderQueryBondTest;
     RGroupListTest.class,
     SymbolSetQueryAtomTest.class,
     QueryAtomContainerCreatorTest.class,
-    AnyOrderQueryBondTest.class
+    
+    AtomMatcherTest.class,
+    BondMatcherTest.class,
+    AbstractVFStateTest.class,
+    VFSubStateTest.class,
+    VFStateTest.class,
+    VentoFoggiaTest.class,
+    UllmannStateTest.class,
+    CompatibilityMatrixTest.class,
+    StateStreamTest.class,
+    UllmannTest.class,
+    StereoMatchTest.class,
+    ComponentGroupingTest.class
 })
 public class MisomorphismTests {}

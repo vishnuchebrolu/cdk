@@ -24,17 +24,16 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
 /**
- * This smarts atom matches aliphatic atom with element symbol specified
+ * This smarts atom matches aliphatic atom with element symbol specified.
  *
  * @cdk.module  smarts
  * @cdk.githash
  * @cdk.keyword SMARTS
  */
 public class AliphaticSymbolAtom extends SMARTSAtom {
-	private static final long serialVersionUID = -4091269557200575925L;
 	
 	/**
-	 * Creates a new instance
+	 * Creates a new instance.
 	 *
 	 * @param symbol the atom symbol
 	 */
@@ -48,12 +47,7 @@ public class AliphaticSymbolAtom extends SMARTSAtom {
 	 * @see org.openscience.cdk.isomorphism.matchers.smarts.SMARTSAtom#matches(org.openscience.cdk.interfaces.IAtom)
 	 */
 	public boolean matches(IAtom atom) {
-		if (atom.getSymbol().equals(this.getSymbol()) &&
-				!atom.getFlag(CDKConstants.ISAROMATIC)) {
-			return true;
-		} else {
-			return false;
-		}
+		return !atom.getFlag(CDKConstants.ISAROMATIC) && atom.getSymbol().equals(this.getSymbol());
 	}
 	
 	/* (non-Javadoc)

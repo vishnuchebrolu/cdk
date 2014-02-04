@@ -78,6 +78,9 @@ import org.openscience.cdk.interfaces.IChemObjectBuilder;
  * @cdk.keyword substructure search
  */
 public class SMARTSParser {
+
+    private int componentId = 0;
+
 	/**
 	 * This method parses a Smarts String and returns an instance of 
 	 * <code>QueryAtomContainer</code>
@@ -88,8 +91,8 @@ public class SMARTSParser {
         try {
             SMARTSParser parser = new SMARTSParser(reader);
             ASTStart start = parser.Start();
-            org.openscience.cdk.smiles.smarts.parser.visitor.SmartsQueryVisitor visitor 
-            	= new org.openscience.cdk.smiles.smarts.parser.visitor.SmartsQueryVisitor(builder);
+            org.openscience.cdk.smiles.smarts.parser.SmartsQueryVisitor visitor 
+            	= new org.openscience.cdk.smiles.smarts.parser.SmartsQueryVisitor(builder);
             container = (QueryAtomContainer)start.jjtAccept(visitor, null);
         } catch (ParseException exception) {
             throw new IllegalArgumentException("The string " + smarts + " is not a valid" +
@@ -107,7 +110,7 @@ TOKEN_MGR_DECLS : {
     // Required by SetState
     void backup(int n) { input_stream.backup(n); } 
 
-} 
+}
 
 <*> TOKEN:
 {
@@ -353,17 +356,50 @@ void ReactionExpression() #Reaction : {}
     ">>" GroupExpression()
 }
 
-void GroupExpression() #Group : { ASTSmarts smarts; }
+void GroupExpression() #Group : {}
 {
-    [<L_PAREN>] SmartsExpression() [<R_PAREN>] 
+    (
+        <L_PAREN> 
+        SmartsExpression()
+        {
+            ((ASTSmarts) jjtree.peekNode()).setComponentId(++componentId);
+        }
+        ( "." 
+          SmartsExpression()
+          {
+              // same component grouping
+              ((ASTSmarts) jjtree.peekNode()).setComponentId(componentId);
+          }
+          )* 
+        <R_PAREN>
+        |
+        SmartsExpression()
+    )
     ( "." 
-    	[<L_PAREN>] SmartsExpression() [<R_PAREN>] 
+    	(
+    	    <L_PAREN> 
+                    SmartsExpression()
+                    {
+                        ((ASTSmarts) jjtree.peekNode()).setComponentId(++componentId);
+                    }
+                    ( "." 
+                      SmartsExpression()
+                      {
+                          // same component grouping
+                          ((ASTSmarts) jjtree.peekNode()).setComponentId(componentId);
+                      }
+                      )* 
+            <R_PAREN>
+            |
+            SmartsExpression()
+        )
     )*
 }    
 
 void SmartsExpression() #Smarts : 
 {
-	ASTAtom atom; 
+	ASTAtom atom;
+	int ringIdToken;
 }
 {
 	atom = AtomExpression() 
@@ -371,7 +407,12 @@ void SmartsExpression() #Smarts :
 	  (
 	  	( LowAndBond() )? 
 	  	( 
-	  		<DIGIT>
+	  		(<DIGIT> 
+	  		{ ringIdToken = token.image.charAt(0) - '0'; } 
+	  		| ("%" <DIGIT> 
+	  		{ ringIdToken = 10 * (token.image.charAt(0) - '0'); }
+	  		       <DIGIT> 
+	  		{ ringIdToken += token.image.charAt(0) - '0'; })) 
 	  		{
 	  			ASTLowAndBond bond = null;
 				ASTRingIdentifier ringId = new ASTRingIdentifier(JJTRINGIDENTIFIER);
@@ -379,10 +420,10 @@ void SmartsExpression() #Smarts :
 					bond = (ASTLowAndBond)jjtree.popNode(); // pop the bond
 					ringId.jjtAddChild(bond, 0);
 				}
-				ringId.setRingId(Integer.parseInt(token.image));
+				ringId.setRingId(ringIdToken);
 				atom.jjtAddChild(ringId, atom.jjtGetNumChildren());
-	  		} 
-	  		| 
+	  		}	
+	  		|
 	  		atom = AtomExpression()
 	  	)
 	  ) 
@@ -540,7 +581,7 @@ void NotExpression() #NotExpression :
 void RecursiveSmartsExpression() #RecursiveSmartsExpression : {}
 {
     <DOLLAR> <L_PAREN> {token_source.SwitchTo(SMARTSParserConstants.DEFAULT); }
-    SmartsExpression() <R_PAREN> {token_source.SwitchTo(SMARTSParserConstants.ATOM_EXPRESSION); }
+    GroupExpression() <R_PAREN> {token_source.SwitchTo(SMARTSParserConstants.ATOM_EXPRESSION); }
 }
 
 void PrimitiveAtomExpression() : {}
@@ -737,13 +778,9 @@ void RingIdentifier() #RingIdentifier: {}
 void Chirality() #Chirality : 
 { StringBuffer digits = new StringBuffer(); }
 {
-    LOOKAHEAD(2)
-    "@" { jjtThis.setClockwise(true); } | "@@" { jjtThis.setClockwise(false); }
-    ( 
-    	( <DIGIT> { digits.append(token.image); } )+
-    	{
-    		jjtThis.setDegree( Integer.parseInt(digits.toString()) );
-    	}
+    "@" { jjtThis.setClockwise(false); }
+    (
+        "@" { jjtThis.setClockwise(true); }
     )? 
     ( 
     	<Q_MARK> { jjtThis.setUnspecified(true); }
