@@ -42,7 +42,7 @@ import java.util.Arrays;
  * 
  * The initial set of invariants is basic and are - <i> 
  * "sufficient for the purpose of obtaining unique notation for simple SMILES,
- *  but it is not necessarily a “complete” set. No “perfect” set of invariants
+ *  but it is not necessarily a “complete�? set. No “perfect�? set of invariants
  *  is known that will distinguish all possible graph asymmetries. However, 
  *  for any given set of structures, a set of invariants can be devised to 
  *  provide the necessary discrimination"</i> {@cdk.cite WEI89}. As such this
@@ -163,7 +163,7 @@ public final class Canon {
         int n = 0, m = 0;
         
         // storage of symmetry classes
-        long[] symmetry = null; 
+        long[] symmetry_local = null; 
 
         while (n < ord) {
             
@@ -179,12 +179,12 @@ public final class Canon {
                 m = n;
             }
             
-            if (symmetry == null)
-                symmetry = Arrays.copyOf(prev, ord);
+            if (symmetry_local == null)
+                symmetry_local = Arrays.copyOf(prev, ord);
 
             // partition is discrete or only symmetry classes are needed
             if (symOnly || n == ord)
-                return symmetry;
+                return symmetry_local;
 
             // artificially split the lowest cell, we perturb the value
             // of all vertices with equivalent rank to the lowest non-unique
@@ -197,7 +197,7 @@ public final class Canon {
             System.arraycopy(nextVs, 0, currVs, 0, nnu);
         }
 
-        return symmetry;
+        return symmetry_local;
     }
     
 
