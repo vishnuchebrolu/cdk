@@ -36,6 +36,8 @@ import org.openscience.cdk.interfaces.IRingSet;
 import org.openscience.cdk.ringsearch.RingSearch;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
 import java.util.List;
 
 import static org.openscience.cdk.graph.GraphUtil.EdgeToBondMap;
@@ -94,7 +96,7 @@ public final class Cycles {
 
     /** The input container - allows us to create 'Ring' objects. */
     private final IAtomContainer container;
-    
+
     /** Mapping for quick lookup of bond mapping. */
     private final EdgeToBondMap bondMap;
 
@@ -108,9 +110,9 @@ public final class Cycles {
     private Cycles(int[][] paths,
                    IAtomContainer container,
                    EdgeToBondMap bondMap) {
-        this.paths     = paths;
+        this.paths = paths;
         this.container = container;
-        this.bondMap   = bondMap;
+        this.bondMap = bondMap;
     }
 
     /**
@@ -127,9 +129,9 @@ public final class Cycles {
     public int[][] paths() {
         int[][] cpy = new int[paths.length][];
         for (int i = 0; i < paths.length; i++)
-            cpy[i] = paths[i].clone();         
-        return cpy;     
-    } 
+            cpy[i] = paths[i].clone();
+        return cpy;
+    }
 
     /**
      * Convert the cycles to a {@link IRingSet} containing the {@link IAtom}s
@@ -178,7 +180,9 @@ public final class Cycles {
     }
 
     /**
-     * All cycles of smaller than or equal to the specified length.
+     * All cycles of smaller than or equal to the specified length. If a length
+     * is also provided to {@link CycleFinder#find(IAtomContainer, int)} the
+     * minimum of the two limits is used.
      *
      * @param length maximum size or cycle to find
      * @return cycle finder
@@ -398,8 +402,8 @@ public final class Cycles {
      * Find all cycles in a fused system or if there were too many cycles
      * fallback and use the shortest cycles through each vertex. Typically the
      * types of molecules which the vertex short cycles are provided for are
-     * fullerenes. This cycle finder is well suited to aromaticity. 
-     * 
+     * fullerenes. This cycle finder is well suited to aromaticity.
+     *
      * <blockquote>
      * <pre>
      * CycleFinder cf = Cycles.allOrVertexShort();
@@ -413,32 +417,32 @@ public final class Cycles {
      * }
      * </pre>
      * </blockquote>
-     * 
+     *
      * @return a cycle finder which computes all cycles if possible or provides
-     *         the vertex short cycles
-     * @deprecated use {@link #or} to define a custom fall-back        
+     * the vertex short cycles
+     * @deprecated use {@link #or} to define a custom fall-back
      */
     @Deprecated
     @TestMethod("allOrVertexShort")
     public static CycleFinder allOrVertexShort() {
-        return or(all(), vertexShort());    
+        return or(all(), vertexShort());
     }
 
     /**
      * Use an auxiliary cycle finder if the primary method was intractable.
-     * 
+     *
      * <blockquote><pre>
-     * // all cycles or all cycles size <= 6 
+     * // all cycles or all cycles size <= 6
      * CycleFinder cf = Cycles.or(Cycles.all(), Cycles.all(6));
      * </pre></blockquote>
-     * 
+     *
      * It is possible to nest multiple levels.
-     * 
+     *
      * <blockquote><pre>
-     * // all cycles or relevant or essential  
+     * // all cycles or relevant or essential
      * CycleFinder cf = Cycles.or(Cycles.all(),
      *                            Cycles.or(Cycles.relevant(),
-     *                                      Cycles.essential())); 
+     *                                      Cycles.essential()));
      * </pre></blockquote>
      *
      * @param primary   primary cycle finding method
@@ -482,7 +486,7 @@ public final class Cycles {
      */
     @TestMethod("all")
     public static Cycles all(IAtomContainer container) throws Intractable {
-        return all().find(container);
+        return all().find(container, container.getAtomCount());
     }
 
     /**
@@ -495,7 +499,7 @@ public final class Cycles {
      */
     @TestMethod("allUpToLength")
     public static Cycles all(IAtomContainer container, int length) throws Intractable {
-        return all(length).find(container);
+        return all().find(container, length);
     }
 
     /**
@@ -648,6 +652,17 @@ public final class Cycles {
     }
 
     /**
+     * Derive a new cycle finder that only provides cycles without a chord.
+     *
+     * @param original find the initial cycles before filtering
+     * @return cycles or the original without chords
+     */
+    @TestMethod("unchorded")
+    public static CycleFinder unchorded(CycleFinder original) {
+        return new Unchorded(original);
+    }
+
+    /**
      * Internal method to wrap cycle computations which <i>should</i> be
      * tractable. That is they currently won't throw the exception - if the
      * method does throw an exception an internal error is triggered as a sanity
@@ -658,8 +673,23 @@ public final class Cycles {
      * @return the cycles of the molecule
      */
     private static Cycles _invoke(CycleFinder finder, IAtomContainer container) {
+        return _invoke(finder, container, container.getAtomCount());
+    }
+
+    /**
+     * Internal method to wrap cycle computations which <i>should</i> be
+     * tractable. That is they currently won't throw the exception - if the
+     * method does throw an exception an internal error is triggered as a sanity
+     * check.
+     *
+     * @param finder    the cycle finding method
+     * @param container the molecule to find the cycles of
+     * @param length    maximum size or cycle to find
+     * @return the cycles of the molecule
+     */
+    private static Cycles _invoke(CycleFinder finder, IAtomContainer container, int length) {
         try {
-            return finder.find(container);
+            return finder.find(container, length);
         } catch (Intractable e) {
             throw new RuntimeException("Cycle computation should not be intractable: ",
                                        e);
@@ -670,31 +700,31 @@ public final class Cycles {
     private static enum CycleComputation implements CycleFinder {
         MCB {
             /** {@inheritDoc} */
-            @Override int[][] apply(int[][] graph) {
-                InitialCycles ic = InitialCycles.ofBiconnectedComponent(graph);
+            @Override int[][] apply(int[][] graph, int length) {
+                InitialCycles ic = InitialCycles.ofBiconnectedComponent(graph, length);
                 return new MinimumCycleBasis(ic, true).paths();
             }
         },
         ESSENTIAL {
             /** {@inheritDoc} */
-            @Override int[][] apply(int[][] graph) {
-                InitialCycles ic = InitialCycles.ofBiconnectedComponent(graph);
+            @Override int[][] apply(int[][] graph, int length) {
+                InitialCycles ic = InitialCycles.ofBiconnectedComponent(graph, length);
                 RelevantCycles rc = new RelevantCycles(ic);
                 return new EssentialCycles(rc, ic).paths();
             }
         },
         RELEVANT {
             /** {@inheritDoc} */
-            @Override int[][] apply(int[][] graph) {
-                InitialCycles ic = InitialCycles.ofBiconnectedComponent(graph);
+            @Override int[][] apply(int[][] graph, int length) {
+                InitialCycles ic = InitialCycles.ofBiconnectedComponent(graph, length);
                 return new RelevantCycles(ic).paths();
             }
         },
         ALL {
             /** {@inheritDoc} */
-            @Override int[][] apply(int[][] graph) throws Intractable {
+            @Override int[][] apply(int[][] graph, int length) throws Intractable {
                 final int threshold = 684; // see. AllRingsFinder.Threshold.Pubchem_99  
-                AllCycles ac = new AllCycles(graph, graph.length, threshold);
+                AllCycles ac = new AllCycles(graph, Math.min(length, graph.length), threshold);
                 if (!ac.completed())
                     throw new Intractable("A large number of cycles were being generated and the" +
                                                   " computation was aborted. Please use AllCycles/AllRingsFinder with" +
@@ -705,50 +735,51 @@ public final class Cycles {
         },
         TRIPLET_SHORT {
             /** {@inheritDoc} */
-            @Override int[][] apply(int[][] graph) throws Intractable {
-                InitialCycles ic = InitialCycles.ofBiconnectedComponent(graph);
+            @Override int[][] apply(int[][] graph, int length) throws Intractable {
+                InitialCycles ic = InitialCycles.ofBiconnectedComponent(graph, length);
                 return new TripletShortCycles(new MinimumCycleBasis(ic, true), false).paths();
             }
         },
         VERTEX_SHORT {
             /** {@inheritDoc} */
-            @Override int[][] apply(int[][] graph) throws Intractable {
-                InitialCycles ic = InitialCycles.ofBiconnectedComponent(graph);
+            @Override int[][] apply(int[][] graph, int length) throws Intractable {
+                InitialCycles ic = InitialCycles.ofBiconnectedComponent(graph, length);
                 return new VertexShortCycles(ic).paths();
             }
         },
         EDGE_SHORT {
             /** {@inheritDoc} */
-            @Override int[][] apply(int[][] graph) throws Intractable {
-                InitialCycles ic = InitialCycles.ofBiconnectedComponent(graph);
+            @Override int[][] apply(int[][] graph, int length) throws Intractable {
+                InitialCycles ic = InitialCycles.ofBiconnectedComponent(graph, length);
                 return new EdgeShortCycles(ic).paths();
             }
         },
         CDK_AROMATIC {
             /** {@inheritDoc} */
-            @Override int[][] apply(int[][] graph) throws Intractable {
-                
-                InitialCycles     ic  = InitialCycles.ofBiconnectedComponent(graph);
+            @Override int[][] apply(int[][] graph, int length) throws Intractable {
+
+                InitialCycles ic = InitialCycles.ofBiconnectedComponent(graph, length);
                 MinimumCycleBasis mcb = new MinimumCycleBasis(ic, true);
-                
+
                 // As per the old aromaticity detector if the MCB/SSSR is made 
                 // of 2 or 3 rings we check all rings for aromaticity - otherwise
                 // we just check the MCB/SSSR
                 if (mcb.size() > 3) {
                     return mcb.paths();
-                } else { 
-                    return ALL.apply(graph);
                 }
-            }    
+                else {
+                    return ALL.apply(graph, length);
+                }
+            }
         },
         ALL_OR_VERTEX_SHORT {
             /** {@inheritDoc} */
-            @Override int[][] apply(int[][] graph) throws Intractable {
+            @Override int[][] apply(int[][] graph, int length) throws Intractable {
                 final int threshold = 684; // see. AllRingsFinder.Threshold.Pubchem_99  
-                AllCycles ac = new AllCycles(graph, graph.length, threshold);
-                
-                return ac.completed() ? ac.paths() 
-                                      : VERTEX_SHORT.apply(graph);
+                AllCycles ac = new AllCycles(graph, Math.min(length, graph.length), threshold);
+
+                return ac.completed() ? ac.paths()
+                                      : VERTEX_SHORT.apply(graph, length);
             }
         };
 
@@ -760,10 +791,15 @@ public final class Cycles {
          * @return the cycles of the graph
          * @throws Intractable the computation reached a set limit
          */
-        abstract int[][] apply(int[][] graph) throws Intractable;
+        abstract int[][] apply(int[][] graph, int length) throws Intractable;
+
+        /** @inheritDoc */
+        @Override public Cycles find(IAtomContainer molecule) throws Intractable {
+            return find(molecule, molecule.getAtomCount());
+        }
 
         /** {@inheritDoc} */
-        @Override public Cycles find(IAtomContainer molecule) throws Intractable {
+        @Override public Cycles find(IAtomContainer molecule, int length) throws Intractable {
 
             EdgeToBondMap bondMap = EdgeToBondMap.withSpaceFor(molecule);
             int[][] graph = GraphUtil.toAdjList(molecule, bondMap);
@@ -774,7 +810,8 @@ public final class Cycles {
             // all isolated cycles are relevant - all we need to do is walk around
             // the vertices in the subset 'isolated' 
             for (int[] isolated : ringSearch.isolated()) {
-                walks.add(GraphUtil.cycle(graph, isolated));
+                if (isolated.length <= length)
+                    walks.add(GraphUtil.cycle(graph, isolated));
             }
 
             // each biconnected component which isn't an isolated cycle is processed
@@ -783,7 +820,7 @@ public final class Cycles {
 
                 // make a subgraph and 'apply' the cycle computation - the walk 
                 // (path) is then lifted to the original graph            
-                for (int[] cycle : apply(GraphUtil.subgraph(graph, fused))) {
+                for (int[] cycle : apply(GraphUtil.subgraph(graph, fused), length)) {
                     walks.add(lift(cycle, fused));
                 }
             }
@@ -794,8 +831,8 @@ public final class Cycles {
         }
 
         /** @inheritDoc */
-        @Override public Cycles find(IAtomContainer molecule, int[][] graph) throws Intractable {
-            
+        @Override public Cycles find(IAtomContainer molecule, int[][] graph, int length) throws Intractable {
+
             RingSearch ringSearch = new RingSearch(molecule, graph);
 
             List<int[]> walks = new ArrayList<int[]>(6);
@@ -812,7 +849,7 @@ public final class Cycles {
 
                 // make a subgraph and 'apply' the cycle computation - the walk 
                 // (path) is then lifted to the original graph            
-                for (int[] cycle : apply(GraphUtil.subgraph(graph, fused))) {
+                for (int[] cycle : apply(GraphUtil.subgraph(graph, fused), length)) {
                     walks.add(lift(cycle, fused));
                 }
             }
@@ -899,11 +936,11 @@ public final class Cycles {
      * Obtain the bond between the atoms at index 'u' and 'v'. If the 'bondMap'
      * is non-null it is used for direct lookup otherwise the slower linear
      * lookup in 'container' is used.
-     * 
+     *
      * @param container a structure
-     * @param bondMap optimised map of atom indices to bond instances
-     * @param u an atom index
-     * @param v an atom index (connected to u)
+     * @param bondMap   optimised map of atom indices to bond instances
+     * @param u         an atom index
+     * @param v         an atom index (connected to u)
      * @return the bond between u and v
      */
     private static IBond getBond(IAtomContainer container,
@@ -919,31 +956,40 @@ public final class Cycles {
      * All cycles smaller than or equal to a specified length.
      */
     private static final class AllUpToLength implements CycleFinder {
-        
-        private final int length;
-        
+
+        private final int predefinedLength;
+
         // see. AllRingsFinder.Threshold.Pubchem_99
-        private final int threshold = 684; 
+        private final int threshold = 684;
 
         private AllUpToLength(int length) {
-            this.length = length;
+            this.predefinedLength = length;
         }
 
         /** @inheritDoc */
         @Override public Cycles find(IAtomContainer molecule) throws Intractable {
-            return find(molecule, GraphUtil.toAdjList(molecule));
+            return find(molecule, molecule.getAtomCount());
         }
 
         /** @inheritDoc */
-        @Override public Cycles find(IAtomContainer molecule, int[][] graph) throws Intractable {
+        @Override public Cycles find(IAtomContainer molecule, int length) throws Intractable {
+            return find(molecule, GraphUtil.toAdjList(molecule), length);
+        }
+
+        /** @inheritDoc */
+        @Override public Cycles find(IAtomContainer molecule, int[][] graph, int length) throws Intractable {
             RingSearch ringSearch = new RingSearch(molecule, graph);
+
+            if (this.predefinedLength < length)
+                length = this.predefinedLength;
 
             List<int[]> walks = new ArrayList<int[]>(6);
 
             // all isolated cycles are relevant - all we need to do is walk around
             // the vertices in the subset 'isolated' 
             for (int[] isolated : ringSearch.isolated()) {
-                walks.add(GraphUtil.cycle(graph, isolated));
+                if (isolated.length <= length)
+                    walks.add(GraphUtil.cycle(graph, isolated));
             }
 
             // each biconnected component which isn't an isolated cycle is processed
@@ -952,7 +998,7 @@ public final class Cycles {
 
                 // make a subgraph and 'apply' the cycle computation - the walk 
                 // (path) is then lifted to the original graph            
-                for (int[] cycle : findInFused(GraphUtil.subgraph(graph, fused))) {
+                for (int[] cycle : findInFused(GraphUtil.subgraph(graph, fused), length)) {
                     walks.add(lift(cycle, fused));
                 }
             }
@@ -964,12 +1010,12 @@ public final class Cycles {
 
         /**
          * Find rings in a biconnected component.
-         *  
+         *
          * @param g adjacency list
-         * @return 
+         * @return
          * @throws Intractable computation was not feasible
          */
-        private int[][] findInFused(int[][] g) throws Intractable {
+        private int[][] findInFused(int[][] g, int length) throws Intractable {
             AllCycles allCycles = new AllCycles(g,
                                                 Math.min(g.length, length),
                                                 threshold);
@@ -1002,17 +1048,95 @@ public final class Cycles {
 
         /** @inheritDoc */
         @Override public Cycles find(IAtomContainer molecule) throws Intractable {
-            return find(molecule, GraphUtil.toAdjList(molecule));
+            return find(molecule, molecule.getAtomCount());
         }
 
         /** @inheritDoc */
-        @Override public Cycles find(IAtomContainer molecule, int[][] graph) throws Intractable {
+        @Override public Cycles find(IAtomContainer molecule, int length) throws Intractable {
+            return find(molecule, GraphUtil.toAdjList(molecule), length);
+        }
+
+        /** @inheritDoc */
+        @Override public Cycles find(IAtomContainer molecule, int[][] graph, int length) throws Intractable {
             try {
-                return primary.find(molecule, graph);
+                return primary.find(molecule, graph, length);
             } catch (Intractable e) {
                 // auxiliary may still thrown an exception
-                return auxiliary.find(molecule, graph);
+                return auxiliary.find(molecule, graph, length);
             }
+        }
+    }
+
+    /**
+     * Remove cycles with a chord from an existing set of cycles.
+     */
+    private static final class Unchorded implements CycleFinder {
+
+        private CycleFinder primary;
+
+        /**
+         * Filter any cycles produced by the {@code primary} cycle finder and
+         * only allow those without a chord.
+         *
+         * @param primary the primary cycle finder
+         */
+        private Unchorded(CycleFinder primary) {
+            this.primary = primary;
+        }
+
+        /** @inheritDoc */
+        @Override public Cycles find(IAtomContainer molecule) throws Intractable {
+            return find(molecule, molecule.getAtomCount());
+        }
+
+        /** @inheritDoc */
+        @Override public Cycles find(IAtomContainer molecule, int length) throws Intractable {
+            return find(molecule, GraphUtil.toAdjList(molecule), length);
+        }
+
+        /** @inheritDoc */
+        @Override public Cycles find(IAtomContainer molecule, int[][] graph, int length) throws Intractable {
+
+            Cycles inital = primary.find(molecule, graph, length);
+
+            int[][] filtered = new int[inital.numberOfCycles()][0];
+            int n = 0;
+
+            for (int[] path : inital.paths) {
+                if (accept(path, graph))
+                    filtered[n++] = path;
+            }
+
+            return new Cycles(Arrays.copyOf(filtered, n), inital.container, inital.bondMap);
+        }
+
+        /**
+         * The cycle path is accepted if it does not have chord.
+         *
+         * @param path  a path
+         * @param graph the adjacency of atoms
+         * @return accept the path as unchorded
+         */
+        private boolean accept(int[] path, int[][] graph) {
+            BitSet vertices = new BitSet();
+
+            for (int v : path)
+                vertices.set(v);
+
+            for (int j = 1; j < path.length; j++) {
+                int v = path[j];
+                int prev = path[j - 1];
+                int next = path[(j + 1) % (path.length - 1)];
+
+                for (int w : graph[v]) {
+                    // chord found
+                    if (w != prev && w != next && vertices.get(w))
+                        return false;
+                }
+
+            }
+
+            return true;
         }
     }
 }
