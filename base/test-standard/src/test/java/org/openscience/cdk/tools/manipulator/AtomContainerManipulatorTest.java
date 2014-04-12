@@ -528,7 +528,22 @@ public class AtomContainerManipulatorTest extends CDKTestCase {
         mol.getAtom(1).setExactMass(34.96885268);
         double totalExactMass = AtomContainerManipulator.getTotalExactMass(mol);
 
-        Assert.assertEquals(46.96885268,totalExactMass,0.000001);
+        Assert.assertEquals(49.992327775,totalExactMass,0.000001);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getNaturalExactMassNeedsHydrogens() {
+        IAtomContainer mol = new AtomContainer();
+        mol.addAtom(new Atom("C"));
+        AtomContainerManipulator.getNaturalExactMass(mol);    
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getNaturalExactMassNeedsAtomicNumber() {
+        IAtomContainer mol = new AtomContainer();
+        mol.addAtom(new Atom("C"));
+        mol.getAtom(0).setAtomicNumber(null);
+        AtomContainerManipulator.getNaturalExactMass(mol);
     }
     
     @Test public void testGetNaturalExactMass_IAtomContainer() throws Exception {
@@ -536,10 +551,14 @@ public class AtomContainerManipulatorTest extends CDKTestCase {
         IAtomContainer mol = builder.newInstance(IAtomContainer.class);
         mol.addAtom(new Atom("C"));
         mol.addAtom(new Atom("Cl"));
+        
+        mol.getAtom(0).setImplicitHydrogenCount(4);
+        mol.getAtom(1).setImplicitHydrogenCount(1);
     	
         double expectedMass = 0.0;
         expectedMass += Isotopes.getInstance().getNaturalMass(builder.newInstance(IElement.class,"C"));
         expectedMass += Isotopes.getInstance().getNaturalMass(builder.newInstance(IElement.class,"Cl"));
+        expectedMass += 5 * Isotopes.getInstance().getNaturalMass(builder.newInstance(IElement.class,"H"));
         
     	double totalExactMass = AtomContainerManipulator.getNaturalExactMass(mol);
 
@@ -558,7 +577,7 @@ public class AtomContainerManipulatorTest extends CDKTestCase {
         mol.getAtom(1).setNaturalAbundance(75.78);
         double totalAbudance = AtomContainerManipulator.getTotalNaturalAbundance(mol);
 
-        Assert.assertEquals(0.74969154,totalAbudance,0.000001);
+        Assert.assertEquals(0.749432,totalAbudance,0.000001);
     }
     
     /**
