@@ -51,11 +51,21 @@ public abstract class AbstractChemObjectTest extends AbstractCDKObjectTest {
 
     @Test public void testSetProperties_Map() {
         IChemObject chemObject = newChemObject();
+        chemObject.setProperty("remove", "me");
+        Map<Object,Object> props = new Hashtable<Object,Object>();
+        props.put("keep", "me");
+        chemObject.setProperties(props);
+        Assert.assertEquals("me", chemObject.getProperty("keep"));
+        Assert.assertNull(chemObject.getProperty("remove"));
+    }
+    
+    @Test public void testAddProperties_Map() {
+        IChemObject chemObject = newChemObject();
         Map<Object,Object> props = new Hashtable<Object,Object>();
         String cDescription = new String("description");
         String cProperty = new String("property");
         props.put(cDescription, cProperty);
-        chemObject.setProperties(props);
+        chemObject.addProperties(props);
         Assert.assertEquals(cProperty, chemObject.getProperty(cDescription));
     }
 
@@ -215,13 +225,13 @@ public abstract class AbstractChemObjectTest extends AbstractCDKObjectTest {
     @Test public void testClone_Properties() throws Exception {
         IChemObject chemObject1 = newChemObject();
         Map<Object,Object> props1 = new Hashtable<Object,Object>();
-        chemObject1.setProperties(props1);
+        chemObject1.addProperties(props1);
         IChemObject chemObject2 = (IChemObject)chemObject1.clone();
 
         // test cloning of properties field
         Map<Object,Object> props2 = new Hashtable<Object,Object>();
         props2.put("key", "value");
-        chemObject2.setProperties(props2);
+        chemObject2.addProperties(props2);
         Assert.assertEquals(props1, chemObject1.getProperties());
         Assert.assertEquals(1, chemObject2.getProperties().size());
         Assert.assertEquals(0, chemObject1.getProperties().size());
@@ -232,12 +242,12 @@ public abstract class AbstractChemObjectTest extends AbstractCDKObjectTest {
         Map<Object,Object> props1 = new Hashtable<Object,Object>();
         IAtom atom = chemObject1.getBuilder().newInstance(IAtom.class,"C");
         props1.put("atom", atom);
-        chemObject1.setProperties(props1);
+        chemObject1.addProperties(props1);
         IChemObject chemObject2 = (IChemObject)chemObject1.clone();
 
         // test cloning of properties field
         Map<Object,Object> props2 = new Hashtable<Object,Object>();
-        chemObject2.setProperties(props2);
+        chemObject2.addProperties(props2);
         Assert.assertEquals(props1, chemObject1.getProperties());
         Assert.assertEquals(1, chemObject2.getProperties().size());
         Assert.assertEquals(1, chemObject1.getProperties().size());
