@@ -375,6 +375,24 @@
         </repository>
     </repositories>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>ebi-repo</id>
+            <name>EBI Maven Repository</name>
+            <url>
+                http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo/
+            </url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+
     <!-- centralised versions for common dependencies -->
     <dependencyManagement>
         <dependencies>
@@ -496,7 +514,7 @@
                     <tagletArtifact>
                         <groupId>org.openscience.cdk</groupId>
                         <artifactId>cdk-build-utils</artifactId>
-                        <version>1.0</version>
+                        <version>1.0.1</version>
                     </tagletArtifact>
                 </configuration>
                 <executions>
@@ -510,6 +528,23 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <rulesets>
+                        <ruleset>/pmd/custom.xml</ruleset>
+                    </rulesets>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.openscience.cdk</groupId>
+                        <artifactId>cdk-build-utils</artifactId>
+                        <version>1.0.1</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
@@ -531,15 +566,6 @@
                     </reportSet>
                 </reportSets>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.0.1</version>
-                <configuration>
-                    <linkXref>true</linkXref>
-                </configuration>
-            </plugin>
         </plugins>
     </reporting>
-
 </project>
