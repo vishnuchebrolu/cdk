@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2001-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2001-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -117,8 +115,8 @@ public class ShelXWriter extends DefaultChemObjectWriter {
     }
 
 	@TestMethod("testAccepts")
-    public boolean accepts(Class classObject) {
-		Class[] interfaces = classObject.getInterfaces();
+    public boolean accepts(Class<? extends IChemObject> classObject) {
+		Class<?>[] interfaces = classObject.getInterfaces();
 		for (int i=0; i<interfaces.length; i++) {
 			if (ICrystal.class.equals(interfaces[i])) return true;
 		}

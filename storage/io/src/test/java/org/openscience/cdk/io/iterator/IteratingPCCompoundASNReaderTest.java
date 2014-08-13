@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2008  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2008  Egon Willighagen <egonw@users.sf.net>
  * 
  * Contact: cdk-devel@slists.sourceforge.net
  * 
@@ -56,6 +54,7 @@ public class IteratingPCCompoundASNReaderTest extends CDKTestCase {
             Assert.assertTrue(object instanceof IAtomContainer);
             molCount++;
         }
+        reader.close();
 
         Assert.assertEquals(2, molCount);
     }

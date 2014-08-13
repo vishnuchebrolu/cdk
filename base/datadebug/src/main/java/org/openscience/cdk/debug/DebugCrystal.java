@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2005-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2005-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -253,7 +251,7 @@ public class DebugCrystal extends Crystal
 //	}
 
     /** {@inheritDoc} */ @Override
-    public List getConnectedAtomsList(IAtom atom) {
+    public List<IAtom> getConnectedAtomsList(IAtom atom) {
 		logger.debug("Getting connecting atoms vector for atom: ", atom);
 		return super.getConnectedAtomsList(atom);
 	}
@@ -264,25 +262,25 @@ public class DebugCrystal extends Crystal
 //	}
 
     /** {@inheritDoc} */ @Override
-    public List getConnectedBondsList(IAtom atom) {
+    public List<IBond> getConnectedBondsList(IAtom atom) {
 		logger.debug("Getting connected bonds vector for atom: ", atom);
 		return super.getConnectedBondsList(atom);
 	}
 
     /** {@inheritDoc} */ @Override
-    public List getConnectedLonePairsList(IAtom atom) {
+    public List<ILonePair> getConnectedLonePairsList(IAtom atom) {
 		logger.debug("Getting lone pairs at atom: atom=" + atom, " lone pairs=" + super.getConnectedLonePairsCount(atom));
 		return super.getConnectedLonePairsList(atom);
 	}
 	
     /** {@inheritDoc} */ @Override
-    public List getConnectedSingleElectronsList(IAtom atom) {
+    public List<ISingleElectron> getConnectedSingleElectronsList(IAtom atom) {
 		logger.debug("Getting single electrons at atom: atom=" + atom, " single electrons=" + super.getConnectedSingleElectronsCount(atom));
 		return super.getConnectedSingleElectronsList(atom);
 	}
 	
     /** {@inheritDoc} */ @Override
-    public java.util.List getConnectedElectronContainersList(IAtom atom) {
+    public List<IElectronContainer> getConnectedElectronContainersList(IAtom atom) {
 		logger.debug("Getting connected electron containers for atom: ", atom);
 		return super.getConnectedElectronContainersList(atom);
 	}
@@ -564,7 +562,7 @@ public class DebugCrystal extends Crystal
 	}
 
     /** {@inheritDoc} */ @Override
-    public Object getProperty(Object description) {
+    public <T> T getProperty(Object description) {
 		logger.debug("Getting property: ", description + "=" + super.getProperty(description));
 		return super.getProperty(description);
 	}

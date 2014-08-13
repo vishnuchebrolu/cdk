@@ -29,7 +29,7 @@ import javax.vecmath.Vector3d;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.charges.GasteigerMarsiliPartialCharges;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.graph.invariant.ConjugatedPiSystemsDetector;
@@ -212,7 +212,7 @@ public class RDFProtonDescriptor_GHR extends AbstractAtomicDescriptor implements
         if (checkAromaticity) {
             try {
                 AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(varAtomContainer);
-                CDKHueckelAromaticityDetector.detectAromaticity(varAtomContainer);
+                Aromaticity.cdkLegacy().apply(varAtomContainer);
             } catch (CDKException e) {
                 return getDummyDescriptorValue(e);
             }
@@ -386,9 +386,6 @@ public class RDFProtonDescriptor_GHR extends AbstractAtomicDescriptor implements
         IAtom atom2;
 
 ///////////////////////THE FIRST CALCULATED DESCRIPTOR IS g(H)r	 WITH PARTIAL CHARGES:		
-        String s=new String();
-	
-
 		if(atoms.size() > 0) {
 			int counter = 0;
 			for(double ghr = limitInf; ghr < limitSup; ghr = ghr + step) {

@@ -7,7 +7,7 @@
     <parent>
         <artifactId>cdk-base</artifactId>
         <groupId>org.openscience.cdk</groupId>
-        <version>1.5.7-SNAPSHOT</version>
+        <version>1.5.8-SNAPSHOT</version>
     </parent>
 
     <artifactId>cdk-test-interfaces</artifactId>
@@ -50,12 +50,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>cdk-diff</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>cdk-standard</artifactId>
             <version>${project.parent.version}</version>
             <scope>test</scope>
@@ -69,4 +63,15 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <destFile>${project.basedir}/../interfaces/target/jacoco.exec</destFile>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

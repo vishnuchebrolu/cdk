@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -30,8 +25,9 @@ package org.openscience.cdk.dict;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
@@ -63,7 +59,7 @@ public class DictionaryDatabase {
         "xml", "owl", "owl", "owl_React"
     };
     
-    private Hashtable<String, Dictionary> dictionaries;
+    private Map<String, Dictionary> dictionaries;
 
     @TestMethod("testDictionaryDatabase")
     public DictionaryDatabase() {
@@ -184,8 +180,8 @@ public class DictionaryDatabase {
      * Returns true if the database contains the dictionary.
      */
     @TestMethod("testListDictionaries")
-    public Enumeration<String> listDictionaries() {
-        return dictionaries.keys();
+    public Iterator<String> listDictionaries() {
+        return dictionaries.keySet().iterator();
     }
     
     /**

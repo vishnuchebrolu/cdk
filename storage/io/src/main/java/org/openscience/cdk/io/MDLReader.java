@@ -1,6 +1,4 @@
-/*  $Revision$ $Author$ $Date$
- *
- *  Copyright (C) 1997-2007  Christoph Steinbeck <steinbeck@users.sourceforge.net>
+/* Copyright (C) 1997-2007  Christoph Steinbeck <steinbeck@users.sourceforge.net>
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -149,11 +147,11 @@ public class MDLReader extends DefaultChemObjectReader {
     }
 
 	@TestMethod("testAccepts")
-    public boolean accepts(Class classObject) {
+    public boolean accepts(Class<? extends IChemObject> classObject) {
         if (IChemFile.class.equals(classObject)) return true;
         if (IChemModel.class.equals(classObject)) return true;
         if (IAtomContainer.class.equals(classObject)) return true;
-		Class[] interfaces = classObject.getInterfaces();
+		Class<?>[] interfaces = classObject.getInterfaces();
 		for (int i=0; i<interfaces.length; i++) {
 			if (IChemFile.class.equals(interfaces[i])) return true;
 			if (IChemModel.class.equals(interfaces[i])) return true;
@@ -225,7 +223,7 @@ public class MDLReader extends DefaultChemObjectReader {
                 logger.debug("line: ", line);
                 // apparently, this is a SDF file, continue with 
                 // reading mol files
-		str = new String(line);
+		str = line;
 		if (str.equals("$$$$")) {
 		    m = readMolecule(chemFile.getBuilder().newInstance(IAtomContainer.class));
 		    
@@ -247,9 +245,9 @@ public class MDLReader extends DefaultChemObjectReader {
 			if (str.startsWith("> ")) {
 			    // ok, should extract the field name
 			    str.substring(2); // String content = 
-			    int index = str.indexOf("<");
+			    int index = str.indexOf('<');
 			    if (index != -1) {
-				int index2 = str.substring(index).indexOf(">");
+				int index2 = str.substring(index).indexOf('>');
 				if (index2 != -1) {
 				    fieldName = str.substring(
 							      index+1,

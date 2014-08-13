@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2006-2007  The Chemistry Development Kit Project
+/* Copyright (C) 2006-2007  The Chemistry Development Kit Project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -33,7 +31,7 @@ import org.junit.Test;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.DefaultChemObjectBuilder;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
@@ -158,7 +156,7 @@ public class RingSetManipulatorTest extends CDKTestCase {
     	IRingSet rs = builder.newInstance(IRingSet.class);
     	rs.addAtomContainer(builder.newInstance(IRing.class));
     	rs.addAtomContainer(builder.newInstance(IRing.class));
-    	List list = RingSetManipulator.getAllAtomContainers(rs);
+    	List<IAtomContainer> list = RingSetManipulator.getAllAtomContainers(rs);
     	Assert.assertEquals(2, list.size());
     }
     
@@ -218,7 +216,7 @@ public class RingSetManipulatorTest extends CDKTestCase {
     public void markAromatic() throws Exception {
         IAtomContainer mol = MoleculeFactory.makeBiphenyl();
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
-        CDKHueckelAromaticityDetector.detectAromaticity(mol);
+        Aromaticity.cdkLegacy().apply(mol);
         
         AllRingsFinder arf = new AllRingsFinder();
         IRingSet ringSet = arf.findAllRings(mol);

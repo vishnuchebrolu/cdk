@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$    
- * 
- * Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -58,7 +56,7 @@ public class IDCreatorTest extends CDKTestCase {
         IDCreator.createIDs(mol);
         Assert.assertEquals("a1", atom1.getID());
         Assert.assertEquals("b1", bond.getID());
-        List ids = AtomContainerManipulator.getAllIDs(mol);
+        List<String> ids = AtomContainerManipulator.getAllIDs(mol);
         Assert.assertEquals(4, ids.size());
 	}
 	
@@ -72,7 +70,7 @@ public class IDCreatorTest extends CDKTestCase {
         
         Assert.assertEquals("atom1", atom.getID());
         Assert.assertNotNull(mol.getID());
-        List ids = AtomContainerManipulator.getAllIDs(mol);
+        List<String> ids = AtomContainerManipulator.getAllIDs(mol);
         Assert.assertEquals(2, ids.size());
 	}
 	
@@ -86,7 +84,7 @@ public class IDCreatorTest extends CDKTestCase {
         
         IDCreator.createIDs(mol);
         Assert.assertEquals("a2", atom2.getID());
-        List ids = AtomContainerManipulator.getAllIDs(mol);
+        List<String> ids = AtomContainerManipulator.getAllIDs(mol);
         Assert.assertEquals(3, ids.size());
 	}
 	
@@ -104,7 +102,7 @@ public class IDCreatorTest extends CDKTestCase {
         molSet.addAtomContainer(mol);
         
         IDCreator.createIDs(molSet);
-        List ids = MoleculeSetManipulator.getAllIDs(molSet);
+        List<String> ids = MoleculeSetManipulator.getAllIDs(molSet);
         Assert.assertEquals(4, ids.size());
         
         mol = new AtomContainer();
@@ -131,7 +129,7 @@ public class IDCreatorTest extends CDKTestCase {
         Assert.assertFalse(ids.contains("a1"));
 
         IDCreator.createIDs(molSet);
-        List idsAfter = MoleculeSetManipulator.getAllIDs(molSet);
+        List<String> idsAfter = MoleculeSetManipulator.getAllIDs(molSet);
         Assert.assertTrue(idsAfter.contains("a1"));
         Assert.assertEquals(10, idsAfter.size());
 	}

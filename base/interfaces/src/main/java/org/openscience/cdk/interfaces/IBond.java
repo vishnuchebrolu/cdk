@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2006-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2006-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -50,6 +45,8 @@ public interface IBond extends IElectronContainer {
 		DOUBLE(2),
 		TRIPLE(3),
 		QUADRUPLE(4),
+		QUINTUPLE(5),
+		SEXTUPLE(6),
 		UNSET(0);
 
         private final Integer bondedElectronPairs;

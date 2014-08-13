@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2007  Egon Willighagen <egonw@users.sf.net>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -29,7 +27,6 @@ import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
-import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.qsar.DescriptorValue;
 import org.openscience.cdk.qsar.IAtomicDescriptor;
 import org.openscience.cdk.qsar.descriptors.DescriptorTest;
@@ -40,13 +37,13 @@ import org.openscience.cdk.tools.diff.AtomDiff;
  *
  * @cdk.module test-qsaratomic
  */
-public abstract class AtomicDescriptorTest extends DescriptorTest {
+public abstract class AtomicDescriptorTest extends DescriptorTest<IAtomicDescriptor> {
 	
 	protected IAtomicDescriptor descriptor;
 
 	public AtomicDescriptorTest() {}
 	
-	public void setDescriptor(Class descriptorClass) throws Exception {
+	public void setDescriptor(Class<? extends IAtomicDescriptor> descriptorClass) throws Exception {
 		if (descriptor == null) {
 			Object descriptor = descriptorClass.newInstance();
 			if (!(descriptor instanceof IAtomicDescriptor)) {

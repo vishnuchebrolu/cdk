@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -27,19 +22,22 @@
  *  */
 package org.openscience.cdk.io.cml;
 
+import java.io.IOException;
 import java.io.StringWriter;
+import java.io.Writer;
 
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.ReactionScheme;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.config.Elements;
 import org.openscience.cdk.formula.MolecularFormula;
 import org.openscience.cdk.interfaces.IAtom;
@@ -60,6 +58,7 @@ import org.openscience.cdk.silent.Reaction;
 import org.openscience.cdk.templates.TestMoleculeFactory;
 import org.openscience.cdk.tools.ILoggingTool;
 import org.openscience.cdk.tools.LoggingToolFactory;
+import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 /**
  * TestCase for the reading CML 2 files using a few test files
@@ -76,10 +75,12 @@ public class CML2WriterTest extends CDKTestCase {
     @Test public void testCMLWriterBenzene() throws Exception {
 		StringWriter writer = new StringWriter();
 		IAtomContainer molecule = TestMoleculeFactory.makeBenzene();
-        CDKHueckelAromaticityDetector.detectAromaticity(molecule);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule);
+        Aromaticity.cdkLegacy().apply(molecule);
         CMLWriter cmlWriter = new CMLWriter(writer);
         
         cmlWriter.write(molecule);
+        cmlWriter.close();
 		logger.debug("****************************** testCMLWriterBenzene()");
         logger.debug(writer.toString());
 		logger.debug("******************************");
@@ -99,6 +100,7 @@ public class CML2WriterTest extends CDKTestCase {
         CMLWriter cmlWriter = new CMLWriter(writer);
         
         cmlWriter.write(molecule);
+        cmlWriter.close();
 		logger.debug("****************************** testHydrogenCount()");
         logger.debug(writer.toString());
 		logger.debug("******************************");
@@ -113,6 +115,7 @@ public class CML2WriterTest extends CDKTestCase {
 	    CMLWriter cmlWriter = new CMLWriter(writer);
 
 	    cmlWriter.write(molecule);
+        cmlWriter.close();
 	    logger.debug("****************************** testNullFormalCharge()");
 	    logger.debug(writer.toString());
 	    logger.debug("******************************");
@@ -132,6 +135,7 @@ public class CML2WriterTest extends CDKTestCase {
 	    CMLWriter cmlWriter = new CMLWriter(writer);
 
 	    cmlWriter.write(mol);
+        cmlWriter.close();
 	    logger.debug("****************************** testMAssNumber()");
 	    logger.debug(writer.toString());
 	    logger.debug("******************************");
@@ -153,6 +157,7 @@ public class CML2WriterTest extends CDKTestCase {
         CMLWriter cmlWriter = new CMLWriter(writer);
         
         cmlWriter.write(molecule);
+        cmlWriter.close();
 		logger.debug("****************************** testHydrogenCount_2()");
         logger.debug(writer.toString());
 		logger.debug("******************************");
@@ -173,6 +178,7 @@ public class CML2WriterTest extends CDKTestCase {
         CMLWriter cmlWriter = new CMLWriter(writer);
         
         cmlWriter.write(crystal);
+        cmlWriter.close();
         String cmlContent = writer.toString();
 		logger.debug("****************************** testCMLCrystal()");
         logger.debug(cmlContent);
@@ -200,6 +206,7 @@ public class CML2WriterTest extends CDKTestCase {
         
         CMLWriter cmlWriter = new CMLWriter(writer);
         cmlWriter.write(reaction);
+        cmlWriter.close();
         String cmlContent = writer.toString();
         logger.debug("****************************** testReactionCustomization()");
         logger.debug(cmlContent);
@@ -240,6 +247,7 @@ public class CML2WriterTest extends CDKTestCase {
                 
         CMLWriter cmlWriter = new CMLWriter(writer);
         cmlWriter.write(scheme1);
+        cmlWriter.close();
         String cmlContent = writer.toString();
         logger.debug("****************************** testReactionCustomization()");
         logger.debug(cmlContent);
@@ -281,6 +289,7 @@ public class CML2WriterTest extends CDKTestCase {
         
         CMLWriter cmlWriter = new CMLWriter(writer);
         cmlWriter.write(scheme1);
+        cmlWriter.close();
         String cmlContent = writer.toString();
         logger.debug("****************************** testReactionCustomization()");
         logger.debug(cmlContent);
@@ -326,6 +335,7 @@ public class CML2WriterTest extends CDKTestCase {
         
         CMLWriter cmlWriter = new CMLWriter(writer);
         cmlWriter.write(scheme1);
+        cmlWriter.close();
         String cmlContent = writer.toString();
         
         logger.debug("****************************** testReactionCustomization()");
@@ -369,6 +379,7 @@ public class CML2WriterTest extends CDKTestCase {
         
         CMLWriter cmlWriter = new CMLWriter(writer);
         cmlWriter.write(scheme1);
+        cmlWriter.close();
         String cmlContent = writer.toString();
         logger.debug("****************************** testReactionCustomization()");
         logger.debug(cmlContent);
@@ -388,6 +399,7 @@ public class CML2WriterTest extends CDKTestCase {
     	
     	CMLWriter cmlWriter = new CMLWriter(writer);
         cmlWriter.write(chemModel);
+        cmlWriter.close();
         String cmlContent = writer.toString();
         logger.debug("****************************** testReactionCustomization()");
         logger.debug(cmlContent);
@@ -401,6 +413,7 @@ public class CML2WriterTest extends CDKTestCase {
     	
     	CMLWriter cmlWriter = new CMLWriter(writer);
         cmlWriter.write(moleculeSet);
+        cmlWriter.close();
         String cmlContent = writer.toString();
         logger.debug("****************************** testReactionCustomization()");
         logger.debug(cmlContent);
@@ -415,6 +428,7 @@ public class CML2WriterTest extends CDKTestCase {
         reaction.setProperty("blabla", "blabla2");
         CMLWriter cmlWriter = new CMLWriter(writer);
         cmlWriter.write(reaction);
+        cmlWriter.close();
         String cmlContent = writer.toString();
         logger.debug("****************************** testReactionCustomization()");
         logger.debug(cmlContent);
@@ -533,4 +547,10 @@ public class CML2WriterTest extends CDKTestCase {
 //        Assert.assertTrue(cmlContent.indexOf("<molecule id=\"D") != -1);
 //        Assert.assertTrue(cmlContent.indexOf("<molecule id=\"E") != -1);
 //    }
+    
+    @Test public void writeIsClosed() throws IOException {
+        Writer mock = Mockito.mock(Writer.class);
+        new CMLWriter(mock).close();
+        Mockito.verify(mock).close();
+    }
 }

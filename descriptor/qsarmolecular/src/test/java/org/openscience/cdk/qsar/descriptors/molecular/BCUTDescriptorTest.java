@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.ChemObject;
 import org.openscience.cdk.DefaultChemObjectBuilder;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
-import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.io.HINReader;
 import org.openscience.cdk.io.ISimpleChemObjectReader;
@@ -34,12 +33,11 @@ import org.openscience.cdk.io.MDLV2000Reader;
 import org.openscience.cdk.qsar.DescriptorValue;
 import org.openscience.cdk.qsar.result.DoubleArrayResult;
 import org.openscience.cdk.smiles.SmilesParser;
+import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
 
 import java.io.InputStream;
 import java.util.List;
-import java.util.Locale;
-
 
 /**
  * TestSuite that runs all QSAR tests.
@@ -139,8 +137,10 @@ public class BCUTDescriptorTest extends MolecularDescriptorTest {
         addExplicitHydrogens(mol1);
         addExplicitHydrogens(mol2);
 
-        CDKHueckelAromaticityDetector.detectAromaticity(mol1);
-        CDKHueckelAromaticityDetector.detectAromaticity(mol2);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol1);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol2);
+        Aromaticity.cdkLegacy().apply(mol1);
+        Aromaticity.cdkLegacy().apply(mol2);
         
         DoubleArrayResult result1 = (DoubleArrayResult) descriptor.calculate(mol1).getValue();
         DoubleArrayResult result2 = (DoubleArrayResult) descriptor.calculate(mol2).getValue();
@@ -171,8 +171,9 @@ public class BCUTDescriptorTest extends MolecularDescriptorTest {
         IAtomContainer ac = (IAtomContainer) cList.get(0);
 
         Assert.assertNotNull(ac);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(ac);
         addExplicitHydrogens(ac);
-        CDKHueckelAromaticityDetector.detectAromaticity(ac);
+        Aromaticity.cdkLegacy().apply(ac);
 
         Exception e = descriptor.calculate(ac).getException();
         Assert.assertNotNull(e);

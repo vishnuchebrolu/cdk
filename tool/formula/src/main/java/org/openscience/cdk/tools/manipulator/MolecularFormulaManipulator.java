@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2007  Miguel Rojasch <miguelrojasch@users.sf.net>
+/* Copyright (C) 2007  Miguel Rojasch <miguelrojasch@users.sf.net>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -392,33 +390,40 @@ public class MolecularFormulaManipulator {
 	 */
 	@TestMethod("testGetHTML_IMolecularFormula_arrayString_boolean_boolean")
 	public static String getHTML(IMolecularFormula formula, String[] orderElements, boolean chargeB, boolean isotopeB) {
-		String htmlString = "";
+		StringBuilder sb = new StringBuilder();
 		for (String orderElement : orderElements) {
 			IElement element = formula.getBuilder().newInstance(IElement.class,orderElement);
 			if (containsElement(formula, element)) {
 				if (!isotopeB) {
-					String eleToAdd = element.getSymbol() + "<sub>" + getElementCount(formula, element) + "</sub>";
-					htmlString += eleToAdd;
+					sb.append(element.getSymbol());
+                    int n = getElementCount(formula, element);
+                    if (n > 1) {
+                        sb.append("<sub>").append(n).append("</sub>");
+                    }
 				} else {
 					for (IIsotope isotope : getIsotopes(formula, element)) {
-						String isoToAdd = "<sup>" + isotope.getMassNumber() + "</sup>"
-						+ isotope.getSymbol() + "<sub>" + formula.getIsotopeCount(isotope) + "</sub>";
-						htmlString += isoToAdd;
+                        sb.append("<sup>").append(isotope.getMassNumber()).append("</sup>");
+                        sb.append(isotope.getSymbol());
+                        int n = formula.getIsotopeCount(isotope);
+                        if (n > 1) {
+                            sb.append("<sub>").append(n).append("</sub>");
+                        }
 					}
 				}
 			}
 		}
+        
 		if (chargeB) {
 			Integer charge = formula.getCharge();
 			if (charge == CDKConstants.UNSET || charge == 0) {
-				return htmlString;
+				return sb.toString();
 			} else if (charge < 0) {
-				return htmlString + "<sup>" + charge * -1 + "-" + "</sup>";
+				sb.append("<sup>").append(charge * -1).append("-").append("</sup>");
 			} else {
-				return htmlString + "<sup>" + charge +"+" + "</sup>";
+                sb.append("<sup>").append(charge).append("+").append("</sup>");
 			}
 		}
-		return htmlString;
+		return sb.toString();
 	}
 
 	/**
@@ -509,8 +514,8 @@ public class MolecularFormulaManipulator {
 		/*
 		 *  Buffer for
 		 */
-		String RecentElementSymbol = new String();
-		String RecentElementCountString = new String("0");
+		String RecentElementSymbol = "";
+		String RecentElementCountString = "0";
 		/*
 		 *  String to be converted to an integer
 		 */
@@ -623,7 +628,7 @@ public class MolecularFormulaManipulator {
 		}
 		if (multiple.equals("") || multiple.equals("-"))
 			multiple += 1;
-		return new Integer(multiple);
+		return Integer.valueOf(multiple);
 	}
 
 	/**
@@ -1083,8 +1088,8 @@ public class MolecularFormulaManipulator {
 		if (newFormula.contains("("))
 			newFormula = breakExtractor(newFormula);
 
-		String recentElementSymbol = new String();
-		String recentElementCountString = new String("0");
+		String recentElementSymbol = "";
+		String recentElementCountString = "0";
 
 		List<String> eleSymb = new ArrayList<String>();
 		List<Integer> eleCount = new ArrayList<Integer>();
@@ -1125,7 +1130,7 @@ public class MolecularFormulaManipulator {
 				}
 			}
 		}
-		String newF = new String();
+		String newF = "";
 		for (int i = 0 ; i < eleCount.size(); i++) {
 			String element = eleSymb.get(i);
 			int num = eleCount.get(i);
@@ -1147,8 +1152,8 @@ public class MolecularFormulaManipulator {
 	 */
 	private static String breakExtractor(String formula) {
 		boolean finalBreak = false;
-		String recentformula = new String();
-		String multiple = new String("0");
+		String recentformula = "";
+		String multiple = "0";
 		for (int f = 0; f < formula.length(); f++) {
 			char thisChar = formula.charAt(f);
 			if (thisChar == '(') {
@@ -1175,8 +1180,8 @@ public class MolecularFormulaManipulator {
 	 * @return        Formula with the correction
 	 */
 	private static String multipleExtractor(String formula) {
-		String recentCompoundCount = new String("0");
-		String recentCompound = new String();
+		String recentCompoundCount = "0";
+		String recentCompound = "";
 
 		boolean found = false;
 		for (int f = 0; f < formula.length(); f++) {
@@ -1203,9 +1208,9 @@ public class MolecularFormulaManipulator {
 	 * @return        Formula with the correction
 	 */
 	private static String muliplier(String formula, int factor) {
-		String finalformula = new String();
-		String recentElementSymbol = new String();
-		String recentElementCountString = new String("0");
+		String finalformula = "";
+		String recentElementSymbol = "";
+		String recentElementCountString = "0";
 		for (int f = 0; f < formula.length(); f++) {
 			char thisChar = formula.charAt(f);
 			if (f < formula.length()) {

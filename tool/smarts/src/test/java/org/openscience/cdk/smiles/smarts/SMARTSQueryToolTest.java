@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2007  Rajarshi Guha <>
+/* Copyright (C) 2007  Rajarshi Guha <>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -32,8 +30,6 @@ import org.junit.Test;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.aromaticity.Aromaticity;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
-import org.openscience.cdk.aromaticity.DoubleBondAcceptingAromaticityDetector;
 import org.openscience.cdk.aromaticity.ElectronDonation;
 import org.openscience.cdk.config.Elements;
 import org.openscience.cdk.exception.CDKException;
@@ -140,7 +136,8 @@ public class SMARTSQueryToolTest extends CDKTestCase {
     public void testUniqueQueries() throws Exception {
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer atomContainer = sp.parseSmiles("c1ccccc1CCCNCCCc1ccccc1");
-        CDKHueckelAromaticityDetector.detectAromaticity(atomContainer);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(atomContainer);
+        Aromaticity.cdkLegacy().apply(atomContainer);
         SMARTSQueryTool querytool = new SMARTSQueryTool("c1ccccc1", DefaultChemObjectBuilder.getInstance());
 
         boolean status = querytool.matches(atomContainer);
@@ -157,7 +154,8 @@ public class SMARTSQueryToolTest extends CDKTestCase {
     public void testQuery() throws Exception {
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer atomContainer = sp.parseSmiles("c12cc(CCN)ccc1c(COC)ccc2");
-        CDKHueckelAromaticityDetector.detectAromaticity(atomContainer);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(atomContainer);
+        Aromaticity.cdkLegacy().apply(atomContainer);
         SMARTSQueryTool querytool = new SMARTSQueryTool("c12ccccc1cccc2", DefaultChemObjectBuilder.getInstance());
 
         boolean status = querytool.matches(atomContainer);
@@ -184,7 +182,7 @@ public class SMARTSQueryToolTest extends CDKTestCase {
         IAtomContainer indole = MoleculeFactory.makeIndole();
         addImplicitHydrogens(indole);
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(indole);
-        DoubleBondAcceptingAromaticityDetector.detectAromaticity(indole);
+        Aromaticity.cdkLegacy().apply(indole);
         SmilesGenerator generator = new SmilesGenerator().aromatic();        
         String indoleSmiles = generator.create(indole);
         SmilesParser smilesParser = new SmilesParser(DefaultChemObjectBuilder.getInstance());        

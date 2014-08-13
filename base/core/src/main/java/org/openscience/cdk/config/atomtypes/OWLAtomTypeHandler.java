@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2003-2008  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2003-2008  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sf.net
  *
@@ -29,7 +27,6 @@ import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtomType;
 import org.openscience.cdk.interfaces.IBond.Order;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
-import org.openscience.cdk.interfaces.IElement;
 import org.openscience.cdk.tools.ILoggingTool;
 import org.openscience.cdk.tools.LoggingToolFactory;
 import org.openscience.cdk.tools.manipulator.BondManipulator;
@@ -142,11 +139,11 @@ public class OWLAtomTypeHandler extends DefaultHandler {
     		bondOrderSum = 0.0;
     	} else if ("hasElement".equals(local)) {
     		String attrValue = atts.getValue("rdf:resource");
-    		currentAtomType.setSymbol(attrValue.substring(attrValue.indexOf("#")+1));
+    		currentAtomType.setSymbol(attrValue.substring(attrValue.indexOf('#')+1));
     	} else if ("formalBondType".equals(local)) {
     		neighborCount++;
     		String attrValue = atts.getValue("rdf:resource");
-    		String bondType = attrValue.substring(attrValue.indexOf("#")+1);
+    		String bondType = attrValue.substring(attrValue.indexOf('#')+1);
     		if ("single".equals(bondType)) {
     			maxBondOrder = BondManipulator.getMaximumBondOrder(maxBondOrder, Order.SINGLE);
     			bondOrderSum += 1.0;
@@ -165,7 +162,7 @@ public class OWLAtomTypeHandler extends DefaultHandler {
     		} // else: should throw an exception 
     	} else if ("hybridization".equals(local)) {
     		String attrValue = atts.getValue("rdf:resource");
-    		String hybridization = attrValue.substring(attrValue.indexOf("#")+1);
+    		String hybridization = attrValue.substring(attrValue.indexOf('#')+1);
     		if ("sp3".equals(hybridization)) {
     			currentAtomType.setHybridization(IAtomType.Hybridization.SP3);
     		} else if ("sp2".equals(hybridization)) {

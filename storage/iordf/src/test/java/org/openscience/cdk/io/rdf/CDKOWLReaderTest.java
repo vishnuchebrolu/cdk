@@ -26,7 +26,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.io.SimpleChemObjectReaderTest;
 import org.openscience.cdk.silent.AtomContainer;
 import org.openscience.cdk.tools.ILoggingTool;
@@ -59,6 +58,7 @@ public class CDKOWLReaderTest extends SimpleChemObjectReaderTest {
             new InputStreamReader(ins)
         );
         IAtomContainer mol = (IAtomContainer)reader.read(new AtomContainer());
+        reader.close();
 
         Assert.assertNotNull(mol);
         Assert.assertEquals(2, mol.getAtomCount());

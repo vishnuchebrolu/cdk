@@ -7,7 +7,7 @@
     <parent>
         <artifactId>cdk-base</artifactId>
         <groupId>org.openscience.cdk</groupId>
-        <version>1.5.7-SNAPSHOT</version>
+        <version>1.5.8-SNAPSHOT</version>
     </parent>
 
     <artifactId>cdk-test-standard</artifactId>
@@ -28,12 +28,6 @@
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>jgrapht</groupId>
-            <artifactId>jgrapht</artifactId>
-            <version>0.6.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -146,5 +140,17 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <destFile>${project.basedir}/../standard/target/jacoco.exec</destFile>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

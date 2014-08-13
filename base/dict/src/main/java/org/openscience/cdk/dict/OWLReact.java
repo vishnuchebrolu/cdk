@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author: rajarshi $
- * $Date: 2007-10-22 02:38:43 +0200 (Mon, 22 Oct 2007) $
- * $Revision: 9172 $
- *
- * Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -155,7 +150,7 @@ public class OWLReact extends Dictionary {
         if (params != null)
 	        for(int i = 0 ; i< params.size(); i++){
 	        	String typeParam = params.get(i).getAttributeValue("dataType");
-	        	typeParam = typeParam.substring(typeParam.indexOf(":")+1, typeParam.length());
+	        	typeParam = typeParam.substring(typeParam.indexOf(':')+1, typeParam.length());
 	        	String nameParam = params.get(i).getAttributeValue("resource");
 	        	String value = params.get(i).getValue();
 	        	dbEntry.setParameters(nameParam,typeParam,value);
@@ -168,7 +163,7 @@ public class OWLReact extends Dictionary {
 	        	if (params2 != null)
 	    	        for(int j = 0 ; j< params2.size(); j++){
 	    	        	String paramClass = params2.get(i).getAttribute(0).getValue();
-	    	        	paramClass = paramClass.substring(paramClass.indexOf("#")+1);
+	    	        	paramClass = paramClass.substring(paramClass.indexOf('#')+1);
 	    	            logger.debug("parameter class: ", paramClass);
 	    	        	
 	    	        	String needsToSet = "";
@@ -183,7 +178,7 @@ public class OWLReact extends Dictionary {
 	    	    	        for(int k = 0 ; k< 1; k++){
 	    	    	        	value = paramSubt2.get(k).getValue();
 	    	    	        	dataType = paramSubt2.get(k).getAttributeValue("dataType");
-	    	    	        	dataType = dataType.substring(dataType.indexOf(":")+1, dataType.length());
+	    	    	        	dataType = dataType.substring(dataType.indexOf(':')+1, dataType.length());
 	    	    	        }
 	    	        	List<String> pp = new ArrayList<String>();
 	    	        	pp.add(paramClass);
@@ -199,7 +194,7 @@ public class OWLReact extends Dictionary {
         if (mechanismDependence != null)
 	        for(int i = 0 ; i< mechanismDependence.size(); i++){
 	        	mechanism = mechanismDependence.get(i).getAttribute(0).getValue();
-	        	mechanism = mechanism.substring(mechanism.indexOf("#")+1);
+	        	mechanism = mechanism.substring(mechanism.indexOf('#')+1);
 	            logger.debug("mechanism name: ", mechanism);
 	        }
 

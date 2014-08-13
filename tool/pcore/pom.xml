@@ -7,7 +7,7 @@
     <parent>
         <artifactId>cdk-tool</artifactId>
         <groupId>org.openscience.cdk</groupId>
-        <version>1.5.7-SNAPSHOT</version>
+        <version>1.5.8-SNAPSHOT</version>
     </parent>
 
     <artifactId>cdk-pcore</artifactId>
@@ -36,12 +36,6 @@
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>jgrapht</groupId>
-            <artifactId>jgrapht</artifactId>
-            <version>0.6.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>

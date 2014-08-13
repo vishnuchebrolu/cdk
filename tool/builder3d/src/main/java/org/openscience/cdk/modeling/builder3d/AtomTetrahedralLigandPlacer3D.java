@@ -1,9 +1,4 @@
-/*  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2005-2007  Christian Hoppe <chhoppe@users.sf.net>
+/* Copyright (C) 2005-2007  Christian Hoppe <chhoppe@users.sf.net>
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -28,7 +23,6 @@
  */
 package org.openscience.cdk.modeling.builder3d;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 

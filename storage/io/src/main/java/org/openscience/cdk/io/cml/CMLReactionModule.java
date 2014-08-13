@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2003-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2003-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -151,10 +149,10 @@ public class CMLReactionModule extends CMLCoreModule {
         if ("reaction".equals(local)) {
 //            cdo.endObject("Reaction");
         	currentReactionSet.addReaction(currentReaction);
+        	currentChemModel.setReactionSet(currentReactionSet);
         } else if ("reactionList".equals(local)) {
 //            cdo.endObject("ReactionSet");
         	currentChemModel.setReactionSet(currentReactionSet);
-            currentChemSequence.addChemModel(currentChemModel);
             /* FIXME: this should be when document is closed! */ 
         } else if ("reactant".equals(local)) {
 //            cdo.endObject("Reactant");

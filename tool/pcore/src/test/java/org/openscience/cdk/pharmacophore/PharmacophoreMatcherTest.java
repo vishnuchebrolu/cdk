@@ -1,9 +1,4 @@
-/*  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2004-2008  Rajarshi Guha <rajarshi.guha@gmail.com>
+/* Copyright (C) 2004-2008  Rajarshi Guha <rajarshi.guha@gmail.com>
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -23,7 +18,6 @@
  */
 package org.openscience.cdk.pharmacophore;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -36,12 +30,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openscience.cdk.ConformerContainer;
 import org.openscience.cdk.DefaultChemObjectBuilder;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.io.iterator.IteratingMDLConformerReader;
 import org.openscience.cdk.io.iterator.IteratingSDFReader;
+import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 /**
  * @cdk.module test-pcore
@@ -224,7 +219,7 @@ public class PharmacophoreMatcherTest {
     }
 
     @Test
-    public void testCNSPcore() throws FileNotFoundException, CDKException {
+    public void testCNSPcore() throws CDKException, IOException {
         String filename = "data/mdl/cnssmarts.sdf";
         InputStream ins = PharmacophoreMatcherTest.class.getClassLoader().getResourceAsStream(filename);
         IteratingSDFReader reader = new IteratingSDFReader(ins,
@@ -241,7 +236,9 @@ public class PharmacophoreMatcherTest {
 
         reader.hasNext();
         IAtomContainer mol = (IAtomContainer) reader.next();
-        CDKHueckelAromaticityDetector.detectAromaticity(mol);
+        reader.close();
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+        Aromaticity.cdkLegacy().apply(mol);
 
         PharmacophoreMatcher matcher = new PharmacophoreMatcher(query);
         boolean status = matcher.matches(mol);
@@ -255,7 +252,7 @@ public class PharmacophoreMatcherTest {
     }
 
     @Test
-    public void testMatchingBonds() throws FileNotFoundException, CDKException {
+    public void testMatchingBonds() throws CDKException, IOException {
         String filename = "data/mdl/cnssmarts.sdf";
         InputStream ins = PharmacophoreMatcherTest.class.getClassLoader().getResourceAsStream(filename);
         IteratingSDFReader reader = new IteratingSDFReader(ins,
@@ -271,7 +268,9 @@ public class PharmacophoreMatcherTest {
 
         reader.hasNext();
         IAtomContainer mol = (IAtomContainer) reader.next();
-        CDKHueckelAromaticityDetector.detectAromaticity(mol);
+        reader.close();
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+        Aromaticity.cdkLegacy().apply(mol);
 
         PharmacophoreMatcher matcher = new PharmacophoreMatcher(query);
         boolean status = matcher.matches(mol);
@@ -310,7 +309,9 @@ public class PharmacophoreMatcherTest {
 
         reader.hasNext();
         IAtomContainer mol = (IAtomContainer) reader.next();
-        CDKHueckelAromaticityDetector.detectAromaticity(mol);
+        reader.close();
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+        Aromaticity.cdkLegacy().apply(mol);
 
         PharmacophoreMatcher matcher = new PharmacophoreMatcher(query);
         boolean status = matcher.matches(mol);
@@ -336,7 +337,9 @@ public class PharmacophoreMatcherTest {
 
         reader.hasNext();
         IAtomContainer mol = (IAtomContainer) reader.next();
-        CDKHueckelAromaticityDetector.detectAromaticity(mol);
+        reader.close();
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+        Aromaticity.cdkLegacy().apply(mol);
 
         PharmacophoreMatcher matcher = new PharmacophoreMatcher(query);
         boolean status = matcher.matches(mol);
@@ -435,6 +438,7 @@ public class PharmacophoreMatcherTest {
 
 
         mol = (IAtomContainer) reader.next();
+        reader.close();
         Assert.assertFalse(matcher.matches(mol));
     }
 }

@@ -1,10 +1,4 @@
-/*
- *  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2002-2006  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2002-2006  The Chemistry Development Kit (CDK) project
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -32,7 +26,6 @@ package org.openscience.cdk.isomorphism.matchers.smarts;
 import com.google.common.base.Preconditions;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
-import org.openscience.cdk.tools.periodictable.PeriodicTable;
 
 /**
  * This matches an atom using the atomic number.

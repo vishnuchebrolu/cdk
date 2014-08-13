@@ -24,13 +24,12 @@
 
 package org.openscience.cdk.graph.invariant;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.openscience.cdk.graph.GraphUtil;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
-
-import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -82,6 +81,61 @@ public class CanonTest {
         assertThat(act, is(exp));
     }
 
+    @Test public void terminalExplicitHydrogensAreNotIncluded() throws Exception {
+        IAtomContainer m    = smi("C/C=C(/C)C[H]");
+        boolean[]      mask = Canon.terminalHydrogens(m, GraphUtil.toAdjList(m));
+        assertThat(mask, is(new boolean[]{false, false, false, false, false, true}));
+    }
+
+    @Test public void bridgingExplicitHydrogensAreIncluded() throws Exception {
+        IAtomContainer m    = smi("B1[H]B[H]1");
+        boolean[]      mask = Canon.terminalHydrogens(m, GraphUtil.toAdjList(m));
+        assertThat(mask, is(new boolean[]{false, false, false, false}));
+    }
+
+    @Test public void explicitHydrogensIonsAreIncluded() throws Exception {
+        IAtomContainer m    = smi("[H+]");
+        boolean[]      mask = Canon.terminalHydrogens(m, GraphUtil.toAdjList(m));
+        assertThat(mask, is(new boolean[]{false}));
+    }
+
+    @Test public void molecularHydrogensAreNotIncluded() throws Exception {
+        IAtomContainer m    = smi("[H][H]");
+        boolean[]      mask = Canon.terminalHydrogens(m, GraphUtil.toAdjList(m));
+        assertThat(mask, is(new boolean[]{true, true}));
+    }
+
+
+    @Test public void explicitHydrogensOfEthanolHaveSymmetry() throws Exception {
+        IAtomContainer m        = smi("C([H])([H])C([H])([H])O");
+        long[]         symmetry = Canon.symmetry(m, GraphUtil.toAdjList(m));
+        assertThat(symmetry, is(new long[]{6, 1, 1, 7, 3, 3, 5}));
+    }
+
+    @Test public void explicitHydrogensDoNotAffectHeavySymmetry() throws Exception {
+        IAtomContainer m        = smi("CC=C(C)C[H]");
+        long[]         symmetry = Canon.symmetry(m, GraphUtil.toAdjList(m));
+        assertThat(symmetry, is(new long[]{4, 2, 3, 5, 5, 1}));
+    }
+
+    @Test public void canonicallyLabelEthaneWithInConsistentHydrogenRepresentation() throws Exception {
+        IAtomContainer m = smi("CC[H]");
+        long[] labels = Canon.label(m, GraphUtil.toAdjList(m));
+        Assert.assertThat(labels, is(new long[]{2, 3, 1}));
+    }
+    
+    @Test public void canonicallyLabelEthaneWithInConsistentHydrogenRepresentation2() throws Exception {
+        IAtomContainer m = smi("CC([H])([H])");
+        long[] labels = Canon.label(m, GraphUtil.toAdjList(m));
+        Assert.assertThat(labels, is(new long[]{3, 4, 1, 2}));
+    }
+    
+    @Test public void canonicallyLabelCaffeineWithExplicitHydrogenRepresentation() throws Exception {
+        IAtomContainer m = smi("[H]C1=NC2=C(N1C([H])([H])[H])C(=O)N(C(=O)N2C([H])([H])[H])C([H])([H])[H]");
+        long[] labels = Canon.label(m, GraphUtil.toAdjList(m));
+        Assert.assertThat(labels, is(new long[]{1, 14, 13, 16, 18, 19, 22, 2, 3, 4, 15, 11, 20, 17, 12, 21, 24, 8, 9, 10, 23, 5, 6, 7}));
+    }
+    
     static final SmilesParser sp = new SmilesParser(SilentChemObjectBuilder.getInstance());
 
     static IAtomContainer smi(String smi) throws Exception {

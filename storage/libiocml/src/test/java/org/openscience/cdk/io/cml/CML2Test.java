@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -27,7 +22,6 @@
  *  */
 package org.openscience.cdk.io.cml;
 
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -37,7 +31,6 @@ import org.junit.Test;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.ChemFile;
-import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.geometry.GeometryTools;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -67,6 +60,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -95,6 +89,7 @@ public class CML2Test extends CDKTestCase {
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = new ChemFile();
         chemFile = (IChemFile) reader.read(chemFile);
+        reader.close();
         IAtomContainer container = ChemFileManipulator.getAllAtomContainers(chemFile).get(0);
         for (IAtom atom : container.atoms()) {
             Assert.assertEquals(CDKConstants.UNSET, atom.getImplicitHydrogenCount());
@@ -107,6 +102,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -140,6 +136,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -173,6 +170,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -199,6 +197,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -225,6 +224,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -251,6 +251,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -277,6 +278,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -303,6 +305,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -329,6 +332,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -355,6 +359,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -381,6 +386,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -407,6 +413,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -433,6 +440,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -459,6 +467,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -489,6 +498,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -519,6 +529,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -550,6 +561,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -581,6 +593,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -611,6 +624,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -637,6 +651,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -662,6 +677,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -689,6 +705,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -726,6 +743,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -763,6 +781,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -801,6 +820,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -838,6 +858,7 @@ public class CML2Test extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -876,6 +897,7 @@ public class CML2Test extends CDKTestCase {
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = new ChemFile();
         chemFile = (IChemFile) reader.read(chemFile);
+        reader.close();
         Assert.assertSame(chemFile.getChemSequence(0).getChemModel(0).getMoleculeSet().getAtomContainer(0), chemFile.getChemSequence(0).getChemModel(0).getReactionSet().getReaction(0).getReactants().getAtomContainer(0));
     }
 
@@ -888,17 +910,19 @@ public class CML2Test extends CDKTestCase {
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = new ChemFile();
         chemFile = (IChemFile) reader.read(chemFile);
+        reader.close();
         Assert.assertSame(chemFile.getChemSequence(0).getChemModel(0).getMoleculeSet().getAtomContainer(0), chemFile.getChemSequence(0).getChemModel(0).getReactionSet().getReaction(0).getReactants().getAtomContainer(0));
     }
 
     /**
      */
-    @Test public void testReactionProperties() throws CDKException, FileNotFoundException {
+    @Test public void testReactionProperties() throws Exception {
         String filename = "data/cml/reaction.2.cml";
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
         IChemFile chemFile = new ChemFile();
         chemFile = (IChemFile) reader.read(chemFile);
+        reader.close();
         IReaction reaction = chemFile.getChemSequence(0).getChemModel(0).getReactionSet().getReaction(0);
      
         Assert.assertEquals("3",(String)reaction.getProperty("Ka"));

@@ -38,7 +38,7 @@ import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.ChemObject;
 import org.openscience.cdk.DefaultChemObjectBuilder;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.geometry.GeometryTools;
 import org.openscience.cdk.interfaces.IAtom;
@@ -55,6 +55,8 @@ import org.openscience.cdk.io.Mol2Reader;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.templates.TestMoleculeFactory;
+import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
+
 /**
  *  A set of test cases for the StructureDiagramGenerator
  *
@@ -338,7 +340,8 @@ public class StructureDiagramGeneratorTest extends CDKTestCase
 		String smiles = "c1(:c(:c2-C(-c3:c(-C(=O)-c:2:c(:c:1-[H])-[H]):c(:c(:c(:c:3-[H])-[H])-N(-[H])-[H])-[H])=O)-[H])-[H]";
 		SmilesParser parser = new SmilesParser(SilentChemObjectBuilder.getInstance());
 		IAtomContainer cdkMol = parser.parseSmiles(smiles);
-		CDKHueckelAromaticityDetector.detectAromaticity(cdkMol);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(cdkMol);
+		Aromaticity.cdkLegacy().apply(cdkMol);
 		new StructureDiagramGenerator(cdkMol).generateCoordinates();
 	}
 	

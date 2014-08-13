@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2005-2008  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2005-2008  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -65,7 +63,7 @@ public class StructGenAtomTypeGuesser implements IAtomTypeGuesser {
 	 *
 	 * @param  atomContainer  AtomContainer
 	 * @param  atom            the target atom
-	 * @exception CDKException Exception thrown if something goed wrong
+	 * @exception CDKException Exception thrown if something goes wrong
 	 * @return                 the matching AtomType
 	 */
 	public List<IAtomType> possibleAtomTypes(IAtomContainer atomContainer, IAtom atom) throws CDKException {

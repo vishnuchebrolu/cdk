@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2012   Syed Asad Rahman <asad@ebi.ac.uk>
+/* Copyright (C) 2012   Syed Asad Rahman <asad@ebi.ac.uk>
  *
  *
  * Contact: cdk-devel@lists.sourceforge.net
@@ -29,11 +27,11 @@ import java.io.Serializable;
 import java.util.*;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.graph.ConnectivityChecker;
+import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.interfaces.*;
-import org.openscience.cdk.ringsearch.SSSRFinder;
 import org.openscience.cdk.tools.ILoggingTool;
 import org.openscience.cdk.tools.LoggingToolFactory;
 import org.openscience.cdk.tools.manipulator.RingSetManipulator;
@@ -127,7 +125,7 @@ public class ShortestPathFingerprinter extends RandomNumber implements IFingerpr
         } catch (CloneNotSupportedException ex) {
             logger.error("Failed to clone the molecule:", ex);
         }
-        CDKHueckelAromaticityDetector.detectAromaticity(atomContainer);
+        Aromaticity.cdkLegacy().apply(atomContainer);
         BitSet bitSet = new BitSet(fingerprintLength);
         if (!ConnectivityChecker.isConnected(atomContainer)) {
             IAtomContainerSet partitionedMolecules = ConnectivityChecker.partitionIntoMolecules(atomContainer);
@@ -195,8 +193,7 @@ public class ShortestPathFingerprinter extends RandomNumber implements IFingerpr
         /*
          * Add ring information
          */
-        SSSRFinder finder = new SSSRFinder(container);
-        IRingSet sssr = finder.findEssentialRings();
+        IRingSet sssr = Cycles.essential(container).toRingSet();
         RingSetManipulator.sort(sssr);
         for (Iterator<IAtomContainer> it = sssr.atomContainers().iterator(); it.hasNext();) {
             IAtomContainer ring = it.next();

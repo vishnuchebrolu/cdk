@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -32,7 +30,7 @@ import org.openscience.cdk.CDKTestCase;
 public class HOSECodeAnalyserTest extends CDKTestCase {
 	
 	@Test public void testGetElements_String()	{
-		List elements = HOSECodeAnalyser.getElements("CCY(CF,C,/C,,&/&)//");
+		List<String> elements = HOSECodeAnalyser.getElements("CCY(CF,C,/C,,&/&)//");
 		Assert.assertEquals(3, elements.size());
 		Assert.assertTrue(elements.contains("C"));
 		Assert.assertTrue(elements.contains("F"));
@@ -40,7 +38,7 @@ public class HOSECodeAnalyserTest extends CDKTestCase {
 	}
     
 	@Test public void testCode1()	{
-		List elements = HOSECodeAnalyser.getElements("*C*CC(*C,*C,=C/*C,*&,CC/*&O,=OO,%N),C,,C,/");
+		List<String> elements = HOSECodeAnalyser.getElements("*C*CC(*C,*C,=C/*C,*&,CC/*&O,=OO,%N),C,,C,/");
 		Assert.assertEquals(3, elements.size());
 		Assert.assertTrue(elements.contains("C"));
 		Assert.assertTrue(elements.contains("O"));

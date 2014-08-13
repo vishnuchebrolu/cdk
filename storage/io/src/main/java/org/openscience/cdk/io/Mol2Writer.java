@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2005-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2005-2007  Egon Willighagen <egonw@users.sf.net>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -110,10 +108,10 @@ public class Mol2Writer extends DefaultChemObjectWriter {
     }
 
 	@TestMethod("testAccepts")
-    public boolean accepts(Class classObject) {
+    public boolean accepts(Class<? extends IChemObject> classObject) {
         if (IAtomContainer.class.equals(classObject)) return true;
-		Class[] interfaces = classObject.getInterfaces();
-        for (Class anInterface : interfaces) {
+		Class<?>[] interfaces = classObject.getInterfaces();
+        for (Class<?> anInterface : interfaces) {
             if (IAtomContainer.class.equals(anInterface)) return true;
         }
         Class superClass = classObject.getSuperclass();

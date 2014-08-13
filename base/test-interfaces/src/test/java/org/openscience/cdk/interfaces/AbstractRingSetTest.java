@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$    
- * $Date$    
- * $Revision$
- * 
- * Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -27,7 +22,6 @@ package org.openscience.cdk.interfaces;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
 

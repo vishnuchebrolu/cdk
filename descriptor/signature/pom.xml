@@ -7,7 +7,7 @@
     <parent>
         <artifactId>cdk-descriptor</artifactId>
         <groupId>org.openscience.cdk</groupId>
-        <version>1.5.7-SNAPSHOT</version>
+        <version>1.5.8-SNAPSHOT</version>
     </parent>
 
     <artifactId>cdk-signature</artifactId>
@@ -46,12 +46,6 @@
             <groupId>java3d</groupId>
             <artifactId>vecmath</artifactId>
             <version>1.5.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>jgrapht</groupId>
-            <artifactId>jgrapht</artifactId>
-            <version>0.6.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>

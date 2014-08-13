@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- * 
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -27,7 +22,7 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
 /**
- * This matcher any Atom.
+ * This matcher any Atom including explicit hydrogens.
  *
  * @cdk.module  smarts
  * @cdk.githash
@@ -48,10 +43,6 @@ public class AnyAtom extends SMARTSAtom {
      * @see org.openscience.cdk.isomorphism.matchers.smarts.SMARTSAtom#matches(org.openscience.cdk.interfaces.IAtom)
      */
     public boolean matches(IAtom atom) {
-        if (atom.getSymbol().equals("H")) {
-            Integer massNumber = atom.getMassNumber();
-            return massNumber != null;
-        }
         return true;
     }
 

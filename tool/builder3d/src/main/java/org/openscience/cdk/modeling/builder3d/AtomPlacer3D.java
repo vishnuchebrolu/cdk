@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- *  Copyright (C) 2005-2007  Christian Hoppe <chhoppe@users.sf.net>
+/* Copyright (C) 2005-2007  Christian Hoppe <chhoppe@users.sf.net>
  *
  *  Contact: cdk-devel@list.sourceforge.net
  *
@@ -383,9 +381,9 @@ public class AtomPlacer3D {
 	 * author:    steinbeck,cho
 	 */
 	public IAtom getNextUnplacedHeavyAtomWithAliphaticPlacedNeighbour(IAtomContainer molecule) {
-        Iterator bonds = molecule.bonds().iterator();
+        Iterator<IBond> bonds = molecule.bonds().iterator();
         while (bonds.hasNext()) {
-            IBond bond = (IBond) bonds.next();
+            IBond bond = bonds.next();
 			if (bond.getAtom(0).getFlag(CDKConstants.ISPLACED) & !(bond.getAtom(1).getFlag(CDKConstants.ISPLACED))) {
 				if (bond.getAtom(1).getFlag(CDKConstants.ISALIPHATIC) & !bond.getAtom(1).getSymbol().equals("H")) {
 					return bond.getAtom(1);
@@ -407,9 +405,9 @@ public class AtomPlacer3D {
 	 * author: steinbeck,cho
 	 */
 	public IAtom getNextPlacedHeavyAtomWithUnplacedAliphaticNeighbour(IAtomContainer molecule) {
-        Iterator bonds = molecule.bonds().iterator();
+        Iterator<IBond> bonds = molecule.bonds().iterator();
         while (bonds.hasNext()) {
-            IBond bond = (IBond) bonds.next();
+            IBond bond = bonds.next();
 			IAtom atom0 = bond.getAtom(0);
 			IAtom atom1 = bond.getAtom(1);
 			if (atom0.getFlag(CDKConstants.ISPLACED) & !(atom1.getFlag(CDKConstants.ISPLACED))) {
@@ -433,9 +431,9 @@ public class AtomPlacer3D {
 	 */
 	public IAtom getNextPlacedHeavyAtomWithUnplacedRingNeighbour(IAtomContainer molecule) {
 //		IBond[] bonds = molecule.getBonds();
-        Iterator bonds = molecule.bonds().iterator();
+        Iterator<IBond> bonds = molecule.bonds().iterator();
         while (bonds.hasNext()) {
-            IBond bond = (IBond) bonds.next();
+            IBond bond = bonds.next();
 			IAtom atom0 = bond.getAtom(0);
 			IAtom atom1 = bond.getAtom(1);
 			if (atom0.getFlag(CDKConstants.ISPLACED) & !(atom1.getFlag(CDKConstants.ISPLACED))) {

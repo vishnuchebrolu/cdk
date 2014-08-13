@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -129,10 +124,10 @@ public class SMILESWriter extends DefaultChemObjectWriter {
     }
 
 	@TestMethod("testAccepts")
-    public boolean accepts(Class classObject) {
+    public boolean accepts(Class<? extends IChemObject> classObject) {
         if (IAtomContainer.class.equals(classObject)) return true;
         if (IAtomContainerSet.class.equals(classObject)) return true;
-		Class[] interfaces = classObject.getInterfaces();
+		Class<?>[] interfaces = classObject.getInterfaces();
 		for (int i=0; i<interfaces.length; i++) {
 			if (IAtomContainerSet.class.equals(interfaces[i])) return true;
 			if (IAtomContainer.class.equals(interfaces[i])) return true;

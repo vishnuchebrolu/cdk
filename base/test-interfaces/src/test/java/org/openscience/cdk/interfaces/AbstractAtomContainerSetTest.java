@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$    
- * 
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -23,7 +21,6 @@ package org.openscience.cdk.interfaces;
 import java.util.Comparator;
 import java.util.Iterator;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -492,7 +489,7 @@ public abstract class AbstractAtomContainerSetTest extends AbstractChemObjectTes
         Assert.assertEquals(1.0, som.getMultiplier(newFirstAC), 0.00001);
     }
 
-    private class ChemObjectListenerImpl implements IChemObjectListener {
+    protected class ChemObjectListenerImpl implements IChemObjectListener {
         private boolean changed;
         
         private ChemObjectListenerImpl() {

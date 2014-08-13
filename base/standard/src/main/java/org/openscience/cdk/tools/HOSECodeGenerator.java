@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 1997-2007  Christoph Steinbeck <steinbeck@users.sf.net>
+/* Copyright (C) 1997-2007  Christoph Steinbeck <steinbeck@users.sf.net>
  *                    2008  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
@@ -34,10 +32,10 @@ import java.util.List;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
 import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.config.IsotopeFactory;
 import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.graph.invariant.CanonicalLabeler;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -46,7 +44,6 @@ import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.interfaces.IIsotope;
 import org.openscience.cdk.interfaces.IRing;
 import org.openscience.cdk.interfaces.IRingSet;
-import org.openscience.cdk.ringsearch.SSSRFinder;
 import org.openscience.cdk.smiles.InvPair;
 
 /**
@@ -308,7 +305,7 @@ public class HOSECodeGenerator implements java.io.Serializable
 	
 	private String getRingcode(IAtom root, IAtomContainer ac){
 		if(ac!=acold){
-			soar=new SSSRFinder(ac).findSSSR();
+			soar= Cycles.sssr(ac).toRingSet();
 		}
 		boolean[] bool=new boolean[1000];
 		StringBuffer sb=new StringBuffer();

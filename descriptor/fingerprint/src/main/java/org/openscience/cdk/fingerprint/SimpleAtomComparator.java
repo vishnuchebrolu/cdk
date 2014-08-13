@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2012   Syed Asad Rahman <asad@ebi.ac.uk>
+/* Copyright (C) 2012   Syed Asad Rahman <asad@ebi.ac.uk>
  *           
  *
  * Contact: cdk-devel@lists.sourceforge.net
@@ -28,7 +26,6 @@ package org.openscience.cdk.fingerprint;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IChemObject;
 
 import java.io.Serializable;
 import java.util.Comparator;

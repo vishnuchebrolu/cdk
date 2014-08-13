@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2008  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2008  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -140,6 +138,7 @@ extends DefaultIteratingChemObjectReader<IAtomContainer> {
             			new StringReader(buffer.toString())
             		);
             		IChemFile cFile = (IChemFile)asnReader.read(builder.newInstance(IChemFile.class));
+                    asnReader.close();
             		nextMolecule = ChemFileManipulator.getAllAtomContainers(cFile).get(0);
             	}
             } catch (Exception exception) {

@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 1997-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 1997-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -54,6 +52,7 @@ public class CMLHandler extends DefaultHandler {
 
     private CMLStack xpath;
     private CMLStack conventionStack;
+    private CMLModuleStack moduleStack;
 
     /**
      * Constructor for the CMLHandler.
@@ -65,6 +64,7 @@ public class CMLHandler extends DefaultHandler {
         userConventions = new Hashtable<String,ICMLModule>();
         xpath = new CMLStack();
         conventionStack = new CMLStack();
+        moduleStack = new CMLModuleStack();
     }
 
     public void registerConvention(String convention, ICMLModule conv) {
@@ -95,12 +95,14 @@ public class CMLHandler extends DefaultHandler {
         conv.endElement(xpath, uri, local, raw);
         xpath.pop();
         conventionStack.pop();
+        moduleStack.pop();
+        conv = moduleStack.current();
     }
 
     public void startDocument() {
         conv.startDocument();
         conventionStack.push("CML");
-
+        moduleStack.push(conv);
     }
 
     public void startElement(String uri, String local, String raw, Attributes atts) {
@@ -110,9 +112,12 @@ public class CMLHandler extends DefaultHandler {
         if (local.startsWith("reaction")) {
             // e.g. reactionList, reaction -> CRML module
             logger.info("Detected CRML module");
-            conv = new CMLReactionModule(conv);
-            conventionStack.push(conventionStack.current());
-        } else {
+            if (!conventionStack.current().equals("CMLR")) {
+                conv = new CMLReactionModule(conv);
+            }
+            conventionStack.push("CMLR");
+        } else if (uri == null || uri.length() == 0 ||
+        		   uri.startsWith("http://www.xml-cml.org/")) {
             // assume CML Core
                 
             // Detect conventions
@@ -157,7 +162,11 @@ public class CMLHandler extends DefaultHandler {
                 // no convention set/reset: take convention of parent
                 conventionStack.push(conventionStack.current());
             }
+        } else {
+        	 conv = new OtherNamespace();
+        	 conventionStack.push("Other");
         }
+        moduleStack.push(conv);
         if (debug) logger.debug("ConventionStack: ", conventionStack);
         conv.startElement(xpath, uri, local, raw, atts);
     }

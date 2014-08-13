@@ -1,10 +1,4 @@
-/*
- * $RCSfile$    
- * $Author$    
- * $Date$    
- * $Revision$
- * 
- * Copyright (C) 1997-2007  The Chemistry Development Kit (CKD) project
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CKD) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -33,20 +27,16 @@ package org.openscience.cdk.similarity;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openscience.cdk.CDKTestCase;
-import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.fingerprint.Fingerprinter;
 import org.openscience.cdk.fingerprint.IBitFingerprint;
 import org.openscience.cdk.fingerprint.ICountFingerprint;
 import org.openscience.cdk.fingerprint.IntArrayCountFingerprint;
-import org.openscience.cdk.fingerprint.LingoFingerprinter;
 import org.openscience.cdk.fingerprint.SignatureFingerprinter;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.templates.MoleculeFactory;
 
-import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 

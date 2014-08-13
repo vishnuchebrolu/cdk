@@ -1,10 +1,4 @@
-/*
- *  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2008 Miguel Rojas <miguelrojasch@users.sf.net>
+/* Copyright (C) 2008 Miguel Rojas <miguelrojasch@users.sf.net>
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -141,7 +135,7 @@ public class PiBondingMovementReaction extends ReactionEngine implements IReacti
 			setActiveCenters(reactant);
 		
 //		if((Boolean)paramsMap.get("lookingSymmetry")){
-//			CDKHueckelAromaticityDetector.detectAromaticity(reactant);
+//			Aromaticity.cdkLegacy().apply(reactant);
 //		}
 		
 		AllRingsFinder arf = new AllRingsFinder();

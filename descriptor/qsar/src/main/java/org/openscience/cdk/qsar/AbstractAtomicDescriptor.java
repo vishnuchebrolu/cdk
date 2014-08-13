@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- * 
- * Copyright (C) 2006-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2006-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -43,7 +38,7 @@ public abstract class AbstractAtomicDescriptor extends AbstractDescriptor implem
     
 	private static final String PREVIOUS_ATOMCONTAINER = "previousAtomContainer";
 	
-	private Map cachedDescriptorValues = null;
+	private Map cachedDescriptorValues = null; // FIXME: needs a better solution!
 
 	/**
 	 * Returns true if the cached IDescriptorResult's are for the given IAtomContainer.

@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2003-2008  Egon Willighagen <egonw@sci.kun.nl>
+/* Copyright (C) 2003-2008  Egon Willighagen <egonw@sci.kun.nl>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -119,7 +117,7 @@ public class GaussianInputWriter extends DefaultChemObjectWriter {
     }
     
 	@TestMethod("testAccepts")
-    public boolean accepts(Class classObject) {
+    public boolean accepts(Class<? extends IChemObject> classObject) {
         return IAtomContainer.class.isAssignableFrom(classObject);
     }
 

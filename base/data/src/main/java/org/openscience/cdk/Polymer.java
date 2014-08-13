@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- * 
- * Copyright (C) 2001-2007  Edgar Luttmann <edgar@uni-paderborn.de>
+/* Copyright (C) 2001-2007  Edgar Luttmann <edgar@uni-paderborn.de>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -35,7 +30,6 @@ import org.openscience.cdk.interfaces.IPolymer;
 import org.openscience.cdk.interfaces.ISingleElectron;
 import org.openscience.cdk.interfaces.IStereoElement;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;

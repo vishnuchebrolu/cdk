@@ -46,7 +46,7 @@ import java.util.Arrays;
  *  is known that will distinguish all possible graph asymmetries. However, 
  *  for any given set of structures, a set of invariants can be devised to 
  *  provide the necessary discrimination"</i> {@cdk.cite WEI89}. As such this
- *  producer should not be considered a complete canonical labelledr but in
+ *  producer should not be considered a complete canonical labelled but in
  *  practice performs well. For a more accurate and computationally expensive
  *  labelling, please using the {@link InChINumbersTools}.
  *  
@@ -85,13 +85,14 @@ public final class Canon {
      * invariants.
      *
      * @param g         a graph (adjacency list representation)
+     * @param hydrogens binary vector of terminal hydrogens                  
      * @param partition an initial partition of the vertices
      */
-    private Canon(int[][] g, long[] partition, boolean symOnly) {
+    private Canon(int[][] g, long[] partition, boolean[] hydrogens, boolean symOnly) {
         this.g       = g;
         this.symOnly = symOnly;
         labelling    = partition.clone();
-        symmetry     = refine(labelling);
+        symmetry     = refine(labelling, hydrogens);
     }
 
     /**
@@ -126,7 +127,7 @@ public final class Canon {
      *
      * @param container  structure
      * @param g          adjacency list graph representation
-     * @param invariants intial invariants
+     * @param invariants initial invariants
      * @return the canonical labelling
      * @see EquivalentClassPartitioner
      * @see InChINumbersTools
@@ -134,7 +135,10 @@ public final class Canon {
     public static long[] label(IAtomContainer container, int[][] g, long[] invariants) {
         if (invariants.length != g.length)
             throw new IllegalArgumentException("number of invariants != number of atoms");
-        return new Canon(g, invariants, false).labelling;
+        return new Canon(g,
+                         invariants,
+                         terminalHydrogens(container, g),
+                         false).labelling;
     }
 
     /**
@@ -150,7 +154,10 @@ public final class Canon {
      * @see EquivalentClassPartitioner
      */
     public static long[] symmetry(IAtomContainer container, int[][] g) {
-        return new Canon(g, basicInvariants(container, g), true).symmetry;
+        return new Canon(g,
+                         basicInvariants(container, g),
+                         terminalHydrogens(container, g),
+                         true).symmetry;
     }
 
     /**
@@ -159,9 +166,10 @@ public final class Canon {
      * 
      * @param invariants the invariants to refine (canonical labelling gets
      *                   written here)
+     * @param hydrogens  binary vector of terminal hydrogens                  
      * @return the symmetry classes
      */
-    private long[] refine(long[] invariants) {
+    private long[] refine(long[] invariants, boolean[] hydrogens) {
         
         int ord = g.length;
         
@@ -199,13 +207,36 @@ public final class Canon {
                 for (int i = 0; i < ord && nextVs[i] >= 0; i++) {
                     int v         = nextVs[i];
                     currVs[nnu++] = v;
-                    curr[v]       = primeProduct(g[v], prev);
+                    curr[v]       = hydrogens[v] ? prev[v] 
+                                                 : primeProduct(g[v], prev, hydrogens);
                 }
                 m = n;
             }
             
-            if (symmetry == null)
+            if (symmetry == null) {
+                
+                // After symmetry classes have been found without hydrogens we add
+                // back in the hydrogens and assign ranks. We don't refine the
+                // partition until the next time round the while loop to avoid
+                // artificially splitting due to hydrogen representation, for example
+                // the two hydrogens are equivalent in this SMILES for ethane '[H]CC'
+                for (int i = 0; i < g.length; i++) {
+                    if (hydrogens[i]) {
+                        curr[i]      = prev[g[i][0]];
+                        hydrogens[i] = false;
+                    }
+                }
+                n        = ranker.rank(currVs, nextVs, nnu, curr, prev);
                 symmetry = Arrays.copyOf(prev, ord);
+
+                // Update the buffer of non-unique vertices as hydrogens next
+                // to discrete heavy atoms are also discrete (and removed from
+                // 'nextVs' during ranking.
+                nnu = 0;
+                for (int i = 0; i < ord && nextVs[i] >= 0; i++) {
+                    currVs[nnu++] = nextVs[i];
+                }
+            }
 
             // partition is discrete or only symmetry classes are needed
             if (symOnly || n == ord)
@@ -234,10 +265,13 @@ public final class Canon {
      * @param ranks invariant ranks
      * @return the prime product
      */
-    private long primeProduct(int[] ws, long[] ranks) {
+    private long primeProduct(int[] ws, long[] ranks, boolean[] hydrogens) {
         long prod = 1;
-        for (int w : ws)
-            prod *= PRIMES[(int) ranks[w]];
+        for (int w : ws) {
+            if (!hydrogens[w]) {
+                prod *= PRIMES[(int) ranks[w]];
+            }
+        }
         return prod;
     }
     
@@ -352,6 +386,25 @@ public final class Canon {
         if (charge != null)
             return charge;
         return 0;
+    }
+
+    /**
+     * Locate explicit hydrogens that are attached to exactly one other atom.
+     *
+     * @param ac a structure
+     * @return binary set of terminal hydrogens
+     */
+    static boolean[] terminalHydrogens(final IAtomContainer ac, final int[][] g) {
+
+        final boolean[] hydrogens = new boolean[ac.getAtomCount()];
+
+        // we specifically don't check for null atomic number, this must be set.
+        // if not, something major is wrong
+        for (int i = 0; i < ac.getAtomCount(); i++) {
+            hydrogens[i] = ac.getAtom(i).getAtomicNumber() == 1 && g[i].length == 1;
+        }
+
+        return hydrogens;
     }
 
     /** The first 2229 primes. */

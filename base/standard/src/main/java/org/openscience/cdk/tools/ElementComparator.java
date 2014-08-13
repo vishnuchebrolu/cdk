@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- * 
- * Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -27,10 +22,10 @@
  *  */
 package org.openscience.cdk.tools;
 
+import java.util.Comparator;
+
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
-
-import java.util.Comparator;
 
 /** 
   * Compares elements based on the order commonly used in 
@@ -43,7 +38,7 @@ import java.util.Comparator;
   * @cdk.keyword element, sorting
   */
 @TestClass("org.openscience.cdk.tools.ElementComparatorTest")
-public class ElementComparator implements Comparator {
+public class ElementComparator implements Comparator<String> {
 
     private static final String H_ELEMENT_SYMBOL = "H";
     private static final String C_ELEMENT_SYMBOL = "C";
@@ -54,7 +49,7 @@ public class ElementComparator implements Comparator {
      * after o2 in the formula.
      */
     @TestMethod("testCompare_Object_Object")
-    public int compare(Object o1, Object o2) {
+    public int compare(String o1, String o2) {
         if (C_ELEMENT_SYMBOL.equals(o1)) {
             if (C_ELEMENT_SYMBOL.equals(o2)) {
                 return 0;

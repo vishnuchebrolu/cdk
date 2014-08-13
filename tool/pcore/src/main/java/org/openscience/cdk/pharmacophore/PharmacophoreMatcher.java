@@ -1,9 +1,4 @@
-/*  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2004-2008  Rajarshi Guha <rajarshi.guha@gmail.com>
+/* Copyright (C) 2004-2008  Rajarshi Guha <rajarshi.guha@gmail.com>
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -257,8 +252,8 @@ public class PharmacophoreMatcher {
         matchingPBonds = new ArrayList<List<IBond>>();
         bondMapHash = new ArrayList<HashMap<IBond, IBond>>();
 
-        for (Object aBondMapping : bondMapping) {
-            List list = (List) aBondMapping;
+        for (List<RMap> aBondMapping : bondMapping) {
+            List<RMap> list = aBondMapping;
             List<IBond> bondList = new ArrayList<IBond>();
             HashMap<IBond, IBond> tmphash = new HashMap<IBond, IBond>();
             for (Object aList : list) {
@@ -544,12 +539,12 @@ public class PharmacophoreMatcher {
         return ret;
     }
 
-    private List<List<PharmacophoreAtom>> getAtomMappings(List bondMapping, IAtomContainer atomContainer) {
+    private List<List<PharmacophoreAtom>> getAtomMappings(List<List<RMap>> bondMapping, IAtomContainer atomContainer) {
         List<List<PharmacophoreAtom>> atomMapping = new ArrayList<List<PharmacophoreAtom>>();
 
         // loop over each mapping
-        for (Object aBondMapping : bondMapping) {
-            List list = (List) aBondMapping;
+        for (List<RMap> aBondMapping : bondMapping) {
+            List<RMap> list = aBondMapping;
 
             List<Integer> tmp = new ArrayList<Integer>();
             List<PharmacophoreAtom> atomList = new ArrayList<PharmacophoreAtom>();

@@ -7,7 +7,7 @@
     <parent>
         <artifactId>cdk-descriptor</artifactId>
         <groupId>org.openscience.cdk</groupId>
-        <version>1.5.7-SNAPSHOT</version>
+        <version>1.5.8-SNAPSHOT</version>
     </parent>
 
     <artifactId>cdk-ionpot</artifactId>
@@ -28,12 +28,6 @@
             <groupId>Jama</groupId>
             <artifactId>Jama</artifactId>
             <version>1.0.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>jgrapht</groupId>
-            <artifactId>jgrapht</artifactId>
-            <version>0.6.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>

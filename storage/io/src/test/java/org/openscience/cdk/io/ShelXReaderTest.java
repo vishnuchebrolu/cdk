@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -62,6 +57,7 @@ public class ShelXReaderTest extends SimpleChemObjectReaderTest {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         ShelXReader reader = new ShelXReader(ins);
         Crystal crystal = (Crystal)reader.read(new Crystal());
+        reader.close();
         Assert.assertNotNull(crystal);
         Assert.assertEquals(42, crystal.getAtomCount());
         double notional[] = CrystalGeometryTools.cartesianToNotional(

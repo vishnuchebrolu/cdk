@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2001-2007  Bradley A. Smith <bradley@baysmith.com>
+/* Copyright (C) 2001-2007  Bradley A. Smith <bradley@baysmith.com>
  *               2003-2009  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
@@ -25,13 +23,10 @@ import java.io.BufferedReader;
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -39,7 +34,6 @@ import java.util.StringTokenizer;
 import java.util.TreeSet;
 
 import com.google.common.io.CharStreams;
-import com.google.common.io.Files;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.io.formats.IChemFormat;

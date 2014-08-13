@@ -1,6 +1,4 @@
-/* $Revision$ $Author$$Date$
- *
- * Copyright (C) 2006-2007  Egon Willighagen <ewilligh@uni-koeln.de>
+/* Copyright (C) 2006-2007  Egon Willighagen <ewilligh@uni-koeln.de>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -27,7 +25,6 @@ package org.openscience.cdk;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IFragmentAtom;
-import org.openscience.cdk.interfaces.IPseudoAtom;
 
 /**
  * Class to represent an IPseudoAtom which embeds an IAtomContainer. Very much

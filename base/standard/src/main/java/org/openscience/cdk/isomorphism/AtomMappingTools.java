@@ -1,6 +1,4 @@
-/*  $Revision$ $Author$ $Date$
- *
- *  Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -64,12 +62,12 @@ public class AtomMappingTools {
         RMap map;
         IAtom atom1;
         IAtom atom2;
-        List list;
+        List<RMap> list;
         try {
             list = new UniversalIsomorphismTester().getSubgraphAtomsMap(firstAtomContainer, secondAtomContainer);
             //logger.debug("ListSize:"+list.size());
             for (int i = 0; i < list.size(); i++) {
-                map = (RMap) list.get(i);
+                map = list.get(i);
                 atom1 = firstAtomContainer.getAtom(map.getId1());
                 atom2 = secondAtomContainer.getAtom(map.getId2());
                 if (checkAtomMapping(firstAtomContainer, secondAtomContainer, firstAtomContainer.getAtomNumber(atom1), secondAtomContainer.getAtomNumber(atom2)))

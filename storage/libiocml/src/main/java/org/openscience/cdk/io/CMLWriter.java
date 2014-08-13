@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2001-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2001-2007  Egon Willighagen <egonw@users.sf.net>
  *                          Stefan Kuhn <shk3@users.sf.net>
  *                          Miguel Rojas-Cherto <miguelrojasch@users.sf.net>
  *
@@ -61,7 +59,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -141,6 +138,10 @@ public class CMLWriter extends DefaultChemObjectWriter {
             public void write(int b) throws IOException {
                 writer.write(b);
             }
+
+            @Override public void close() throws IOException {
+                writer.close();
+            }
         };
 
         initIOSettings();
@@ -194,8 +195,8 @@ public class CMLWriter extends DefaultChemObjectWriter {
     }
 
 	@TestMethod("testAccepts")
-    public boolean accepts(Class classObject) {
-		Class[] interfaces = classObject.getInterfaces();
+    public boolean accepts(Class<? extends IChemObject> classObject) {
+		Class<?>[] interfaces = classObject.getInterfaces();
 		for (int i=0; i<interfaces.length; i++) {
 			if (IAtom.class.equals(interfaces[i])) return true;
 			if (IBond.class.equals(interfaces[i])) return true;

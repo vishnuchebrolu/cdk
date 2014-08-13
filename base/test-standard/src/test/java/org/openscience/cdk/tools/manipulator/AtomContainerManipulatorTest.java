@@ -1,9 +1,4 @@
-/* $RCSfile$    
- * $Author$    
- * $Date$    
- * $Revision$
- * 
- * Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -684,15 +679,30 @@ public class AtomContainerManipulatorTest extends CDKTestCase {
         for (IAtom atom : container.atoms()) {
             Assert.assertTrue(atom.getAtomTypeName() != CDKConstants.UNSET);
             Assert.assertTrue(atom.getHybridization() != CDKConstants.UNSET);
-            Assert.assertTrue(atom.getAtomicNumber() != CDKConstants.UNSET);
         }
 
         AtomContainerManipulator.clearAtomConfigurations(container);
         for (IAtom atom : container.atoms()) {
             Assert.assertTrue(atom.getAtomTypeName() == CDKConstants.UNSET);
             Assert.assertTrue(atom.getHybridization() == CDKConstants.UNSET);
-            Assert.assertTrue(atom.getAtomicNumber() == CDKConstants.UNSET);
         }
+    }
+    
+    @Test public void atomicNumberIsNotCleared() throws Exception {
+        IAtomContainer container = DefaultChemObjectBuilder.getInstance().newInstance(IAtomContainer.class);
+        IAtom atom1 = DefaultChemObjectBuilder.getInstance().newInstance(IAtom.class,"C");
+        IAtom atom2 = DefaultChemObjectBuilder.getInstance().newInstance(IAtom.class,"O");
+        IAtom atom3 = DefaultChemObjectBuilder.getInstance().newInstance(IAtom.class,"C");
+        container.addAtom(atom1);
+        container.addAtom(atom2);
+        container.addAtom(atom3);
+        container.addBond(new Bond(atom1, atom2, IBond.Order.SINGLE));
+        container.addBond(new Bond(atom2, atom3, IBond.Order.SINGLE));
+
+        AtomContainerManipulator.clearAtomConfigurations(container);
+        for (IAtom atom : container.atoms()) {
+            Assert.assertNotNull(atom.getAtomicNumber());
+        }     
     }
 
     @Test

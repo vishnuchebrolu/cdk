@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$    
- * 
- * Copyright (C) 2006-2007  Egon Willighagen <ewilligh@uni-koeln.de>
+/* Copyright (C) 2006-2007  Egon Willighagen <ewilligh@uni-koeln.de>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -29,10 +27,12 @@ import java.util.Iterator;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.DefaultChemObjectBuilder;
+import org.openscience.cdk.SlowTest;
 import org.openscience.cdk.atomtype.CDKAtomTypeMatcher;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -53,6 +53,7 @@ import org.openscience.cdk.tools.manipulator.AtomTypeManipulator;
  *
  * @cdk.module test-standard
  */
+@Category(SlowTest.class) // CanonicalLabeler is deprecated (slow) 
 public class CanonicalLabelerTest extends CDKTestCase {
 	
 	private SmilesParser parser;
@@ -82,9 +83,9 @@ public class CanonicalLabelerTest extends CDKTestCase {
 
         
 		labeler.canonLabel(molecule);
-		Iterator atoms = molecule.atoms().iterator();
+		Iterator<IAtom> atoms = molecule.atoms().iterator();
 		while (atoms.hasNext()) {
-			IAtom atom = (IAtom)atoms.next();
+			IAtom atom = atoms.next();
 			Assert.assertNotNull(atom.getProperty(InvPair.CANONICAL_LABEL));
 		}
         
@@ -106,9 +107,9 @@ public class CanonicalLabelerTest extends CDKTestCase {
     public void testSomeMoleculeWithDifferentStartingOrder() throws Exception {
         IAtomContainer molecule = parser.parseSmiles("O=C(C)CBr");
 		labeler.canonLabel(molecule);
-		Iterator atoms = molecule.atoms().iterator();
+		Iterator<IAtom> atoms = molecule.atoms().iterator();
 		while (atoms.hasNext()) {
-			IAtom atom = (IAtom)atoms.next();
+			IAtom atom = atoms.next();
 			Assert.assertNotNull(atom.getProperty(InvPair.CANONICAL_LABEL));
 		}        
 		Assert.assertEquals(1, ((Long)molecule.getAtom(0).getProperty(InvPair.CANONICAL_LABEL)).intValue());

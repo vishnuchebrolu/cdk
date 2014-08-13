@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2007  Stefan Kuhn <shk3@users.sf.net>
+/* Copyright (C) 2007  Stefan Kuhn <shk3@users.sf.net>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -30,7 +28,6 @@ import nu.xom.Serializer;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openscience.cdk.Atom;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.interfaces.IBond;

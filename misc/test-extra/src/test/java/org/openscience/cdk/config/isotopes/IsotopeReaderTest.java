@@ -1,9 +1,4 @@
-/* $RCSfile$    
- * $Author$    
- * $Date$    
- * $Revision$
- * 
- * Copyright (C) 2005-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2005-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -28,6 +23,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openscience.cdk.ChemObject;
 import org.openscience.cdk.config.isotopes.IsotopeReader;
+import org.openscience.cdk.interfaces.IIsotope;
 import org.openscience.cdk.CDKTestCase;
 
 import java.io.ByteArrayInputStream;
@@ -55,7 +51,7 @@ public class IsotopeReaderTest extends CDKTestCase {
         	new ChemObject().getBuilder()
         );
         Assert.assertNotNull(reader);
-        List isotopes = reader.readIsotopes();
+        List<IIsotope> isotopes = reader.readIsotopes();
         Assert.assertNotNull(isotopes);
         Assert.assertEquals(0, isotopes.size());
     }
@@ -92,7 +88,7 @@ public class IsotopeReaderTest extends CDKTestCase {
             new ChemObject().getBuilder()
         );
         Assert.assertNotNull(reader);
-        List isotopes = reader.readIsotopes();
+        List<IIsotope> isotopes = reader.readIsotopes();
         Assert.assertNotNull(isotopes);
         Assert.assertEquals(3, isotopes.size());
     }

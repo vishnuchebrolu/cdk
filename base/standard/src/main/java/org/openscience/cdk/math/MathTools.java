@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -36,7 +31,7 @@ import org.openscience.cdk.annotations.TestMethod;
 public class MathTools {
 	
 	/**
-	 * Analog of Math.max that returns the largest double value in an array of dpubles.
+	 * Analog of Math.max that returns the largest double value in an array of doubles.
 	 *
 	 * @param   values  the values to be searched for the largest value among them
 	 * @return   the largest value among a set of given values  

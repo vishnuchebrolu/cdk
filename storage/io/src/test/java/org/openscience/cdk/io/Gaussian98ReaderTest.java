@@ -43,15 +43,16 @@ public class Gaussian98ReaderTest extends SimpleChemObjectReaderTest {
 		BufferedReader inputReader = new BufferedReader(new InputStreamReader(ins));
 		Gaussian98Reader g98Reader = new Gaussian98Reader(inputReader);
 		ChemFile chemFile = (ChemFile)g98Reader.read(new ChemFile());
-		List atomContainersList = ChemFileManipulator.getAllAtomContainers(chemFile);
+		g98Reader.close();
+		List<IAtomContainer> atomContainersList = ChemFileManipulator.getAllAtomContainers(chemFile);
 		Assert.assertNotNull(atomContainersList);
 		Assert.assertTrue(atomContainersList.size() == 54);
 		//logger.debug("Found " + atomContainers.length + " atomContainers");
-		Iterator iterator = atomContainersList.iterator();
+		Iterator<IAtomContainer> iterator = atomContainersList.iterator();
 		int counter = 0;
 		while(iterator.hasNext())
 		{
-			IAtomContainer ac = (IAtomContainer) iterator.next();
+			IAtomContainer ac = iterator.next();
 			shieldingCounter = 0;
 			atomContainer = ac;
 			for (int g = 0; g <  atomContainer.getAtomCount(); g++)

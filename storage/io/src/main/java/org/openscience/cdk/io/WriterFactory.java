@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$  
- * $Revision$
- *
- * Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -119,7 +114,7 @@ public class WriterFactory {
                     String formatName = reader.readLine();
                     formatCount++;
                     try {
-                        Class formatClass = this.getClass().getClassLoader().loadClass(formatName);
+                        Class<?> formatClass = this.getClass().getClassLoader().loadClass(formatName);
                     	Method getinstanceMethod = formatClass.getMethod("getInstance", new Class[0]);
                     	IResourceFormat format = (IResourceFormat)getinstanceMethod.invoke(null, new Object[0]);
                         if (format instanceof IChemFormat) {

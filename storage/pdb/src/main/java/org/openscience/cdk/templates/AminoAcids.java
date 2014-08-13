@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2005-2007  Martin Eklund <martin.eklund@farmbio.uu.se>
+/* Copyright (C) 2005-2007  Martin Eklund <martin.eklund@farmbio.uu.se>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -181,6 +179,7 @@ public class AminoAcids {
                 }
                 counter++;
         	}
+            reader.close();
         } catch (Exception exception) {
         	logger.error("Failed reading file: ", exception.getMessage());
         	logger.debug(exception);

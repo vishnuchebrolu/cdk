@@ -1,9 +1,4 @@
-/* $RCSfile$    
- * $Author$    
- * $Date$    
- * $Revision$
- * 
- * Copyright (C) 2005-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2005-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -59,12 +54,6 @@ public class AtomTypeReaderTest extends CDKTestCase {
             "  xsi:schemaLocation=\"http://www.xml-cml.org/schema/cml2/core ../../io/cml/data/cmlAll.xsd\"" +
             "  id=\"mol2\" title=\"MOL2 AtomTypes\">                                                      " +
             "                                                                                             " +
-            "  <metadataList>                                                                             " +
-            "    <metadata name=\"cvs:last-change-by\" content=\"$Author$\"/>                     " +
-            "    <metadata name=\"cvs:date\" content=\"$Date$\"/>                   " +
-            "    <metadata name=\"cvs:revision\" content=\"$Revision$\"/>                           " +
-            "  </metadataList>                                                                            " +
-            "                                                                                             " +
             "  <atomType id=\"C.3\" title=\"1\">                                                          " +
             "    <atom elementType=\"C\"/>                                                                " +
             "    <scalar dataType=\"xsd:string\" dictRef=\"cdk:hybridization\">sp3</scalar>               " +
@@ -76,7 +65,7 @@ public class AtomTypeReaderTest extends CDKTestCase {
             "</atomTypeList>")
         );
         Assert.assertNotNull(reader);
-        List types = reader.readAtomTypes(new ChemObject().getBuilder());
+        List<IAtomType> types = reader.readAtomTypes(new ChemObject().getBuilder());
         Assert.assertNotNull(types);
         Assert.assertEquals(2, types.size());
     }
@@ -88,12 +77,6 @@ public class AtomTypeReaderTest extends CDKTestCase {
             "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"                                    " +
             "  xsi:schemaLocation=\"http://www.xml-cml.org/schema/cml2/core ../../io/cml/data/cmlAll.xsd\"" +
             "  id=\"mol2\" title=\"MOL2 AtomTypes\">                                                      " +
-            "                                                                                             " +
-            "  <metadataList>                                                                             " +
-            "    <metadata name=\"cvs:last-change-by\" content=\"$Author$\"/>                     " +
-            "    <metadata name=\"cvs:date\" content=\"$Date$\"/>                   " +
-            "    <metadata name=\"cvs:revision\" content=\"$Revision$\"/>                           " +
-            "  </metadataList>                                                                            " +
             "                                                                                             " +
             "  <atomType id=\"C.3\" title=\"1\">                                                          " +
             "    <atom elementType=\"C\"/>                                                                " +
@@ -109,7 +92,7 @@ public class AtomTypeReaderTest extends CDKTestCase {
             new StringReader(data)
         );
         Assert.assertNotNull(reader);
-        List types = reader.readAtomTypes(new ChemObject().getBuilder());
+        List<IAtomType> types = reader.readAtomTypes(new ChemObject().getBuilder());
         Assert.assertNotNull(types);
         Assert.assertEquals(2, types.size());
     }
@@ -122,12 +105,6 @@ public class AtomTypeReaderTest extends CDKTestCase {
           "  xsi:schemaLocation=\"http://www.xml-cml.org/schema/cml2/core ../../io/cml/data/cmlAll.xsd\"\n" +
           "  id=\"mol2\" title=\"MOL2 AtomTypes\">                                                      \n" +
           "                                                                                             \n" +
-          "  <metadataList>                                                                             \n" +
-          "    <metadata name=\"cvs:last-change-by\" content=\"$Author$\"/>                     \n" +
-          "    <metadata name=\"cvs:date\" content=\"$Date$\"/>                   \n" +
-          "    <metadata name=\"cvs:revision\" content=\"$Revision$\"/>                           \n" +
-          "  </metadataList>                                                                            \n" +
-          "\n" +
           "  <atomType id=\"C.sp\">\n" +
           "    <atom elementType=\"C\" formalCharge=\"0\">\n" +
           "      <scalar dataType=\"xsd:integer\" dictRef=\"cdk:formalNeighbourCount\">2</scalar>\n" +
@@ -142,7 +119,7 @@ public class AtomTypeReaderTest extends CDKTestCase {
           new StringReader(data)
       );
       Assert.assertNotNull(reader);
-      List types = reader.readAtomTypes(new ChemObject().getBuilder());
+      List<IAtomType> types = reader.readAtomTypes(new ChemObject().getBuilder());
       Assert.assertNotNull(types);
       Assert.assertEquals(1, types.size());
       
@@ -165,12 +142,6 @@ public class AtomTypeReaderTest extends CDKTestCase {
             "  xsi:schemaLocation=\"http://www.xml-cml.org/schema/cml2/core ../../io/cml/data/cmlAll.xsd\"\n" +
             "  id=\"mol2\" title=\"MOL2 AtomTypes\">                                                      \n" +
             "                                                                                             \n" +
-            "  <metadataList>                                                                             \n" +
-            "    <metadata name=\"cvs:last-change-by\" content=\"$Author$\"/>                     \n" +
-            "    <metadata name=\"cvs:date\" content=\"$Date$\"/>                   \n" +
-            "    <metadata name=\"cvs:revision\" content=\"$Revision$\"/>                           \n" +
-            "  </metadataList>                                                                            \n" +
-            "\n" +
             " <atomType id=\"C\">\n" +
             "	<!-- for example in CC-->\n" +
             "   <atom elementType=\"C\" formalCharge=\"0\">\n" +
@@ -191,7 +162,7 @@ public class AtomTypeReaderTest extends CDKTestCase {
             new StringReader(data)
         );
         Assert.assertNotNull(reader);
-        List types = reader.readAtomTypes(new ChemObject().getBuilder());
+        List<IAtomType> types = reader.readAtomTypes(new ChemObject().getBuilder());
         Assert.assertNotNull(types);
         Assert.assertEquals(1, types.size());
         

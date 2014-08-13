@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -122,12 +117,12 @@ public class MDLRXNReader extends DefaultChemObjectReader {
     }
 
 	@TestMethod("testAccepts")
-    public boolean accepts(Class classObject) {
+    public boolean accepts(Class<? extends IChemObject> classObject) {
         if (IChemFile.class.equals(classObject)) return true;
         if (IChemModel.class.equals(classObject)) return true;
         if (IReaction.class.equals(classObject)) return true;
         if (IReactionSet.class.equals(classObject)) return true;
-		Class[] interfaces = classObject.getInterfaces();
+		Class<?>[] interfaces = classObject.getInterfaces();
 		for (int i=0; i<interfaces.length; i++) {
 			if (IChemModel.class.equals(interfaces[i])) return true;
 			if (IChemFile.class.equals(interfaces[i])) return true;
@@ -219,16 +214,14 @@ public class MDLRXNReader extends DefaultChemObjectReader {
  		  if (r != null) {
  			setOfReactions.addReaction(r);
  	      }
- 		  
-         String str;
+
          try {
              String line;
              while ((line = input.readLine()) != null) {
                  logger.debug("line: ", line);
                  // apparently, this is a SDF file, continue with 
                  // reading mol files
-		 		str = new String(line);
-		 		if (str.equals("$$$$")) {
+                 if (line.equals("$$$$")) {
 		 		    r = readReaction(setOfReactions.getBuilder());
 		 		    
 		 		    if (r != null) {
@@ -239,14 +232,13 @@ public class MDLRXNReader extends DefaultChemObjectReader {
 		 		    if (r != null) {
 			 			// ok, the first lines should start with '>'
 			 			String fieldName = null;
-			 			if (str.startsWith("> ")) {
+                        if (line.startsWith("> ")) {
 			 			    // ok, should extract the field name
-			 			    str.substring(2); // String content = 
-			 			    int index = str.indexOf("<");
+                            int index = line.indexOf("<");
 			 			    if (index != -1) {
-				 				int index2 = str.substring(index).indexOf(">");
+                                int index2 = line.substring(index).indexOf(">");
 				 				if (index2 != -1) {
-				 				    fieldName = str.substring(index+1,index+index2);
+                                    fieldName = line.substring(index+1,index+index2);
 				 				}
 			 			    }
 			 			    // end skip all other lines
@@ -350,6 +342,7 @@ public class MDLRXNReader extends DefaultChemObjectReader {
                 IAtomContainer reactant = (IAtomContainer)reader.read(
                   builder.newInstance(IAtomContainer.class)
                 );
+                reader.close();
                   
                 // add reactant
                 reaction.addReactant(reactant);
@@ -381,6 +374,7 @@ public class MDLRXNReader extends DefaultChemObjectReader {
                 );
                 IAtomContainer product = (IAtomContainer)reader.read(
                   builder.newInstance(IAtomContainer.class));
+                reader.close();
                   
                 // add reactant
                 reaction.addProduct(product);
@@ -397,14 +391,14 @@ public class MDLRXNReader extends DefaultChemObjectReader {
         logger.info("Reading atom-atom mapping from file");
         // distribute all atoms over two AtomContainer's
         IAtomContainer reactingSide = builder.newInstance(IAtomContainer.class);
-        Iterator molecules = reaction.getReactants().atomContainers().iterator();
+        Iterator<IAtomContainer> molecules = reaction.getReactants().atomContainers().iterator();
         while (molecules.hasNext()) {
-            reactingSide.add((IAtomContainer)molecules.next());
+            reactingSide.add(molecules.next());
         }
         IAtomContainer producedSide = builder.newInstance(IAtomContainer.class);
         molecules = reaction.getProducts().atomContainers().iterator();
         while (molecules.hasNext()) {
-            producedSide.add((IAtomContainer)molecules.next());
+            producedSide.add(molecules.next());
         }
         
         // map the atoms

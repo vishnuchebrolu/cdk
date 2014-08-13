@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2004-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2004-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -104,9 +102,9 @@ public class CrystClustWriter extends DefaultChemObjectWriter {
     
     
 	@TestMethod("testAccepts")
-    public boolean accepts(Class classObject) {
-		Class[] interfaces = classObject.getInterfaces();
-        for (Class anInterface : interfaces) {
+    public boolean accepts(Class<? extends IChemObject> classObject) {
+		Class<?>[] interfaces = classObject.getInterfaces();
+        for (Class<?> anInterface : interfaces) {
             if (ICrystal.class.equals(anInterface)) return true;
             if (IChemSequence.class.equals(anInterface)) return true;
         }

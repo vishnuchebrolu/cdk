@@ -27,9 +27,11 @@ package org.openscience.cdk.io;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.PseudoAtom;
+import org.openscience.cdk.SlowTest;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -110,6 +112,7 @@ public class RGroupQueryReaderTest extends SimpleChemObjectReaderTest {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         RGroupQueryReader reader = new RGroupQueryReader(ins);
         RGroupQuery rGroupQuery = (RGroupQuery)reader.read(new RGroupQuery(DefaultChemObjectBuilder.getInstance()));
+        reader.close();
         Assert.assertNotNull(rGroupQuery);
         Assert.assertEquals(rGroupQuery.getRGroupDefinitions().size(), 1);
         Assert.assertEquals(rGroupQuery.getRootStructure().getAtomCount(), 7);
@@ -117,8 +120,8 @@ public class RGroupQueryReaderTest extends SimpleChemObjectReaderTest {
         for (IAtom at : rGroupQuery.getAllRgroupQueryAtoms()) {
             if (at instanceof PseudoAtom) {
                 Assert.assertEquals(((PseudoAtom)at).getLabel(), "R1");
-                Map rootApo = rGroupQuery.getRootAttachmentPoints();
-                Map<Integer, IBond> apoBonds = (Map<Integer, IBond>)rootApo.get(at);
+                Map<IAtom, Map<Integer, IBond>> rootApo = rGroupQuery.getRootAttachmentPoints();
+                Map<Integer, IBond> apoBonds = rootApo.get(at);
                 Assert.assertEquals(apoBonds.size(), 1);
                 // Assert that the root attachment is the bond between R1 and P
                 for (IBond bond : rGroupQuery.getRootStructure().bonds()) {
@@ -178,6 +181,7 @@ public class RGroupQueryReaderTest extends SimpleChemObjectReaderTest {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         RGroupQueryReader reader = new RGroupQueryReader(ins);
         RGroupQuery rGroupQuery = (RGroupQuery)reader.read(new RGroupQuery(DefaultChemObjectBuilder.getInstance()));
+        reader.close();
         Assert.assertNotNull(rGroupQuery);
         Assert.assertEquals(rGroupQuery.getRGroupDefinitions().size(), 3);
         Assert.assertEquals(rGroupQuery.getRootStructure().getAtomCount(), 14);
@@ -198,8 +202,8 @@ public class RGroupQueryReaderTest extends SimpleChemObjectReaderTest {
                 case 1:
                     {
                         //Test: R1 has two attachment points, defined by AAL
-                        Map rootApo = rGroupQuery.getRootAttachmentPoints();
-                        Map<Integer, IBond> apoBonds = (Map<Integer, IBond>)rootApo.get(at);
+                        Map<IAtom, Map<Integer, IBond>> rootApo = rGroupQuery.getRootAttachmentPoints();
+                        Map<Integer, IBond> apoBonds = rootApo.get(at);
                         Assert.assertEquals(apoBonds.size(), 2);
                         Assert.assertEquals(apoBonds.get(1).getConnectedAtom(at).getSymbol(), "N");
                         Assert.assertTrue(apoBonds.get(2).getConnectedAtom(at).getSymbol().equals("C"));
@@ -268,6 +272,7 @@ public class RGroupQueryReaderTest extends SimpleChemObjectReaderTest {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         RGroupQueryReader reader = new RGroupQueryReader(ins);
         RGroupQuery rGroupQuery = (RGroupQuery)reader.read(new RGroupQuery(DefaultChemObjectBuilder.getInstance()));
+        reader.close();
         Assert.assertNotNull(rGroupQuery);
         Assert.assertEquals(rGroupQuery.getRGroupDefinitions().size(), 1);
         Assert.assertEquals(rGroupQuery.getRootStructure().getAtomCount(), 10);
@@ -309,6 +314,7 @@ public class RGroupQueryReaderTest extends SimpleChemObjectReaderTest {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         RGroupQueryReader reader = new RGroupQueryReader(ins);
         RGroupQuery rGroupQuery = (RGroupQuery)reader.read(new RGroupQuery(DefaultChemObjectBuilder.getInstance()));
+        reader.close();
         Assert.assertNotNull(rGroupQuery);
         Assert.assertEquals(rGroupQuery.getRGroupDefinitions().size(), 1);
         Assert.assertEquals(rGroupQuery.getRootStructure().getAtomCount(), 6);
@@ -339,12 +345,14 @@ public class RGroupQueryReaderTest extends SimpleChemObjectReaderTest {
      * to test mainly for getting all valid configurations.
      */
     @Test
+    @Category(SlowTest.class)
     public void testRgroupQueryFile5() throws Exception {
         String filename = "data/mdl/rgfile.5.mol";
         logger.info("Testing: " + filename);
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         RGroupQueryReader reader = new RGroupQueryReader(ins);
         RGroupQuery rGroupQuery = (RGroupQuery)reader.read(new RGroupQuery(DefaultChemObjectBuilder.getInstance()));
+        reader.close();
         Assert.assertNotNull(rGroupQuery);
         Assert.assertEquals(rGroupQuery.getRGroupDefinitions().size(), 4);
 
@@ -364,6 +372,7 @@ public class RGroupQueryReaderTest extends SimpleChemObjectReaderTest {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         RGroupQueryReader reader = new RGroupQueryReader(ins);
         RGroupQuery rGroupQuery = (RGroupQuery)reader.read(new RGroupQuery(DefaultChemObjectBuilder.getInstance()));
+        reader.close();
         Assert.assertNotNull(rGroupQuery);
         Assert.assertEquals(rGroupQuery.getRGroupDefinitions().size(), 3);
         Assert.assertEquals(rGroupQuery.getRootStructure().getAtomCount(), 14);
@@ -391,6 +400,7 @@ public class RGroupQueryReaderTest extends SimpleChemObjectReaderTest {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         RGroupQueryReader reader = new RGroupQueryReader(ins);
         RGroupQuery rGroupQuery = (RGroupQuery)reader.read(new RGroupQuery(DefaultChemObjectBuilder.getInstance()));
+        reader.close();
         Assert.assertNotNull(rGroupQuery);
         Assert.assertEquals(rGroupQuery.getRGroupDefinitions().size(), 1);
         Assert.assertEquals(rGroupQuery.getRootStructure().getAtomCount(), 9);

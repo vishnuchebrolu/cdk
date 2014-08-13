@@ -1,6 +1,4 @@
-/* $Revision$ $Author$$Date$
- *
- * Copyright (C) 2006-2008  Egon Willighagen <ewilligh@uni-koeln.de>
+/* Copyright (C) 2006-2008  Egon Willighagen <ewilligh@uni-koeln.de>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -378,7 +376,7 @@ public class DebugFragmentAtom extends FragmentAtom {
 	}
 
     /** {@inheritDoc} */ @Override
-    public Object getProperty(Object description) {
+    public <T> T getProperty(Object description) {
 		logger.debug("Getting property: ", description + "=" + super.getProperty(description));
 		return super.getProperty(description);
 	}

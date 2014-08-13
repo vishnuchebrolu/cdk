@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2002-2007  Stephane Werner <mail@ixelis.net>
+/* Copyright (C) 2002-2007  Stephane Werner <mail@ixelis.net>
  *  
  * This code has been kindly provided by Stephane Werner 
  * and Thierry Hanser from IXELIS mail@ixelis.net.
@@ -30,8 +28,8 @@ package org.openscience.cdk.isomorphism.mcss;
 import java.util.BitSet;
 
 /**
- *  Node of the resolution graphe (RGraph) An RNode represents an association
- *  betwwen two edges of the source graphs G1 and G2 that are compared. Two
+ *  Node of the resolution graph (RGraph) An RNode represents an association
+ *  between two edges of the source graphs G1 and G2 that are compared. Two
  *  edges may be associated if they have at least one common feature. The
  *  association is defined outside this class. The node keeps tracks of the ID
  *  of the mapped edges (in an RMap), of its neighbours in the RGraph it belongs
@@ -58,8 +56,8 @@ public class RNode
 	/**
 	 *  Constructor for the RNode object.
 	 *
-	 *@param  id1  number of the bond in the graphe 1
-	 *@param  id2  number of the bond in the graphe 2
+	 *@param  id1  number of the bond in the graph 1
+	 *@param  id2  number of the bond in the graph 2
 	 */
 	public RNode(int id1, int id2)
 	{

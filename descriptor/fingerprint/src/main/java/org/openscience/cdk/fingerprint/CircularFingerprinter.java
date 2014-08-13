@@ -1,7 +1,4 @@
-
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (c) 2014 Collaborative Drug Discovery, Inc. <alex@collaborativedrug.com>
+/* Copyright (c) 2014 Collaborative Drug Discovery, Inc. <alex@collaborativedrug.com>
  *
  * Implemented by Alex M. Clark, produced by Collaborative Drug Discovery, Inc.
  * Made available to the CDK community under the terms of the GNU LGPL.
@@ -31,55 +28,43 @@
  
 package org.openscience.cdk.fingerprint;
 
-import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.graph.PathTools;
 import org.openscience.cdk.interfaces.*;
-import org.openscience.cdk.tools.*;
-import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
-import org.openscience.cdk.tools.periodictable.PeriodicTable;
 import org.openscience.cdk.annotations.*;
 
-import java.lang.*;
 import java.util.*;
 import java.util.zip.CRC32;
 import javax.vecmath.*;
  
 /**
- *  <ul>
- *	<li>Circular fingerprints: for generating fingerprints that are functionally equivalent to ECFP-2/4/6 and FCFP-2/4/6 
- *  fingerprints, which are partially described by:</li>
+ *  <p>Circular fingerprints: for generating fingerprints that are functionally equivalent to ECFP-2/4/6 and FCFP-2/4/6
+ *  fingerprints, which are partially described by Rogers et al. {@cdk.cite Rogers2010}.
  *
- *		Rogers &amp; Hahn, J. Chem. Inf. Model., 50, 742–754 (2010)
- *		<a href="http://pubs.acs.org/doi/abs/10.1021/ci100050t">http://pubs.acs.org/doi/abs/10.1021/ci100050t</a>
- *
- *  <li>While the literature describes the method in detail, it does not disclose either the hashing technique for converting
+ *  <p>While the literature describes the method in detail, it does not disclose either the hashing technique for converting
  *  lists of integers into 32-bit codes, nor does it describe the scheme used to classify the atom types for creating
  *  the FCFP-class of descriptors. For this reason, the fingerprints that are created are not binary compatible with
- *  the reference implementation. They do, however, achieve effectively equal performance for modelling purposes.</li>
+ *  the reference implementation. They do, however, achieve effectively equal performance for modelling purposes.</p>
  *  
- *  <li>The resulting fingerprint bits are presented as a list of unique bits, each with a 32-bit hashcode; typically there
- *  are no more than a hundred or so unique bit hashcodes per molecule. These identifers can be folded into a smaller
- *  array of bits, such that they can be represented as a single long binary number, which is often more convenient.</li>
+ *  <p>The resulting fingerprint bits are presented as a list of unique bits, each with a 32-bit hashcode; typically there
+ *  are no more than a hundred or so unique bit hashcodes per molecule. These identifiers can be folded into a smaller
+ *  array of bits, such that they can be represented as a single long binary number, which is often more convenient.</p>
  *
- *	<li>The  integer hashing is done using the CRC32 algorithm, using the Java CRC32 class, which is the same
- *	formula/parameters as used by PNG files, and described in:</li>
+ *	<p>The  integer hashing is done using the CRC32 algorithm, using the Java CRC32 class, which is the same
+ *	formula/parameters as used by PNG files, and described in:</p>
  *		
  *		<a href="http://www.w3.org/TR/PNG/#D-CRCAppendix">http://www.w3.org/TR/PNG/#D-CRCAppendix</a>
  *
- *	<li>Implicit vs. explicit hydrogens are handled, i.e. it doesn't matter whether the incoming molecule is hydrogen
- *	suppressed or not.</li>
+ *	<p>Implicit vs. explicit hydrogens are handled, i.e. it doesn't matter whether the incoming molecule is hydrogen
+ *	suppressed or not.</p>
  *
- *  <li>Implementation note: many of the algorithms involved in the generation of fingerprints (e.g. aromaticity, atom
+ *  <p>Implementation note: many of the algorithms involved in the generation of fingerprints (e.g. aromaticity, atom
  *  typing) have been coded up explicitly for use by this class, rather than making use of comparable functionality
  *  elsewhere in the CDK. This is to ensure that the CDK implementation of the algorithm is strictly equal to other
  *  implementations: dependencies on CDK functionality that could be modified or improved in the future would break
- *  binary compatibility with formerly identical implementations on other platforms.</li>
+ *  binary compatibility with formerly identical implementations on other platforms.</p>
  *  
- *  <li>For the FCFP class of fingerprints, atom typing is done using a scheme similar to that described in:</li>
- *  
- *  	Green, Kahn, Savoy, Sprague, Teig: Chemical Function Queries for 3D Database Search
- *		Journal of Chemical Information and Computer Science, v.34, pp.1297-1308 (1994)
+ *  <p>For the FCFP class of fingerprints, atom typing is done using a scheme similar to that described by
+ *  Green et al {@cdk.cite Green1994}.</p>
  *  
  * @author         am.clark
  * @cdk.created    2014-01-01
@@ -174,7 +159,7 @@ public class CircularFingerprinter implements IFingerprinter
 	}
 	
 	/**
-	 * Calculates the fingerprints for the given IAtomContainer, and stores them for subsequent retrieval.
+	 * Calculates the fingerprints for the given {@link IAtomContainer}, and stores them for subsequent retrieval.
 	 * 
 	 * @param mol chemical structure; all nodes should be known legitimate elements
 	 */
@@ -237,7 +222,7 @@ public class CircularFingerprinter implements IFingerprinter
 	public FP getFP(int N) {return fplist.get(N);}
 	
 	/**
-	 * Calculates the circular fingerprint for the given IAtomContainer, and <b>folds</b> the result into a single bitset
+	 * Calculates the circular fingerprint for the given {@link IAtomContainer}, and <b>folds</b> the result into a single bitset
 	 * (see getSize()).
 	 * 
 	 * @param  mol IAtomContainer for which the fingerprint should be calculated.
@@ -259,7 +244,7 @@ public class CircularFingerprinter implements IFingerprinter
 	}
 
 	/**
-	 * Calculates the circular fingerprint for the given IAtomContainer, and returns a datastructure that enumerates all
+	 * Calculates the circular fingerprint for the given {@link IAtomContainer}, and returns a datastructure that enumerates all
 	 * of the fingerprints, and their counts (i.e. does <b>not</b> fold them into a bitmask).
 	 * 
 	 * @param  mol IAtomContainer for which the fingerprint should be calculated.
@@ -587,7 +572,7 @@ public class CircularFingerprinter implements IFingerprinter
     	boolean visited[]=new boolean[na];
     	for (int n=0;n<na;n++) visited[n]=!amask[n]; // skip hydrogens
 
-    	int path[]=new int[na+1],plen=0,numVisited=0;
+    	int path[]=new int[na+1],plen=0;
     	while (true)
     	{
     	    int last,current;
@@ -630,7 +615,6 @@ public class CircularFingerprinter implements IFingerprinter
     	    {
     	    	visited[current]=true;
         		path[plen++]=current;
-        		numVisited++;
 		    }
     	    else // otherwise, found nothing and must rewind the path
     	    {
@@ -836,7 +820,6 @@ public class CircularFingerprinter implements IFingerprinter
 		{
 			IAtom other=mol.getAtom(atomAdj[aidx][n]);
 			IBond bond=mol.getBond(bondAdj[aidx][n]);
-			int bfr=mol.getAtomNumber(bond.getAtom(0)),bto=mol.getAtomNumber(bond.getAtom(1));
 			Point3d o3d=other.getPoint3d();
 			Point2d o2d=other.getPoint2d();
 			if (o3d!=null)

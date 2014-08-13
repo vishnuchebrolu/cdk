@@ -1,6 +1,4 @@
-/* $Revision: 7691 $ $Author: egonw $ $Date: 2007-01-11 12:47:48 +0100 (Thu, 11 Jan 2007) $
- * 
- * Copyright (C) 2009  Stefan Kuhn <shk3@users.sf.net>
+/* Copyright (C) 2009  Stefan Kuhn <shk3@users.sf.net>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -25,7 +23,9 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.openscience.cdk.CDKTestCase;
+import org.openscience.cdk.SlowTest;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.graph.ConnectivityChecker;
 import org.openscience.cdk.interfaces.IAtom;
@@ -38,6 +38,7 @@ import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 /**
  * @cdk.module test-structgen
  */
+@Category(SlowTest.class) // structgen is slow... a single method here currently takes ~6 seconds
 public class CrossoverMachineTest extends CDKTestCase {
     
 

@@ -1,9 +1,4 @@
-/*  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2004-2007  Rajarshi Guha <rajarshi@users.sourceforge.net>
+/* Copyright (C) 2004-2007  Rajarshi Guha <rajarshi@users.sourceforge.net>
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -34,6 +29,7 @@ import org.openscience.cdk.qsar.DescriptorValue;
 import org.openscience.cdk.qsar.IMolecularDescriptor;
 import org.openscience.cdk.qsar.descriptors.molecular.MolecularDescriptorTest;
 import org.openscience.cdk.qsar.result.DoubleArrayResult;
+import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.tools.ProteinBuilderTool;
 
 /**
@@ -56,7 +52,7 @@ public class TaeAminoAcidDescriptorTest extends MolecularDescriptorTest {
     }
 
     @Test public void testTaeAminoAcidDescriptor() throws ClassNotFoundException, CDKException, Exception {
-        IBioPolymer pepseq = ProteinBuilderTool.createProtein("ACDEFGH");
+        IBioPolymer pepseq = ProteinBuilderTool.createProtein("ACDEFGH", SilentChemObjectBuilder.getInstance());
         DescriptorValue result = descriptor.calculate(pepseq);
 
         DoubleArrayResult dar = (DoubleArrayResult) result.getValue();

@@ -20,6 +20,7 @@
 package org.openscience.cdk.debug;
 
 
+import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.DynamicFactory;
 import org.openscience.cdk.interfaces.IAdductFormula;
 import org.openscience.cdk.interfaces.IAminoAcid;
@@ -59,6 +60,7 @@ import org.openscience.cdk.interfaces.IRing;
 import org.openscience.cdk.interfaces.IRingSet;
 import org.openscience.cdk.interfaces.ISingleElectron;
 import org.openscience.cdk.interfaces.IStrand;
+import org.openscience.cdk.interfaces.ISubstance;
 import org.openscience.cdk.interfaces.ITetrahedralChirality;
 import org.openscience.cdk.stereo.DoubleBondStereochemistry;
 import org.openscience.cdk.stereo.TetrahedralChirality;
@@ -87,7 +89,8 @@ import org.openscience.cdk.stereo.TetrahedralChirality;
  */
 public class DebugChemObjectBuilder implements IChemObjectBuilder {
 
-	private static IChemObjectBuilder instance = null;
+	private static volatile IChemObjectBuilder instance = null;
+    private static final Object lock = new Object();
     private final DynamicFactory factory = new DynamicFactory(200);
 	
 	private DebugChemObjectBuilder() {
@@ -139,6 +142,7 @@ public class DebugChemObjectBuilder implements IChemObjectBuilder {
         factory.register(IChemModel.class,           DebugChemModel.class);
         factory.register(IChemFile.class,            DebugChemFile.class);
         factory.register(IChemSequence.class,        DebugChemSequence.class);
+        factory.register(ISubstance.class,           DebugSubstance.class);
 
         // stereo components (requires some modification after instantiation)
         factory.register(ITetrahedralChirality.class,
@@ -183,10 +187,16 @@ public class DebugChemObjectBuilder implements IChemObjectBuilder {
      * @return a DebugChemObjectBuilder instance
      */
     public static IChemObjectBuilder getInstance() {
-		if (instance == null) {
-			instance = new DebugChemObjectBuilder();
-		}
-		return instance;
+        IChemObjectBuilder result = instance;
+        if (result == null) {
+            result = instance;
+            synchronized (lock) {
+                if (result == null) {
+                    instance = result = new DebugChemObjectBuilder();
+                }
+            }
+        }
+        return result;
 	}
 
 

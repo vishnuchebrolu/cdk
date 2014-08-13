@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2008  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2008  Egon Willighagen <egonw@users.sf.net>
  * 
  * Contact: cdk-devel@slists.sourceforge.net
  * 
@@ -31,7 +29,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import com.google.common.io.CharStreams;
-import com.google.common.primitives.Chars;
 import org.junit.Assert;
 import org.junit.Test;
 

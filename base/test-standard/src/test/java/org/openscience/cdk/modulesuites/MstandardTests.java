@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -23,12 +21,9 @@ package org.openscience.cdk.modulesuites;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
-import org.openscience.cdk.aromaticity.AromaticityCalculatorTest;
 import org.openscience.cdk.aromaticity.AromaticityTest;
 import org.openscience.cdk.aromaticity.AtomTypeModelTest;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetectorTest;
 import org.openscience.cdk.aromaticity.DaylightModelTest;
-import org.openscience.cdk.aromaticity.DoubleBondAcceptingAromaticityDetectorTest;
 import org.openscience.cdk.aromaticity.ExocyclicAtomTypeModelTest;
 import org.openscience.cdk.aromaticity.PiBondModelTest;
 import org.openscience.cdk.atomtype.EStateAtomTypeMatcherTest;
@@ -46,11 +41,7 @@ import org.openscience.cdk.geometry.GeometryToolsTest;
 import org.openscience.cdk.geometry.volume.VABCVolumeTest;
 import org.openscience.cdk.graph.AtomContainerAtomPermutorTest;
 import org.openscience.cdk.graph.AtomContainerBondPermutorTest;
-import org.openscience.cdk.graph.BFSShortestPathTest;
-import org.openscience.cdk.graph.BiconnectivityInspectorTest;
 import org.openscience.cdk.graph.ConnectivityCheckerTest;
-import org.openscience.cdk.graph.MinimalPathIteratorTest;
-import org.openscience.cdk.graph.MoleculeGraphsTest;
 import org.openscience.cdk.graph.invariant.CanonicalLabelerTest;
 import org.openscience.cdk.graph.invariant.MorganNumbersToolsTest;
 import org.openscience.cdk.graph.matrix.ConnectionMatrixTest;
@@ -80,7 +71,6 @@ import org.openscience.cdk.qsar.result.IntegerArrayResultTypeTest;
 import org.openscience.cdk.qsar.result.IntegerResultTest;
 import org.openscience.cdk.qsar.result.IntegerResultTypeTest;
 import org.openscience.cdk.ringsearch.AllRingsFinderTest;
-import org.openscience.cdk.ringsearch.QueueTest;
 import org.openscience.cdk.ringsearch.RingPartitionerTest;
 import org.openscience.cdk.ringsearch.RingSearchTest_Benzene;
 import org.openscience.cdk.ringsearch.RingSearchTest_BenzylBenzene;
@@ -91,10 +81,6 @@ import org.openscience.cdk.ringsearch.RingSearchTest_Fused;
 import org.openscience.cdk.ringsearch.RingSearchTest_Hexaphenylene;
 import org.openscience.cdk.ringsearch.RingSearchTest_NonCyclic;
 import org.openscience.cdk.ringsearch.RingSearchTest_SpiroRings;
-import org.openscience.cdk.ringsearch.SSSRFinderTest;
-import org.openscience.cdk.ringsearch.cyclebasis.CycleBasisTest;
-import org.openscience.cdk.ringsearch.cyclebasis.SimpleCycleBasisTest;
-import org.openscience.cdk.ringsearch.cyclebasis.SimpleCycleTest;
 import org.openscience.cdk.smiles.InvPairTest;
 import org.openscience.cdk.stereo.StereoElementFactoryTest;
 import org.openscience.cdk.stereo.StereoToolTest;
@@ -129,11 +115,9 @@ import org.openscience.cdk.validate.ProblemMarkerTest;
 @RunWith(value=Suite.class)
 @SuiteClasses(value={
     StandardCoverageTest.class,
-    AromaticityCalculatorTest.class,
     DictRefTest.class,
     CrystalGeometryToolsTest.class,
     GeometryToolsTest.class,
-    MinimalPathIteratorTest.class,
     ConnectivityCheckerTest.class,
     UniversalIsomorphismTesterTest.class,
     IsomorphismTesterTest.class,
@@ -143,9 +127,6 @@ import org.openscience.cdk.validate.ProblemMarkerTest;
     MathToolsTest.class,
     AllRingsFinderTest.class,
     RingPartitionerTest.class,
-    SimpleCycleTest.class,
-    SimpleCycleBasisTest.class,
-    CycleBasisTest.class,
     FormatStringBufferTest.class,
     IDCreatorTest.class,
     MoleculeSetManipulatorTest.class,
@@ -175,15 +156,10 @@ import org.openscience.cdk.validate.ProblemMarkerTest;
     ReactionSetManipulatorTest.class,
     RingSizeComparatorTest.class,
     ElementComparatorTest.class,
-    BFSShortestPathTest.class,
-    MoleculeGraphsTest.class,
     ConnectionMatrixTest.class,
     BsptTest.class,
     PointTest.class,
-    BiconnectivityInspectorTest.class,
     MorganNumbersToolsTest.class,
-    QueueTest.class,
-    SSSRFinderTest.class,
     DoubleArrayResultTest.class,
     IntegerArrayResultTest.class,
     IntegerResultTest.class,
@@ -202,8 +178,6 @@ import org.openscience.cdk.validate.ProblemMarkerTest;
     InvPairTest.class,
     EStateAtomTypeMatcherTest.class,
     AtomContainerComparatorTest.class,
-    CDKHueckelAromaticityDetectorTest.class,
-    DoubleBondAcceptingAromaticityDetectorTest.class,
     HOSECodeGeneratorTest.class,
     LonePairElectronCheckerTest.class ,
     StereoToolTest.class,

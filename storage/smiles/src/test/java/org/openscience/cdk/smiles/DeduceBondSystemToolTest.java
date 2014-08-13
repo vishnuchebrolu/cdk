@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2006-2007  Rajarshi Guha <rajarshi@users.sf.net>
+/* Copyright (C) 2006-2007  Rajarshi Guha <rajarshi@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -33,7 +31,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomType.Hybridization;
 import org.openscience.cdk.interfaces.IBond.Order;
 import org.openscience.cdk.interfaces.IBond;
-import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.ringsearch.AllRingsFinder;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.silent.Atom;

@@ -1,6 +1,4 @@
-/* $Revision: 12144 $ $Author: egonw $ $Date: 2008-09-02 21:53:30 +0100 (Tue, 02 Sep 2008) $
- *
- *  Copyright (C) 2005-2007  Christian Hoppe <chhoppe@users.sf.net>
+/* Copyright (C) 2005-2007  Christian Hoppe <chhoppe@users.sf.net>
  *
  *  Contact: cdk-devel@list.sourceforge.net
  *
@@ -77,9 +75,9 @@ public class AtomPlacer3DTest extends CDKTestCase{
     	// TODO: shk3-cleanuptests: best to use the STRICT IO mode here
     	MDLV2000Reader reader = new MDLV2000Reader(ins);
     	ChemFile chemFile = (ChemFile)reader.read((ChemObject)new ChemFile());
-    	// TODO: shk3-cleanuptests: please make it a types list
-    	List containersList = ChemFileManipulator.getAllAtomContainers(chemFile);
-    	IAtomContainer ac = new AtomContainer((IAtomContainer)containersList.get(0));
+        reader.close();
+    	List<IAtomContainer> containersList = ChemFileManipulator.getAllAtomContainers(chemFile);
+    	IAtomContainer ac = new AtomContainer(containersList.get(0));
     	addExplicitHydrogens(ac);
     	IAtomContainer chain=ac.getBuilder().newInstance(IAtomContainer.class);
     	for(int i=16;i<25;i++){

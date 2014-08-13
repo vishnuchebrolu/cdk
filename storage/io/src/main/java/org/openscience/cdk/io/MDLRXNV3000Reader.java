@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2003-2008  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2003-2008  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -32,7 +30,6 @@ import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IChemFile;
 import org.openscience.cdk.interfaces.IChemModel;
 import org.openscience.cdk.interfaces.IChemObject;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
@@ -40,7 +37,6 @@ import org.openscience.cdk.interfaces.IReaction;
 import org.openscience.cdk.interfaces.IReactionSet;
 import org.openscience.cdk.io.formats.IResourceFormat;
 import org.openscience.cdk.io.formats.MDLRXNV3000Format;
-import org.openscience.cdk.io.setting.IOSetting;
 import org.openscience.cdk.tools.ILoggingTool;
 import org.openscience.cdk.tools.LoggingToolFactory;
 
@@ -111,10 +107,10 @@ public class MDLRXNV3000Reader extends DefaultChemObjectReader {
     }
 
     @TestMethod("testAccepts")
-    public boolean accepts(Class classObject) {
+    public boolean accepts(Class<? extends IChemObject> classObject) {
         if (IChemModel.class.equals(classObject)) return true;
         if (IReaction.class.equals(classObject)) return true;
-		Class[] interfaces = classObject.getInterfaces();
+		Class<?>[] interfaces = classObject.getInterfaces();
 		for (int i=0; i<interfaces.length; i++) {
 			if (IChemModel.class.equals(interfaces[i])) return true;
 			if (IReaction.class.equals(interfaces[i])) return true;
@@ -229,6 +225,7 @@ public class MDLRXNV3000Reader extends DefaultChemObjectReader {
                 );
                 IAtomContainer reactant = (IAtomContainer)reader.read(
                   builder.newInstance(IAtomContainer.class));
+                reader.close();
                   
                 // add reactant
                 reaction.addReactant(reactant);
@@ -262,6 +259,7 @@ public class MDLRXNV3000Reader extends DefaultChemObjectReader {
                   new StringReader(molFile.toString()));
                 IAtomContainer product = (IAtomContainer)reader.read(
                   builder.newInstance(IAtomContainer.class));
+                reader.close();
                   
                 // add product
                 reaction.addProduct(product);

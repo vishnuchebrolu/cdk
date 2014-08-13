@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- *  Copyright (C) 2002-2003  Bradley A. Smith <yeldar@home.com>
+/* Copyright (C) 2002-2003  Bradley A. Smith <yeldar@home.com>
  *  Copyright (C) 2003-2007  Egon Willighagen <egonw@users.sf.net>
  *  Copyright (C) 2003-2007  Christoph Steinbeck <steinbeck@users.sf.net>
  *
@@ -142,9 +140,9 @@ public class Gaussian98Reader extends DefaultChemObjectReader {
     }
 
     @TestMethod("testAccepts")
-    public boolean accepts(Class classObject) {
+    public boolean accepts(Class<? extends IChemObject> classObject) {
         if (IChemFile.class.equals(classObject)) return true;
-        Class[] interfaces = classObject.getInterfaces();
+        Class<?>[] interfaces = classObject.getInterfaces();
         for (int i = 0; i < interfaces.length; i++) {
             if (IChemFile.class.equals(interfaces[i])) return true;
         }
@@ -211,7 +209,7 @@ public class Gaussian98Reader extends DefaultChemObjectReader {
             // Read all other data
             line = input.readLine().trim();
             while (input.ready() && (line != null)) {
-                if (line.indexOf("#") == 0) {
+                if (line.indexOf('#') == 0) {
                     // Found the route section
                     // Memorizing this for the description of the chemmodel
                     lastRoute = line;
@@ -458,13 +456,13 @@ public class Gaussian98Reader extends DefaultChemObjectReader {
      * Reads NMR nuclear shieldings.
      */
     private void readNMRData(IChemModel model, String labelLine) throws CDKException {
-    	List containers = ChemModelManipulator.getAllAtomContainers(model);
+    	List<IAtomContainer> containers = ChemModelManipulator.getAllAtomContainers(model);
     	if (containers.size() == 0) {
     		// nothing to store the results into
     		return;
     	} // otherwise insert in the first AC
     	
-        IAtomContainer ac = (IAtomContainer)containers.get(0);
+        IAtomContainer ac = containers.get(0);
         // Determine label for properties
         String label;
         if (labelLine.indexOf("Diamagnetic") >= 0) {
@@ -522,7 +520,7 @@ public class Gaussian98Reader extends DefaultChemObjectReader {
             do {
                 line = input.readLine().trim();
                 summary.append(line);
-            } while (!(line.indexOf("@") >= 0));
+            } while (!(line.indexOf('@') >= 0));
         }
         catch (Exception exc) {
             logger.debug("syntax problem while parsing summary of g98 section: ");

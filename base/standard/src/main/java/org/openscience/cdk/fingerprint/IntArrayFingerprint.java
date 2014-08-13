@@ -41,7 +41,7 @@ public class IntArrayFingerprint implements IBitFingerprint {
      * 
      */
     private static final long serialVersionUID = 5175105019921245323L;
-    private int[] trueBits;
+    private volatile int[] trueBits;
 	
 	public IntArrayFingerprint(Map<String, Integer> rawFingerPrint) {
 		trueBits = new int[rawFingerPrint.size()];
@@ -163,7 +163,7 @@ public class IntArrayFingerprint implements IBitFingerprint {
 	}
 
 	/* 
-	 * This method is VERY INNEFICIENT when caleld multiple times. It is the 
+	 * This method is VERY INNEFICIENT when called multiple times. It is the 
 	 * cost of keeping down the memory footprint. Avoid using it for building 
 	 * up IntArrayFingerprints -- instead use the constructor taking a so 
 	 * called raw fingerprint.

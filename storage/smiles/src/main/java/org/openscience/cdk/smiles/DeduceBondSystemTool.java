@@ -1,9 +1,4 @@
-/*  $RCSfile: $
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2002-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2002-2007  The Chemistry Development Kit (CDK) project
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -30,9 +25,10 @@ package org.openscience.cdk.smiles;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.atomtype.CDKAtomTypeMatcher;
 import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
@@ -42,7 +38,6 @@ import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IRing;
 import org.openscience.cdk.interfaces.IRingSet;
 import org.openscience.cdk.ringsearch.AllRingsFinder;
-import org.openscience.cdk.ringsearch.SSSRFinder;
 import org.openscience.cdk.tools.ILoggingTool;
 import org.openscience.cdk.tools.LoggingToolFactory;
 import org.openscience.cdk.tools.manipulator.RingManipulator;
@@ -652,7 +647,7 @@ public class DeduceBondSystemTool {
             while (atoms.hasNext()) {
             	IAtom atom = atoms.next();
             	IAtomType matched = matcher.findMatchingAtomType(atomContainer, atom);
-            	if (matched == null) return false;
+            	if (matched == null || matched.getAtomTypeName().equals("X")) return false;
             }
 
         	IRingSet ringSet = recoverRingSystem(atomContainer);
@@ -667,7 +662,7 @@ public class DeduceBondSystemTool {
                 r.setFlag(CDKConstants.ISAROMATIC, false);
             }
             // now, detect aromaticity from cratch, and mark rings as aromatic too (if ...)
-            CDKHueckelAromaticityDetector.detectAromaticity(atomContainer);
+            Aromaticity.cdkLegacy().apply(atomContainer);
             for (int i = 0; i <= ringSet.getAtomContainerCount() - 1; i++) {
             	IRing ring = (IRing) ringSet.getAtomContainer(i);
             	RingManipulator.markAromaticRings(ring);
@@ -718,8 +713,7 @@ public class DeduceBondSystemTool {
     private IRingSet removeExtraRings(IAtomContainer m) {
 
         try {
-            SSSRFinder arf = new SSSRFinder(m);
-            IRingSet rs = arf.findSSSR();
+            IRingSet rs = Cycles.sssr(m).toRingSet();
 
             //remove rings which dont have all aromatic atoms (according to hybridization set by lower case symbols in smiles):
 

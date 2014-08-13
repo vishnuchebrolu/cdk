@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2003-2007  Miguel Howard <miguel@jmol.org>
+/* Copyright (C) 2003-2007  Miguel Howard <miguel@jmol.org>
  *
  * Contact: cdk-devel@lists.sf.net
  *
@@ -43,7 +41,7 @@ import java.util.Enumeration;
  *  stored down the left branch. Values which are >= splitValue are stored
  *  down the right branch. When this happens, the search must proceed down
  *  both branches.
- *  Planar and crystaline substructures can generate values which are == along
+ *  Planar and crystalline substructures can generate values which are == along
  *  one dimension.
  *
  * <p>To get a good picture in your head, first think about it in one dimension,

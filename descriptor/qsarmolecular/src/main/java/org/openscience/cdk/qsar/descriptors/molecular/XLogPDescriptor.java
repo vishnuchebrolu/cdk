@@ -20,14 +20,13 @@
  */
 package org.openscience.cdk.qsar.descriptors.molecular;
 
-import org._3pq.jgrapht.graph.SimpleGraph;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.graph.BFSShortestPath;
-import org.openscience.cdk.graph.MoleculeGraphs;
+import org.openscience.cdk.graph.AllPairsShortestPaths;
+import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.interfaces.*;
 import org.openscience.cdk.interfaces.IAtomType.Hybridization;
 import org.openscience.cdk.isomorphism.UniversalIsomorphismTester;
@@ -42,7 +41,6 @@ import org.openscience.cdk.qsar.DescriptorValue;
 import org.openscience.cdk.qsar.IMolecularDescriptor;
 import org.openscience.cdk.qsar.result.DoubleResult;
 import org.openscience.cdk.qsar.result.IDescriptorResult;
-import org.openscience.cdk.ringsearch.SSSRFinder;
 import org.openscience.cdk.tools.CDKHydrogenAdder;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import org.openscience.cdk.tools.manipulator.RingSetManipulator;
@@ -121,7 +119,6 @@ public class XLogPDescriptor extends AbstractMolecularDescriptor implements IMol
 
     private boolean checkAromaticity = false;
     private boolean salicylFlag=false;
-    private SSSRFinder ssrf=null;
     private static final String[] names = {"XLogP"};
 
     /**
@@ -219,11 +216,11 @@ public class XLogPDescriptor extends AbstractMolecularDescriptor implements IMol
             return getDummyDescriptorValue(e);
         }
 
-        IRingSet rs = (IRingSet) new SSSRFinder(ac).findSSSR();
+        IRingSet rs = Cycles.sssr(ac).toRingSet();
         IRingSet atomRingSet=null;
         if (checkAromaticity) {
-            try {                
-                CDKHueckelAromaticityDetector.detectAromaticity(ac);
+            try {
+                Aromaticity.cdkLegacy().apply(ac);
             } catch (CDKException e) {
                 return getDummyDescriptorValue(e);
             }
@@ -249,11 +246,13 @@ public class XLogPDescriptor extends AbstractMolecularDescriptor implements IMol
             //logger.debug("atomRingSet.size "+atomRingSet.size());
             if (atomRingSet.getAtomContainerCount()>0){
                 if (atomRingSet.getAtomContainerCount()>1){
-                	Iterator containers = RingSetManipulator.getAllAtomContainers(atomRingSet).iterator();
+                	Iterator<IAtomContainer> containers = RingSetManipulator.getAllAtomContainers(atomRingSet).iterator();
                 	atomRingSet = rs.getBuilder().newInstance(IRingSet.class);
                 	while (containers.hasNext()) {
-                		ssrf = new SSSRFinder((IAtomContainer)containers.next());
-                		atomRingSet.add(ssrf.findEssentialRings());
+                        // XXX: we're already in the SSSR, but then get the esential cycles
+                        // of this atomRingSet... this code doesn't seem to make sense as 
+                        // essential cycles are a subset of SSSR and can be found directly
+                		atomRingSet.add(Cycles.essential(containers.next()).toRingSet()); 
                 	}
                     //logger.debug(" SSSRatomRingSet.size "+atomRingSet.size());
                 }
@@ -824,18 +823,16 @@ public class XLogPDescriptor extends AbstractMolecularDescriptor implements IMol
             }
         }
         //logger.debug("XLOGP: Before Correction:"+xlogP);
-        List path=null;
-        SimpleGraph moleculeGraph=null;
         int [][] pairCheck=null;
 //		//logger.debug("Acceptors:"+hBondAcceptors.size()+" Donors:"+hBondDonors.size());
         if (hBondAcceptors.size()>0 && hBondDonors.size()>0){
-            moleculeGraph=MoleculeGraphs.getMoleculeGraph(ac);
             pairCheck=initializeHydrogenPairCheck(new int[atomCount][atomCount]);
         }
+        AllPairsShortestPaths apsp = new AllPairsShortestPaths(ac);
         for (int i=0; i<hBondAcceptors.size();i++){
             for (int j=0; j<hBondDonors.size();j++){
                 if (checkRingLink(rs,ac,ac.getAtom(hBondAcceptors.get(i))) || checkRingLink(rs,ac,ac.getAtom(hBondDonors.get(j).intValue()))){
-                    path=BFSShortestPath.findPathBetween(moleculeGraph,ac.getAtom(hBondAcceptors.get(i)), ac.getAtom((Integer) hBondDonors.get(j)));
+                    int dist = apsp.from(ac.getAtom(hBondAcceptors.get(i))).distanceTo(ac.getAtom(hBondDonors.get(j)));
 //					//logger.debug(" Acc:"+checkRingLink(rs,ac,atoms[((Integer)hBondAcceptors.get(i)).intValue()])
 //					+" S:"+atoms[((Integer)hBondAcceptors.get(i)).intValue()].getSymbol()
 //					+" Nr:"+((Integer)hBondAcceptors.get(i)).intValue()
@@ -844,14 +841,14 @@ public class XLogPDescriptor extends AbstractMolecularDescriptor implements IMol
 //					+" Nr:"+((Integer)hBondDonors.get(j)).intValue()
 //					+" i:"+i+" j:"+j+" path:"+path.size());
                     if (checkRingLink(rs,ac,ac.getAtom(hBondAcceptors.get(i))) && checkRingLink(rs,ac,ac.getAtom(hBondDonors.get(j).intValue()))){
-                        if (path.size()==3 && pairCheck[hBondAcceptors.get(i)][hBondDonors.get(j)]==0){
+                        if (dist==3 && pairCheck[hBondAcceptors.get(i)][hBondDonors.get(j)]==0){
                             xlogP += 0.429;
                             pairCheck[hBondAcceptors.get(i)][hBondDonors.get(j)]=1;
                             pairCheck[hBondDonors.get(j)][hBondAcceptors.get(i)]=1;
                             //logger.debug("XLOGP: Internal HBonds 1-4	 0.429");
                         }
                     }else{
-                        if (path.size()==4 && pairCheck[hBondAcceptors.get(i)][hBondDonors.get(j)]==0){
+                        if (dist==4 && pairCheck[hBondAcceptors.get(i)][hBondDonors.get(j)]==0){
                             xlogP += 0.429;
                             pairCheck[hBondAcceptors.get(i)][hBondDonors.get(j)]=1;
                             pairCheck[hBondDonors.get(j)][hBondAcceptors.get(i)]=1;

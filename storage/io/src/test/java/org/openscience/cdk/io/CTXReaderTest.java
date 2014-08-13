@@ -1,9 +1,4 @@
-/* $RCSfile: $
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2006-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2006-2007  Egon Willighagen <egonw@users.sf.net>
  * 
  * Contact: cdk-devel@slists.sourceforge.net
  * 
@@ -70,6 +65,7 @@ public class CTXReaderTest extends SimpleChemObjectReaderTest {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CTXReader reader = new CTXReader(ins);
         IChemFile chemFile = (ChemFile)reader.read((ChemObject)new ChemFile());
+        reader.close();
 
         Assert.assertNotNull(chemFile);
         Assert.assertEquals(1, chemFile.getChemSequenceCount());

@@ -1,6 +1,4 @@
-/* $Revision: 11293 $ $Author: rajarshi $ $Date: 2008-06-06 22:46:01 +0200 (Fri, 06 Jun 2008) $
- * 
- * Copyright (C) 2008  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2008  Egon Willighagen <egonw@users.sf.net>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -38,11 +36,12 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomType;
 import org.openscience.cdk.interfaces.IBond;
-import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.io.Mol2Reader;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.templates.MoleculeFactory;
 import org.openscience.cdk.tools.manipulator.AtomTypeManipulator;
+
+import static org.hamcrest.CoreMatchers.is;
 
 /**
  * This class tests the perception of Sybyl atom types, which uses
@@ -201,7 +200,9 @@ public class SybylAtomTypeMatcherTest extends AbstractSybylAtomTypeTest {
 	    mol.addAtom(atom);
 	    SybylAtomTypeMatcher matcher =
 	        SybylAtomTypeMatcher.getInstance(mol.getBuilder());
-	    Assert.assertNull(matcher.findMatchingAtomType(mol, atom));
+        IAtomType type = matcher.findMatchingAtomType(mol, atom); 
+	    Assert.assertNotNull(type);
+	    Assert.assertThat(type.getAtomTypeName(), is("X"));
 	}
 
 	@Test public void testAtomTyping2() throws Exception {

@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 1997-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 1997-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -214,7 +212,7 @@ public class PDBConvention extends CMLCoreModule {
          
         } else if(name.equals("molecule")){
         	storeData();
-            if(xpath.sp == 1){
+            if(xpath.size() == 1){
 //	        	cdo.endObject("Molecule");
             	if (currentMolecule instanceof IAtomContainer) {
                     logger.debug("Adding molecule to set");

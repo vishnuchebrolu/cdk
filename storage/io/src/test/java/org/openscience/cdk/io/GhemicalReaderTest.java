@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -91,6 +86,7 @@ public class GhemicalReaderTest extends SimpleChemObjectReaderTest {
         StringReader stringReader = new StringReader(testfile);
         GhemicalMMReader reader = new GhemicalMMReader(stringReader);
         ChemModel model = (ChemModel)reader.read((ChemObject)new ChemModel());
+        reader.close();
 
         Assert.assertNotNull(model);
         Assert.assertNotNull(model.getMoleculeSet());
@@ -115,6 +111,7 @@ public class GhemicalReaderTest extends SimpleChemObjectReaderTest {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         GhemicalMMReader reader = new GhemicalMMReader(ins);
         ChemFile chemFile = (ChemFile)reader.read((ChemObject)new ChemFile());
+        reader.close();
 
         Assert.assertNotNull(chemFile);
         Assert.assertEquals(1, chemFile.getChemSequenceCount());

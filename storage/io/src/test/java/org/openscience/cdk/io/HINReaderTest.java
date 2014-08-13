@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@slists.sourceforge.net
  * 
@@ -70,6 +65,7 @@ public class HINReaderTest extends SimpleChemObjectReaderTest {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         HINReader reader = new HINReader(ins);
         ChemFile chemFile = (ChemFile)reader.read((ChemObject)new ChemFile());
+        reader.close();
 
         Assert.assertNotNull(chemFile);
         Assert.assertEquals(1, chemFile.getChemSequenceCount());
@@ -94,6 +90,7 @@ public class HINReaderTest extends SimpleChemObjectReaderTest {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         HINReader reader = new HINReader(ins);
         ChemFile chemFile = (ChemFile)reader.read((ChemObject)new ChemFile());
+        reader.close();
 
         Assert.assertNotNull(chemFile);
         Assert.assertEquals(1, chemFile.getChemSequenceCount());
@@ -118,6 +115,7 @@ public class HINReaderTest extends SimpleChemObjectReaderTest {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         HINReader reader = new HINReader(ins);
         ChemFile chemFile = (ChemFile)reader.read((ChemObject)new ChemFile());
+        reader.close();
 
         Assert.assertNotNull(chemFile);
         Assert.assertEquals(1, chemFile.getChemSequenceCount());
@@ -137,6 +135,7 @@ public class HINReaderTest extends SimpleChemObjectReaderTest {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         ISimpleChemObjectReader reader = new HINReader(ins);
         IChemFile content = reader.read(new ChemFile());
+        reader.close();
         List<IAtomContainer> cList = ChemFileManipulator.getAllAtomContainers(content);
         IAtomContainer ac = cList.get(0);
         Assert.assertEquals(57, ac.getAtomCount());
@@ -152,6 +151,7 @@ public class HINReaderTest extends SimpleChemObjectReaderTest {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         ISimpleChemObjectReader reader = new HINReader(ins);
         IChemFile content = reader.read(new ChemFile());
+        reader.close();
         List<IAtomContainer> cList = ChemFileManipulator.getAllAtomContainers(content);
         Assert.assertEquals(1, cList.size());
     }
@@ -166,6 +166,7 @@ public class HINReaderTest extends SimpleChemObjectReaderTest {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         ISimpleChemObjectReader reader = new HINReader(ins);
         IChemFile content = reader.read(new ChemFile());
+        reader.close();
         List<IAtomContainer> cList = ChemFileManipulator.getAllAtomContainers(content);
         Assert.assertEquals(1, cList.size());
 

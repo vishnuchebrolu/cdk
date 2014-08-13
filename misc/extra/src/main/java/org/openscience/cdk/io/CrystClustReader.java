@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2004-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2004-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -93,9 +91,9 @@ public class CrystClustReader extends DefaultChemObjectReader {
     }
 
 	@TestMethod("testAccepts")
-    public boolean accepts(Class classObject) {
+    public boolean accepts(Class<? extends IChemObject> classObject) {
         if (IChemFile.class.equals(classObject)) return true;
-		Class[] interfaces = classObject.getInterfaces();
+		Class<?>[] interfaces = classObject.getInterfaces();
 		for (int i=0; i<interfaces.length; i++) {
 			if (IChemFile.class.equals(interfaces[i])) return true;
 		}
@@ -197,8 +195,8 @@ public class CrystClustReader extends DefaultChemObjectReader {
                         cart = new Point3d();
                         line = input.readLine();
                         logger.debug((lineNumber++) + ": ", line);
-                        symbol = line.substring(0, line.indexOf(":"));
-                        charge = Double.parseDouble(line.substring(line.indexOf(":")+1));
+                        symbol = line.substring(0, line.indexOf(':'));
+                        charge = Double.parseDouble(line.substring(line.indexOf(':')+1));
                         line = input.readLine();
                         logger.debug((lineNumber++) + ": ", line);
                         cart.x = Double.parseDouble(line); // x

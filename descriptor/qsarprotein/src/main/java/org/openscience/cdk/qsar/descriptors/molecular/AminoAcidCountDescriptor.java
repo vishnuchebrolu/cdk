@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2006-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2006-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -30,6 +25,7 @@ import org.openscience.cdk.interfaces.IAminoAcid;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 import org.openscience.cdk.isomorphism.UniversalIsomorphismTester;
+import org.openscience.cdk.isomorphism.mcss.RMap;
 import org.openscience.cdk.qsar.AbstractMolecularDescriptor;
 import org.openscience.cdk.qsar.DescriptorSpecification;
 import org.openscience.cdk.qsar.DescriptorValue;
@@ -160,7 +156,7 @@ public class AminoAcidCountDescriptor extends AbstractMolecularDescriptor implem
         IAtomContainer substructure;
         for (int i=0; i<resultLength; i++) {
             substructure = substructureSet.getAtomContainer(i);
-            List maps;
+            List<List<RMap>> maps;
             try {
                 maps = universalIsomorphismTester.getSubgraphMaps(ac, substructure);
             } catch (CDKException e) {

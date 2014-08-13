@@ -1,9 +1,4 @@
-/*
- *  $RCSfile$
- *  $Author: egonw $
- *  $Date: 2008-02-25 14:11:58 +0100 (Mon, 25 Feb 2008) $
- *  
- *  Copyright (C) 2008  Miguel Rojas <miguelrojasch@yahoo.es>
+/* Copyright (C) 2008  Miguel Rojas <miguelrojasch@yahoo.es>
  *
  *  Contact: cdk-devel@list.sourceforge.net
  *
@@ -30,13 +25,12 @@ import org.openscience.cdk.Atom;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.DefaultChemObjectBuilder;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
-import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.LonePairElectronChecker;
@@ -96,7 +90,8 @@ public class GasteigerPEPEPartialChargesTest extends CDKTestCase {
         String smiles1 = "c1ccccc1";
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer mol1 = sp.parseSmiles(smiles1);
-        CDKHueckelAromaticityDetector.detectAromaticity(mol1);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol1);
+        Aromaticity.cdkLegacy().apply(mol1);
         addExplicitHydrogens(mol1);
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol1);
         lpcheck.saturate(mol1);
@@ -126,9 +121,10 @@ public class GasteigerPEPEPartialChargesTest extends CDKTestCase {
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer mol1 = sp.parseSmiles(smiles1);
         IAtomContainer mol2 = sp.parseSmiles(smiles2);
-
-        CDKHueckelAromaticityDetector.detectAromaticity(mol1);
-        CDKHueckelAromaticityDetector.detectAromaticity(mol2);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol1);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol2);
+        Aromaticity.cdkLegacy().apply(mol1);
+        Aromaticity.cdkLegacy().apply(mol2);
 
         addExplicitHydrogens(mol1);
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol1);

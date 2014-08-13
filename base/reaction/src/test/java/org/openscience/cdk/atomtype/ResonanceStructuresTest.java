@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2008  Miguel Rojas <miguelrojasch@yahoo.es>
+/* Copyright (C) 2008  Miguel Rojas <miguelrojasch@yahoo.es>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -28,7 +26,6 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomType;
 import org.openscience.cdk.interfaces.IBond;
-import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.tools.StructureResonanceGeneratorTest;

@@ -1,9 +1,4 @@
-/*
- *  $RCSfile$
- *  $Author$
- *  $Date$
- *   *
- *  Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
  *
  *  Contact: cdk-devel@list.sourceforge.net
  *
@@ -28,7 +23,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.DefaultChemObjectBuilder;
-import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smiles.SmilesParser;
 

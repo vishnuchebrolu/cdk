@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -40,7 +38,6 @@ import org.openscience.cdk.io.INChIReaderTest;
 import org.openscience.cdk.io.ShelXWriterTest;
 import org.openscience.cdk.io.iterator.IteratingMDLConformerReaderTest;
 import org.openscience.cdk.io.random.RandomAccessTest;
-import org.openscience.cdk.iupac.ParserTest;
 import org.openscience.cdk.reaction.ReactionChainTest;
 import org.openscience.cdk.tools.BremserPredictorTest;
 import org.openscience.cdk.tools.DeAromatizationToolTest;
@@ -72,7 +69,6 @@ import org.openscience.cdk.tools.HOSECodeAnalyserTest;
     ExtraReaderFactoryTest.class,
     RandomAccessTest.class,
     BremserPredictorTest.class,
-    ParserTest.class,
     ReactionChainTest.class,
     EquivalentClassPartitionerTest.class,
 })

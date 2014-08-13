@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2004-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2004-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -33,7 +31,6 @@ import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.ChemObject;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.aromaticity.Aromaticity;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
 import org.openscience.cdk.aromaticity.ElectronDonation;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
@@ -703,7 +700,7 @@ public class SMARTSSearchTest extends CDKTestCase {
     }
 
     /**
-     * @throws Exception
+     * With '*' matching 'H', this smarts matches twice 'OC' and 'O[H]'.
      * @cdk.bug 2489417
      */
     @Test
@@ -711,8 +708,8 @@ public class SMARTSSearchTest extends CDKTestCase {
         int[] results;
 
         results = match("[OD1H]-*", "CCO[H]");
-        Assert.assertEquals(1, results[0]);
-        Assert.assertEquals(1, results[1]);
+        Assert.assertEquals(2, results[0]);
+        Assert.assertEquals(2, results[1]);
 
    }
 
@@ -807,21 +804,10 @@ public class SMARTSSearchTest extends CDKTestCase {
     }
 
     @Test
-    public void testPropertAnyAtom5() throws Exception {
-        int[] results = match("[*]", "[H][H]");
-        Assert.assertEquals(0, results[0]);
-        Assert.assertEquals(0, results[1]);
-    }
-
-    /**
-     * @throws Exception
-     * @cdk.bug 2489533
-     */
-    @Test
     public void testPropertyAnyAtom5() throws Exception {
-        int[] result = match("*", "CO");
-        Assert.assertEquals(2, result[0]);
-        Assert.assertEquals(2, result[1]);
+        int[] results = match("[*]", "[H][H]");
+        Assert.assertEquals(2, results[0]);
+        Assert.assertEquals(2, results[1]);
     }
 
     /**
@@ -830,31 +816,51 @@ public class SMARTSSearchTest extends CDKTestCase {
      */
     @Test
     public void testPropertyAnyAtom6() throws Exception {
-        int[] result = match("*", "CO[H]");
+        int[] result = match("*", "CO");
         Assert.assertEquals(2, result[0]);
         Assert.assertEquals(2, result[1]);
     }
 
-     /**
+    /**
+     * Bug was mistaken - '*' does match explicit H but in DEPICTMATCH H's are
+     * suppressed by default.
+     * 
      * @throws Exception
      * @cdk.bug 2489533
      */
     @Test
     public void testPropertyAnyAtom7() throws Exception {
-        int[] result = match("*", "[H]C([H])([H])[H]");
-        Assert.assertEquals(1, result[0]);
-        Assert.assertEquals(1, result[1]);
+        int[] result = match("*", "CO[H]");
+        Assert.assertEquals(3, result[0]);
+        Assert.assertEquals(3, result[1]);
     }
 
     /**
+     * Bug was mistaken - '*' does match explicit H but in DEPICTMATCH H's are
+     * suppressed by default.
+     *
      * @throws Exception
      * @cdk.bug 2489533
      */
     @Test
     public void testPropertyAnyAtom8() throws Exception {
-        int[] result = match("*", "CCCC([2H])[H]");
+        int[] result = match("*", "[H]C([H])([H])[H]");
         Assert.assertEquals(5, result[0]);
         Assert.assertEquals(5, result[1]);
+    }
+
+    /**
+     * Bug was mistaken - '*' does match explicit H but in DEPICTMATCH H's are
+     * suppressed by default.
+     *
+     * @throws Exception
+     * @cdk.bug 2489533
+     */
+    @Test
+    public void testPropertyAnyAtom9() throws Exception {
+        int[] result = match("*", "CCCC([2H])[H]");
+        Assert.assertEquals(6, result[0]);
+        Assert.assertEquals(6, result[1]);
     }
 
     @Test public void testPropertyAtomicMass1() throws Exception {
@@ -1643,7 +1649,7 @@ public class SMARTSSearchTest extends CDKTestCase {
         for (IBond bond : m.bonds())
             bond.setFlag(CDKConstants.ISAROMATIC, false);
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(m);
-        CDKHueckelAromaticityDetector.detectAromaticity(m);
+        Aromaticity.cdkLegacy().apply(m);
         
         results = match(smarts("c-c"), m);
         Assert.assertEquals(2, results[0]);

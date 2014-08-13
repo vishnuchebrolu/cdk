@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- * 
- * Copyright (C) 2005-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2005-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -25,9 +20,9 @@ package org.openscience.cdk.tools;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.openscience.cdk.BioPolymer;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.interfaces.IBioPolymer;
+import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.tools.ProteinBuilderTool;
 
 /**
@@ -37,7 +32,7 @@ public class ProteinBuilderToolTest extends CDKTestCase {
 
     @Test
     public void testCreateProtein() throws Exception {
-        IBioPolymer protein = ProteinBuilderTool.createProtein("GAGA");
+        IBioPolymer protein = ProteinBuilderTool.createProtein("GAGA", SilentChemObjectBuilder.getInstance());
         Assert.assertNotNull(protein);
         Assert.assertEquals(4, protein.getMonomerCount());
         Assert.assertEquals(1, protein.getStrandCount());

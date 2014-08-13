@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2006-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2006-2007  Egon Willighagen <egonw@users.sf.net>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -69,7 +67,7 @@ public class PCCompoundASNReader extends DefaultChemObjectReader {
         LoggingToolFactory.createLoggingTool(PCCompoundASNReader.class);
     
     IAtomContainer molecule = null;
-    Map atomIDs = null;
+    Map<String,IAtom> atomIDs = null;
 
     /**
      * Construct a new reader from a Reader type object.
@@ -108,9 +106,9 @@ public class PCCompoundASNReader extends DefaultChemObjectReader {
     }
 
 	@TestMethod("testAccepts")
-    public boolean accepts(Class classObject) {
+    public boolean accepts(Class<? extends IChemObject> classObject) {
         if (IChemFile.class.equals(classObject)) return true;
-		Class[] interfaces = classObject.getInterfaces();
+		Class<?>[] interfaces = classObject.getInterfaces();
 		for (int i=0; i<interfaces.length; i++) {
 			if (IChemFile.class.equals(interfaces[i])) return true;
 		}
@@ -147,11 +145,11 @@ public class PCCompoundASNReader extends DefaultChemObjectReader {
         IChemModel chemModel = file.getBuilder().newInstance(IChemModel.class);
         IAtomContainerSet moleculeSet = file.getBuilder().newInstance(IAtomContainerSet.class);
         molecule = file.getBuilder().newInstance(IAtomContainer.class);
-        atomIDs = new HashMap();
+        atomIDs = new HashMap<String,IAtom>();
         
         String line = input.readLine();
         while (input.ready() && line != null) {
-        	if (line.indexOf("{") != -1) {
+        	if (line.indexOf('{') != -1) {
         		processBlock(line);
         	} else {
         		logger.warn("Skipping non-block: " + line); 
@@ -192,9 +190,9 @@ public class PCCompoundASNReader extends DefaultChemObjectReader {
 	private void processPropsBlock() throws Exception {
 		String line = input.readLine();
         while (input.ready() && line != null) {
-        	if (line.indexOf("{") != -1) {
+        	if (line.indexOf('{') != -1) {
         		processPropsBlockBlock();
-        	} else if (line.indexOf("}")!= -1) {
+        	} else if (line.indexOf('}')!= -1) {
     			return;
     		} else {
     			logger.warn("Skipping non-block: " + line); 
@@ -223,7 +221,7 @@ public class PCCompoundASNReader extends DefaultChemObjectReader {
         				molecule.setProperty(CDKConstants.SMILES, value);
         			}
         		}
-        	} else if (line.indexOf("}")!= -1) {
+        	} else if (line.indexOf('}')!= -1) {
     			return;
     		} else {
     			logger.warn("Skipping non-block: " + line); 
@@ -240,7 +238,7 @@ public class PCCompoundASNReader extends DefaultChemObjectReader {
         		urn.name = getQuotedValue(line.substring(line.indexOf("name")+4));
         	} else if (line.indexOf("label") != -1) {
         		urn.label = getQuotedValue(line.substring(line.indexOf("label")+4));
-        	} else if (line.indexOf("}")!= -1 && line.indexOf("\"")==-1) {
+        	} else if (line.indexOf('}')!= -1 && line.indexOf('\"')==-1) {
         		// ok, don't return if it also has a "
     			return urn;
     		} else {
@@ -254,9 +252,9 @@ public class PCCompoundASNReader extends DefaultChemObjectReader {
 	private void processAtomBlock() throws Exception {
 		String line = input.readLine();
         while (input.ready() && line != null) {
-        	if (line.indexOf("{") != -1) {
+        	if (line.indexOf('{') != -1) {
         		processAtomBlockBlock(line);
-        	} else if (line.indexOf("}")!= -1) {
+        	} else if (line.indexOf('}')!= -1) {
     			return;
     		} else {
     			logger.warn("Skipping non-block: " + line); 
@@ -268,9 +266,9 @@ public class PCCompoundASNReader extends DefaultChemObjectReader {
 	private void processBondBlock() throws Exception {
 		String line = input.readLine();
         while (input.ready() && line != null) {
-        	if (line.indexOf("{") != -1) {
+        	if (line.indexOf('{') != -1) {
         		processBondBlockBlock(line);
-        	} else if (line.indexOf("}")!= -1) {
+        	} else if (line.indexOf('}')!= -1) {
     			return;
     		} else {
     			logger.warn("Skipping non-block: " + line); 
@@ -329,7 +327,7 @@ public class PCCompoundASNReader extends DefaultChemObjectReader {
 		String line = input.readLine();
 		int atomIndex = 0;
         while (input.ready() && line != null) {
-        	if (line.indexOf("}") != -1) {
+        	if (line.indexOf('}') != -1) {
         		// done
         		return;
         	} else {
@@ -349,7 +347,7 @@ public class PCCompoundASNReader extends DefaultChemObjectReader {
 		String line = input.readLine();
 		int bondIndex = 0;
         while (input.ready() && line != null) {
-        	if (line.indexOf("}") != -1) {
+        	if (line.indexOf('}') != -1) {
         		// done
         		return;
         	} else {
@@ -372,7 +370,7 @@ public class PCCompoundASNReader extends DefaultChemObjectReader {
 		String line = input.readLine();
 		int atomIndex = 0;
         while (input.ready() && line != null) {
-        	if (line.indexOf("}") != -1) {
+        	if (line.indexOf('}') != -1) {
         		// done
         		return;
         	} else {

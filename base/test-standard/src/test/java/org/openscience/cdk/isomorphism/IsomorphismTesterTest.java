@@ -1,9 +1,4 @@
-/* $RCSfile$    
- * $Author$    
- * $Date$    
- * $Revision$
- * 
- * Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -30,7 +25,7 @@ import org.junit.Test;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.CDKTestCase;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
@@ -162,7 +157,7 @@ public class IsomorphismTesterTest extends CDKTestCase
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(biphenyl_aromaticsmiles);
         CDKHydrogenAdder hAdder = CDKHydrogenAdder.getInstance(biphenyl_aromaticsmiles.getBuilder());
         hAdder.addImplicitHydrogens(biphenyl_aromaticsmiles);
-        CDKHueckelAromaticityDetector.detectAromaticity(biphenyl_aromaticsmiles);
+        Aromaticity.cdkLegacy().apply(biphenyl_aromaticsmiles);
         AtomContainerManipulator.convertImplicitToExplicitHydrogens(biphenyl_aromaticsmiles);
 
 
@@ -171,7 +166,7 @@ public class IsomorphismTesterTest extends CDKTestCase
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(biphenyl_kekulesmiles);
         hAdder = CDKHydrogenAdder.getInstance(biphenyl_kekulesmiles.getBuilder());
         hAdder.addImplicitHydrogens(biphenyl_kekulesmiles);
-        CDKHueckelAromaticityDetector.detectAromaticity(biphenyl_kekulesmiles);
+        Aromaticity.cdkLegacy().apply(biphenyl_kekulesmiles);
         AtomContainerManipulator.convertImplicitToExplicitHydrogens(biphenyl_kekulesmiles);
 
 

@@ -29,6 +29,7 @@ import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.graph.CycleFinder;
+import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.graph.GraphUtil;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -321,5 +322,45 @@ public final class Aromaticity {
                 vs[n++] = i;
         
         return Arrays.copyOf(vs, n);
+    }
+
+    /** Replicates CDKHueckelAromaticityDetector. */
+    private static final Aromaticity CDK_LEGACY = new Aromaticity(ElectronDonation.cdk(),
+                                                                  Cycles.cdkAromaticSet());
+
+    /**
+     * Access an aromaticity instance that replicates the previously utilised -
+     * CDKHueckelAromaticityDetector. It has the following configuration:
+     * 
+     * <pre>{@code
+     * new Aromaticity(ElectronDonation.cdk(),
+     *                 Cycles.cdkAromaticSet());
+     * }</pre>
+     * 
+     * <p>
+     * This model is not necessarily bad (or really considered legacy) but
+     * should <b>not</b> be considered a gold standard model that covers all
+     * possible cases. It was however the primary method used in previous 
+     * versions of the CDK (1.4).
+     * </p>
+     * 
+     * <p>
+     * This factory method is provided for convenience for
+     * those wishing to replicate aromaticity perception used in previous
+     * versions. The same electron donation model can be used to test
+     * aromaticity of more cycles. For instance, the following configuration
+     * will identify more bonds in a some structures as aromatic:
+     * </p>
+     * 
+     * <pre>{@code
+     * new Aromaticity(ElectronDonation.cdk(),
+     *                 Cycles.or(Cycles.all(), Cycles.relevant()));
+     * }</pre>
+     * 
+     * @return aromaticity instance that is configured to perform identically
+     *         to the primary aromaticity model in version 1.4. 
+     */
+    public static Aromaticity cdkLegacy() {
+        return CDK_LEGACY;
     }
 }

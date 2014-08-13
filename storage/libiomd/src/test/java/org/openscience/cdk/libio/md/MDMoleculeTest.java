@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2007  Ola Spjuth <ospjuth@users.sf.net>
+/* Copyright (C) 2007  Ola Spjuth <ospjuth@users.sf.net>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -165,6 +163,7 @@ public class MDMoleculeTest extends CDKTestCase {
         cmlWriter.registerCustomizer(new MDMoleculeCustomizer());
         MDMolecule molecule=makeMDBenzene();
         cmlWriter.write(molecule);
+        cmlWriter.close();
 
         String serializedMol=writer.toString();
         logger.debug("****************************** testMDMoleculeCustomizationRoundtripping()");
@@ -177,6 +176,7 @@ public class MDMoleculeTest extends CDKTestCase {
         CMLReader reader = new CMLReader(new ByteArrayInputStream(serializedMol.getBytes()));
         reader.registerConvention("md:mdMolecule", new MDMoleculeConvention(new ChemFile()));
         IChemFile file = (IChemFile)reader.read(new ChemFile());
+        reader.close();
         List containers = ChemFileManipulator.getAllAtomContainers(file);
         Assert.assertEquals(1, containers.size());
 
@@ -213,6 +213,7 @@ public class MDMoleculeTest extends CDKTestCase {
          cmlWriter = new CMLWriter(writer);
         cmlWriter.registerCustomizer(new MDMoleculeCustomizer());
         cmlWriter.write(mdMol);
+        cmlWriter.close();
 
         String serializedMDMol=writer.toString();
         logger.debug("****************************** testMDMoleculeCustomizationRoundtripping()");
@@ -234,6 +235,7 @@ public class MDMoleculeTest extends CDKTestCase {
         try {
             IAtomContainer molecule = makeMDBenzene();
             cmlWriter.write(molecule);
+            cmlWriter.close();
 
         } catch (Exception exception) {
             logger.error("Error while creating an CML2 file: ", exception.getMessage());

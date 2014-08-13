@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2002-2007  Stephane Werner <mail@ixelis.net>
+/* Copyright (C) 2002-2007  Stephane Werner <mail@ixelis.net>
  *  
  * This code has been kindly provided by Stephane Werner 
  * and Thierry Hanser from IXELIS mail@ixelis.net.
@@ -44,8 +42,8 @@ public class RMap {
   /**
    *  Constructor for the RMap.
    *
-   * @param  id1  number of the edge (bond) in the graphe 1
-   * @param  id2  number of the edge (bond) in the graphe 2
+   * @param  id1  number of the edge (bond) in the graph 1
+   * @param  id2  number of the edge (bond) in the graph 2
    */
   public RMap(int id1, int id2) {
     this.id1 = id1;

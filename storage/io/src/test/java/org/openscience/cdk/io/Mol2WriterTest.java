@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@slists.sourceforge.net
  * 
@@ -30,7 +28,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.DefaultChemObjectBuilder;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IChemFile;
@@ -89,7 +87,7 @@ public class Mol2WriterTest extends ChemObjectIOTest {
     @Ignore("moved to SMILES2Mol2WriterTest")
     public void testWriter2() throws Exception {
         IAtomContainer molecule = mock(IAtomContainer.class);
-        CDKHueckelAromaticityDetector.detectAromaticity(molecule);
+        Aromaticity.cdkLegacy().apply(molecule);
 
         StringWriter swriter = new StringWriter();
         Mol2Writer writer = new Mol2Writer(swriter);
@@ -108,7 +106,7 @@ public class Mol2WriterTest extends ChemObjectIOTest {
     @Ignore("moved to SMILES2Mol2WriterTest")
     public void testWriterForAmide() throws Exception {
         IAtomContainer molecule = mock(IAtomContainer.class);
-        CDKHueckelAromaticityDetector.detectAromaticity(molecule);
+        Aromaticity.cdkLegacy().apply(molecule);
 
         StringWriter swriter = new StringWriter();
         Mol2Writer writer = new Mol2Writer(swriter);
@@ -138,10 +136,11 @@ public class Mol2WriterTest extends ChemObjectIOTest {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         MDLV2000Reader reader = new MDLV2000Reader(ins);
         IChemFile fileContents = (IChemFile) reader.read(new ChemFile());
+        reader.close();
         List<IAtomContainer> molecules = ChemFileManipulator.getAllAtomContainers(fileContents);
         IAtomContainer mol = molecules.get(0);
-        CDKHueckelAromaticityDetector.detectAromaticity(mol);
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+        Aromaticity.cdkLegacy().apply(mol);
 
         StringWriter writer = new StringWriter();
         Mol2Writer molwriter = new Mol2Writer(writer);

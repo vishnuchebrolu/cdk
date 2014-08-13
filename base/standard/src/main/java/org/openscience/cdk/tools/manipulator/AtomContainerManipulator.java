@@ -51,7 +51,6 @@ import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.interfaces.IDoubleBondStereochemistry;
 import org.openscience.cdk.interfaces.IElectronContainer;
-import org.openscience.cdk.interfaces.IElement;
 import org.openscience.cdk.interfaces.ILonePair;
 import org.openscience.cdk.interfaces.IMolecularFormula;
 import org.openscience.cdk.interfaces.IPseudoAtom;
@@ -114,7 +113,7 @@ public class AtomContainerManipulator {
     }
 
 	/**
-	 * Returna an atom in an atomcontainer identified by id
+	 * Returns an atom in an atomcontainer identified by id
 	 *
 	 * @param ac The AtomContainer to search in
 	 * @param id The id to search for
@@ -1207,10 +1206,8 @@ public class AtomContainerManipulator {
     public static void percieveAtomTypesAndConfigureAtoms(IAtomContainer container) throws CDKException {
 		CDKAtomTypeMatcher matcher = CDKAtomTypeMatcher.getInstance(container.getBuilder());
         for (IAtom atom : container.atoms()) {
-            if (!(atom instanceof IPseudoAtom)) {
-                IAtomType matched = matcher.findMatchingAtomType(container, atom);
-                if (matched != null) AtomTypeManipulator.configure(atom, matched);
-            }
+            IAtomType matched = matcher.findMatchingAtomType(container, atom);
+            if (matched != null) AtomTypeManipulator.configure(atom, matched);            
         }
 	}
 
@@ -1264,7 +1261,6 @@ public class AtomContainerManipulator {
             atom.setProperty(CDKConstants.CHEMICAL_GROUP_CONSTANT, CDKConstants.UNSET);
             atom.setFlag(CDKConstants.ISAROMATIC, false);
             atom.setProperty("org.openscience.cdk.renderer.color", CDKConstants.UNSET);
-            atom.setAtomicNumber((Integer) CDKConstants.UNSET);
             atom.setExactMass((Double) CDKConstants.UNSET);
         }
     }

@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2007  Egon Willighagen <egonw@users.sf.net>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -32,7 +30,6 @@ import org.openscience.cdk.config.AtomTypeFactory;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
-import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.io.MDLV2000Reader;
 import org.openscience.cdk.io.XYZReader;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
@@ -106,9 +103,9 @@ public class BondToolsTest extends CDKTestCase {
 		);
 		ChemFile chemFile = (ChemFile)reader.read((ChemObject)new ChemFile());
 		IAtomContainer mol=chemFile.getChemSequence(0).getChemModel(0).getMoleculeSet().getAtomContainer(0);
-		Iterator atoms = mol.atoms().iterator();
+		Iterator<IAtom> atoms = mol.atoms().iterator();
 		while (atoms.hasNext()) {
-			atf.configure((IAtom)atoms.next());
+			atf.configure(atoms.next());
 		}
 		Assert.assertTrue(BondTools.closeEnoughToBond(mol.getAtom(0),mol.getAtom(1),1));
 		Assert.assertFalse(BondTools.closeEnoughToBond(mol.getAtom(0),mol.getAtom(8),1));

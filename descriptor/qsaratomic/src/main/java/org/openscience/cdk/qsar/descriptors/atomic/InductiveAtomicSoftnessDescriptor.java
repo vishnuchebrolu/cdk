@@ -1,11 +1,5 @@
 
-/*
- *  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -26,6 +20,7 @@
 package org.openscience.cdk.qsar.descriptors.atomic;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import javax.vecmath.Point3d;
 
@@ -180,7 +175,7 @@ public class InductiveAtomicSoftnessDescriptor extends AbstractAtomicDescriptor 
             }
 
 
-        java.util.Iterator allAtoms = ac.atoms().iterator();
+        Iterator<IAtom> allAtoms = ac.atoms().iterator();
         double atomicSoftness;
         double radiusTarget;
 

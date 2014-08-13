@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$    
- * $Date$    
- * $Revision$
- * 
- * Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -57,6 +52,14 @@ public class AssociationTest extends CDKTestCase {
         	Assert.assertTrue(description.charAt(i) != '\n');
         	Assert.assertTrue(description.charAt(i) != '\r');
         }
+    }
+
+    @Test public void testToStringWithAtoms() {
+        Association association = new Association(
+            new Atom("C"), new Atom("C")
+        );
+        String description = association.toString();
+        Assert.assertTrue(description.contains(","));
     }
 
     @Test public void testContains() {

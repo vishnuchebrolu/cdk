@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2008  Miguel Rojas <miguelrojasch@yahoo.es>
+/* Copyright (C) 2008  Miguel Rojas <miguelrojasch@yahoo.es>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -96,7 +94,7 @@ public class RemovingSEofNBMechanism implements IReactionMechanism{
 		reactantCloned.getAtom(posAtom).setHybridization(null);
 		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(reactantCloned);
 		IAtomType type = atMatcher.findMatchingAtomType(reactantCloned, reactantCloned.getAtom(posAtom));
-		if (type == null)
+		if (type == null || type.getAtomTypeName().equals("X"))
 			return null;
 		
 		IReaction reaction = molecule.getBuilder().newInstance(IReaction.class);

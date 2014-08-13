@@ -25,10 +25,11 @@ package org.openscience.cdk.smsd;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.openscience.cdk.DefaultChemObjectBuilder;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.SlowTest;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.isomorphism.matchers.IQueryAtomContainer;
 import org.openscience.cdk.isomorphism.matchers.QueryAtomContainerCreator;
@@ -43,6 +44,7 @@ import org.openscience.cdk.smsd.tools.ExtAtomContainerManipulator;
  * @cdk.module test-smsd
  * @cdk.require java1.6+
  */
+@Category(SlowTest.class)
 public class SMSDBondSensitiveTest {
 
     private static IAtomContainer Napthalene;
@@ -228,7 +230,7 @@ public class SMSDBondSensitiveTest {
 //        IAtomContainer mol2 = Molecules.create4Toluene();
 //
 //        ExtAtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol2);
-//        CDKHueckelAromaticityDetector.detectAromaticity(mol2);
+//        Aromaticity.cdkLegacy().apply(mol2);
 //
 //        boolean bondSensitive = true;
 //        boolean removeHydrogen = true;
@@ -262,8 +264,8 @@ public class SMSDBondSensitiveTest {
 
 //	Calling the main algorithm to perform MCS cearch
 
-        CDKHueckelAromaticityDetector.detectAromaticity(mol1);
-        CDKHueckelAromaticityDetector.detectAromaticity(mol2);
+        Aromaticity.cdkLegacy().apply(mol1);
+        Aromaticity.cdkLegacy().apply(mol2);
 
         boolean bondSensitive = true;
         boolean removeHydrogen = true;
@@ -311,8 +313,8 @@ public class SMSDBondSensitiveTest {
 
 //	Calling the main algorithm to perform MCS cearch
 
-        CDKHueckelAromaticityDetector.detectAromaticity(source);
-        CDKHueckelAromaticityDetector.detectAromaticity(target);
+        Aromaticity.cdkLegacy().apply(source);
+        Aromaticity.cdkLegacy().apply(target);
 
         boolean bondSensitive = true;
         boolean removeHydrogen = true;

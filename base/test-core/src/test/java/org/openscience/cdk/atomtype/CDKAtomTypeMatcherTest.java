@@ -52,6 +52,8 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import org.openscience.cdk.tools.manipulator.AtomTypeManipulator;
 import org.openscience.cdk.tools.periodictable.PeriodicTable;
 
+import static org.hamcrest.CoreMatchers.is;
+
 /**
  * This class tests the matching of atom types defined in the
  * CDK atom type list. All tests in this class <b>must</b> use
@@ -124,7 +126,9 @@ public class CDKAtomTypeMatcherTest extends AbstractCDKAtomTypeTest {
         mol.addAtom(atom);
         CDKAtomTypeMatcher matcher = CDKAtomTypeMatcher.getInstance(
             DefaultChemObjectBuilder.getInstance());
-        Assert.assertNull(matcher.findMatchingAtomType(mol, atom));
+        IAtomType type = matcher.findMatchingAtomType(mol, atom);
+        Assert.assertNotNull(type);
+        Assert.assertThat(type.getAtomTypeName(), is("X"));
     }
 
     @Test public void testEthene() throws Exception {
@@ -3023,7 +3027,9 @@ public class CDKAtomTypeMatcherTest extends AbstractCDKAtomTypeTest {
 
     	mol.addAtom(new Atom("O"));
     	mol.getAtom(0).setFormalCharge(+1);
-    	Assert.assertNull(atm.findMatchingAtomType(mol, mol.getAtom(0)));
+        IAtomType type = atm.findMatchingAtomType(mol, mol.getAtom(0));
+    	Assert.assertNotNull(type);
+    	Assert.assertThat(type.getAtomTypeName(), is("X"));
     	
     	for (int i=0; i<3; i++) {
     		mol.addAtom(new Atom("H"));

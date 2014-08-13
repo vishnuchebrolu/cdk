@@ -1,9 +1,4 @@
-/*  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -31,7 +26,7 @@ import org.openscience.cdk.tools.manipulator.BondManipulator;
 
 /**
  * Calculator for a connection matrix representation of this AtomContainer. An
- * adjacency matrix is a matrix of quare NxN matrix, where N is the number of
+ * adjacency matrix is a matrix of square NxN matrix, where N is the number of
  * atoms in the AtomContainer. If the i-th and the j-th atom in the
  * atomcontainer share a bond, the element i,j in the matrix is set to the
  * bond order value. Otherwise it is zero. See {@cdk.cite TRI92}.
@@ -51,7 +46,7 @@ public class ConnectionMatrix implements IGraphMatrix {
 	 * Returns the connection matrix representation of this AtomContainer.
 	 *
      * @param  container The AtomContainer for which the matrix is calculated
-	 * @return           A connection matrix representating this AtomContainer
+	 * @return           A connection matrix representing this AtomContainer
 	 */
     @TestMethod("testGetMatrix_IAtomContainer")
     public static double[][] getMatrix(IAtomContainer container) {

@@ -1,9 +1,4 @@
-/*  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2005-2007  Christian Hoppe <chhoppe@users.sf.net>
+/* Copyright (C) 2005-2007  Christian Hoppe <chhoppe@users.sf.net>
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -25,13 +20,13 @@
 package org.openscience.cdk.tools;
 
 import org.openscience.cdk.CDKConstants;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IRing;
 import org.openscience.cdk.interfaces.IRingSet;
-import org.openscience.cdk.ringsearch.SSSRFinder;
 import org.openscience.cdk.smiles.SmilesGenerator;
 import org.openscience.cdk.tools.manipulator.RingSetManipulator;
 
@@ -86,12 +81,12 @@ public class AtomTypeTools {
 		logger.debug("assignAtomTypePropertiesToAtom Start ...");
 		String hoseCode = "";
 		IRingSet ringSetA = null;
-		IRingSet ringSetMolecule = new SSSRFinder(molecule).findSSSR();
+		IRingSet ringSetMolecule = Cycles.sssr(molecule).toRingSet();
 		logger.debug(ringSetMolecule);
 		
 		if (aromaticity){
 			try {
-				CDKHueckelAromaticityDetector.detectAromaticity(molecule);
+                Aromaticity.cdkLegacy().apply(molecule);
 			} catch (Exception cdk1) {
 				//logger.debug("AROMATICITYError: Cannot determine aromaticity due to: " + cdk1.toString());
 				logger.error("AROMATICITYError: Cannot determine aromaticity due to: " + cdk1.toString());

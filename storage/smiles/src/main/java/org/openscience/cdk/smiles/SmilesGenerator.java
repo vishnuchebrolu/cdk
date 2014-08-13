@@ -1,6 +1,4 @@
-/*  $Revision$ $Author$ $Date$
- *  
- *  Copyright (C) 2002-2007  Oliver Horlacher
+/* Copyright (C) 2002-2007  Oliver Horlacher
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -504,7 +502,7 @@ public final class SmilesGenerator {
         String cname = "org.openscience.cdk.graph.invariant.InChINumbersTools";
         String mname = "getUSmilesNumbers";
         try {
-            Class  c      = Class.forName(cname);
+            Class<?>  c   = Class.forName(cname);
             Method method = c.getDeclaredMethod("getUSmilesNumbers", IAtomContainer.class);
             return (long[]) method.invoke(c, container);
         } catch (ClassNotFoundException e) {

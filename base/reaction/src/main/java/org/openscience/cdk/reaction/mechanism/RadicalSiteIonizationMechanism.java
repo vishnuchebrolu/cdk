@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2008  Miguel Rojas <miguelrojasch@yahoo.es>
+/* Copyright (C) 2008  Miguel Rojas <miguelrojasch@yahoo.es>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -106,18 +104,18 @@ public class RadicalSiteIonizationMechanism implements IReactionMechanism{
 		atom1C.setHybridization(null);
 		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(reactantCloned);
 		IAtomType type = atMatcher.findMatchingAtomType(reactantCloned, atom1C);
-		if (type == null) return null;
+		if (type == null || type.getAtomTypeName().equals("X")) return null;
 		
 		atom2C.setHybridization(null);
 		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(reactantCloned);
 		type = atMatcher.findMatchingAtomType(reactantCloned, atom2C);
-		if (type == null) return null;
+		if (type == null || type.getAtomTypeName().equals("X")) return null;
 		
 		reactantCloned.addSingleElectron(atom2C.getBuilder().newInstance(ISingleElectron.class, atom3C));
 		atom3C.setHybridization(null);
 		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(reactantCloned);
 		type = atMatcher.findMatchingAtomType(reactantCloned, atom3C);
-		if (type == null) return null;
+		if (type == null || type.getAtomTypeName().equals("X")) return null;
 		
 		IReaction reaction = atom2C.getBuilder().newInstance(IReaction.class);
 		reaction.addReactant(molecule);

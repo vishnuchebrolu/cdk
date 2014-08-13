@@ -1,6 +1,4 @@
-/* $Revision: 11004 $ $Author: miguelrojasch $ $Date: 2008-05-15 15:27:25 +0200 (Thu, 15 May 2008) $
- *
- * Copyright (C) 2008  Miguel Rojas <miguel.rojas@uni-koeln.de>
+/* Copyright (C) 2008  Miguel Rojas <miguel.rojas@uni-koeln.de>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -32,6 +30,7 @@ import org.openscience.cdk.charges.PiElectronegativity;
 import org.openscience.cdk.charges.Polarizability;
 import org.openscience.cdk.charges.StabilizationCharges;
 import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
@@ -42,7 +41,6 @@ import org.openscience.cdk.reaction.IReactionProcess;
 import org.openscience.cdk.reaction.type.ElectronImpactNBEReaction;
 import org.openscience.cdk.reaction.type.parameters.IParameterReact;
 import org.openscience.cdk.reaction.type.parameters.SetReactionCenter;
-import org.openscience.cdk.ringsearch.SSSRFinder;
 import org.openscience.cdk.tools.manipulator.RingSetManipulator;
 
 /**
@@ -271,8 +269,8 @@ public class IonizationPotentialTool {
 		if(acR != null){
 			results[6] = acR.getAtomCount();
 			// numberAromaticAtoms
-//			boolean isAromatic = CDKHueckelAromaticityDetector.detectAromaticity(container);
-			IRingSet ringSet = new SSSRFinder(container).findSSSR();
+//			boolean isAromatic = Aromaticity.cdkLegacy().apply(container);
+			IRingSet ringSet = Cycles.sssr(container).toRingSet();
 			RingSetManipulator.markAromaticRings(ringSet);
 			int aromRingCount = 0;			
 			for (IAtomContainer ring : ringSet.atomContainers()) {
@@ -350,7 +348,7 @@ public class IonizationPotentialTool {
 			if(acR != null){
 				results[6] += acR.getAtomCount();
 				// numberAromaticAtoms
-	//			boolean isAromatic = CDKHueckelAromaticityDetector.detectAromaticity(container);
+	//			boolean isAromatic = Aromaticity.cdkLegacy().apply(container);
 	//			if(isAromatic)
 	//		        results[7] += 0.1;
 			}else{

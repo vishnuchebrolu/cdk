@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$    
- * 
- * Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -21,7 +19,6 @@
 package org.openscience.cdk.interfaces;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -800,6 +797,30 @@ public abstract class AbstractAtomContainerTest extends AbstractChemObjectTest {
         Assert.assertEquals(3, container.getBondCount());
     }
     
+    @Test public void testAdd_IAtomContainer_LonePairs() {
+        IAtomContainer mol = (IAtomContainer)newChemObject();
+        IAtom c1 = mol.getBuilder().newInstance(IAtom.class,"C");
+        mol.addAtom(c1);
+        mol.addLonePair(0);
+
+        IAtomContainer container = (IAtomContainer)newChemObject();
+        container.add(mol);
+        Assert.assertEquals(1, container.getAtomCount());
+        Assert.assertEquals(1, container.getLonePairCount());
+    }
+
+    @Test public void testAdd_IAtomContainer_SingleElectrons() {
+        IAtomContainer mol = (IAtomContainer)newChemObject();
+        IAtom c1 = mol.getBuilder().newInstance(IAtom.class,"C");
+        mol.addAtom(c1);
+        mol.addSingleElectron(0);
+
+        IAtomContainer container = (IAtomContainer)newChemObject();
+        container.add(mol);
+        Assert.assertEquals(1, container.getAtomCount());
+        Assert.assertEquals(1, container.getSingleElectronCount());
+    }
+
     @Test public void testRemove_IAtomContainer() throws Exception {
     	IAtomContainer acetone = (IAtomContainer)newChemObject();
         IAtom c1 = acetone.getBuilder().newInstance(IAtom.class,"C");
@@ -1116,7 +1137,7 @@ public abstract class AbstractAtomContainerTest extends AbstractChemObjectTest {
         acetone.addAtom(c3);
         acetone.addAtom(o);
         
-        java.util.Iterator atomIter = acetone.atoms().iterator();
+        Iterator<IAtom> atomIter = acetone.atoms().iterator();
         int counter = 0;
         while (atomIter.hasNext()) {
             atomIter.next();
@@ -1143,7 +1164,7 @@ public abstract class AbstractAtomContainerTest extends AbstractChemObjectTest {
         acetone.addAtom(c3);
         acetone.addAtom(o);
         
-        java.util.Iterator atomIter = acetone.atoms().iterator();
+        Iterator<IAtom> atomIter = acetone.atoms().iterator();
         Assert.assertNotNull(atomIter);
         Assert.assertTrue(atomIter.hasNext());
         IAtom next = (IAtom)atomIter.next();
@@ -1184,7 +1205,7 @@ public abstract class AbstractAtomContainerTest extends AbstractChemObjectTest {
         acetone.addBond(bond2);
         acetone.addBond(bond3);
 
-        java.util.Iterator bonds = acetone.bonds().iterator();
+        Iterator<IBond> bonds = acetone.bonds().iterator();
         Assert.assertNotNull(bonds);
         Assert.assertTrue(bonds.hasNext());
 
@@ -1226,7 +1247,7 @@ public abstract class AbstractAtomContainerTest extends AbstractChemObjectTest {
         acetone.addLonePair(lp1);
         acetone.addLonePair(lp2);
 
-        java.util.Iterator lonePairs = acetone.lonePairs().iterator();
+        Iterator<ILonePair> lonePairs = acetone.lonePairs().iterator();
         Assert.assertNotNull(lonePairs);
         Assert.assertTrue(lonePairs.hasNext());
 
@@ -1264,7 +1285,7 @@ public abstract class AbstractAtomContainerTest extends AbstractChemObjectTest {
         acetone.addSingleElectron(se1);
         acetone.addSingleElectron(se2);
 
-        java.util.Iterator singleElectrons = acetone.singleElectrons().iterator();
+        Iterator<ISingleElectron> singleElectrons = acetone.singleElectrons().iterator();
         Assert.assertNotNull(singleElectrons);
         Assert.assertTrue(singleElectrons.hasNext());
 
@@ -1306,7 +1327,7 @@ public abstract class AbstractAtomContainerTest extends AbstractChemObjectTest {
         acetone.addLonePair(lp1);
         acetone.addLonePair(lp2);
 
-        java.util.Iterator electronContainers = acetone.electronContainers().iterator();
+        Iterator<IElectronContainer> electronContainers = acetone.electronContainers().iterator();
         Assert.assertNotNull(electronContainers);
         Assert.assertTrue(electronContainers.hasNext());
         electronContainers.next();
@@ -1504,7 +1525,7 @@ public abstract class AbstractAtomContainerTest extends AbstractChemObjectTest {
         acetone.addBond(b3);
         
         Assert.assertEquals(3, acetone.getBondCount());
-        Iterator bonds = acetone.bonds().iterator();
+        Iterator<IBond> bonds = acetone.bonds().iterator();
         while (bonds.hasNext()) Assert.assertNotNull(bonds.next());
         Assert.assertEquals(b1, acetone.getBond(0));
         Assert.assertEquals(b2, acetone.getBond(1));
@@ -1645,7 +1666,7 @@ public abstract class AbstractAtomContainerTest extends AbstractChemObjectTest {
         acetone.addBond(1, 2, IBond.Order.SINGLE);
         
         Assert.assertEquals(3, acetone.getBondCount());
-        Iterator bonds = acetone.bonds().iterator();
+        Iterator<IBond> bonds = acetone.bonds().iterator();
         while (bonds.hasNext()) Assert.assertNotNull(bonds.next());
 
         Assert.assertEquals(c1, acetone.getBond(0).getAtom(0));
@@ -1675,7 +1696,7 @@ public abstract class AbstractAtomContainerTest extends AbstractChemObjectTest {
         acetone.addBond(1, 2, IBond.Order.SINGLE, IBond.Stereo.NONE);
         
         Assert.assertEquals(3, acetone.getBondCount());
-        Iterator bonds = acetone.bonds().iterator();
+        Iterator<IBond> bonds = acetone.bonds().iterator();
         while (bonds.hasNext()) Assert.assertNotNull(bonds.next());
 
         Assert.assertEquals(c1, acetone.getBond(0).getAtom(0));
@@ -2250,7 +2271,7 @@ public abstract class AbstractAtomContainerTest extends AbstractChemObjectTest {
         mol.addAtom(c1);
         mol.addSingleElectron(1);
         mol.addSingleElectron(1);
-        List list = mol.getConnectedSingleElectronsList(c1);
+        List<ISingleElectron> list = mol.getConnectedSingleElectronsList(c1);
         Assert.assertEquals(2, list.size());
     }
     

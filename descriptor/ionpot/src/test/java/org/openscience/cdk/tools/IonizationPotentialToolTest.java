@@ -1,6 +1,4 @@
-/* $Revision: 11005 $ $Author: miguelrojasch $ $Date: 2008-05-15 16:24:13 +0200 (Thu, 15 May 2008) $
- *
- * Copyright (C) 2004-2007  Miguel Rojas <miguel.rojas@uni-koeln.de>
+/* Copyright (C) 2004-2007  Miguel Rojas <miguel.rojas@uni-koeln.de>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -28,7 +26,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.DefaultChemObjectBuilder;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smiles.SmilesParser;
@@ -68,7 +66,7 @@ public class IonizationPotentialToolTest extends CDKTestCase {
         IAtomContainer molecule = sp.parseSmiles(smiles);
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule);
         addExplicitHydrogens(molecule);
-        CDKHueckelAromaticityDetector.detectAromaticity(molecule);
+        Aromaticity.cdkLegacy().apply(molecule);
         lpcheck.saturate(molecule);
         
 

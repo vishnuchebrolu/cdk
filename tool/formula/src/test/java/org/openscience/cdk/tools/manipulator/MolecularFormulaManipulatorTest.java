@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- *  Copyright (C) 2007  Miguel Rojasch <miguelrojasch@users.sf.net>
+/* Copyright (C) 2007  Miguel Rojasch <miguelrojasch@users.sf.net>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -536,6 +534,16 @@ public class MolecularFormulaManipulatorTest extends CDKTestCase {
     	
         Assert.assertEquals("C<sub>8</sub>H<sub>10</sub>Cl<sub>2</sub>O<sub>2</sub>", MolecularFormulaManipulator.getHTML(formula));
     }
+
+
+    @Test public void htmlFormulaDoesNotAddSubscriptForSingleElements() {
+        MolecularFormula formula = new MolecularFormula();
+        formula.addIsotope(builder.newInstance(IIsotope.class,"C"),1);
+        formula.addIsotope(builder.newInstance(IIsotope.class,"H"),4);
+        
+        Assert.assertEquals("CH<sub>4</sub>", MolecularFormulaManipulator.getHTML(formula));
+    }
+    
     @Test 
     public void testGetHTML_IMolecularFormula_boolean_boolean() {
     	MolecularFormula formula = new MolecularFormula();
@@ -1059,11 +1067,12 @@ public class MolecularFormulaManipulatorTest extends CDKTestCase {
      * @cdk.bug 3071473
      */
     @Test
-    public void testFromMol() throws CDKException {
+    public void testFromMol() throws Exception {
         String filename = "data/mdl/formulatest.mol";
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         MDLV2000Reader reader = new MDLV2000Reader(ins);
         ChemFile chemFile = reader.read(new ChemFile());
+        reader.close();
         Assert.assertNotNull(chemFile);
         List<IAtomContainer> mols = ChemFileManipulator.getAllAtomContainers(chemFile);
         IAtomContainer mol = mols.get(0);

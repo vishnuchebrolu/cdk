@@ -30,7 +30,7 @@ import org.junit.Test;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.DefaultChemObjectBuilder;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -38,7 +38,6 @@ import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.io.IChemObjectReader.Mode;
 import org.openscience.cdk.io.MDLV2000Reader;
-import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.FixBondOrdersTool;
 import org.openscience.cdk.tools.CDKHydrogenAdder;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
@@ -99,8 +98,8 @@ public abstract class AbstractFixedLengthFingerprinterTest extends AbstractFinge
         // one should not expected all implementations to do so.
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(superstructure);
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(substructure);
-        CDKHueckelAromaticityDetector.detectAromaticity(superstructure);
-        CDKHueckelAromaticityDetector.detectAromaticity(substructure);        
+        Aromaticity.cdkLegacy().apply(superstructure);
+        Aromaticity.cdkLegacy().apply(substructure);        
 
         IFingerprinter fingerprinter = getBitFingerprinter();
         BitSet superBS = fingerprinter.getBitFingerprint(superstructure).asBitSet();
@@ -154,8 +153,8 @@ public abstract class AbstractFixedLengthFingerprinterTest extends AbstractFinge
         // one should not expected all implementations to do so.
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(structure1);
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(structure2);
-        CDKHueckelAromaticityDetector.detectAromaticity(structure1);
-        CDKHueckelAromaticityDetector.detectAromaticity(structure2);
+        Aromaticity.cdkLegacy().apply(structure1);
+        Aromaticity.cdkLegacy().apply(structure2);
         addImplicitHydrogens(structure1);
         addImplicitHydrogens(structure2);
 
@@ -193,6 +192,9 @@ public abstract class AbstractFixedLengthFingerprinterTest extends AbstractFinge
         ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         reader = new MDLV2000Reader(ins, Mode.STRICT);
         IAtomContainer structure2 = (IAtomContainer)reader.read(new AtomContainer());
+
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(structure1);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(structure2);
 
         IFingerprinter fingerprinter = getBitFingerprinter();
         BitSet bs1 = fingerprinter.getBitFingerprint(structure1).asBitSet();

@@ -1,9 +1,4 @@
-/*
- *  $RCSfile$
- *  $Author$
- *  $Date$
- *   *
- *  Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
  *
  *  Contact: cdk-devel@list.sourceforge.net
  *
@@ -29,7 +24,7 @@ import org.junit.Test;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.ChemFile;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.io.ISimpleChemObjectReader;
 import org.openscience.cdk.io.MDLV2000Reader;
@@ -38,7 +33,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
-import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.tools.LonePairElectronChecker;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
@@ -232,12 +226,14 @@ public class GasteigerMarsiliPartialChargesTest extends CDKTestCase {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         ISimpleChemObjectReader reader = new MDLV2000Reader(ins);
         ChemFile content = reader.read(new ChemFile());
-        List cList = ChemFileManipulator.getAllAtomContainers(content);
-        IAtomContainer ac = (IAtomContainer) cList.get(0);
+        reader.close();
+        List<IAtomContainer> cList = ChemFileManipulator.getAllAtomContainers(content);
+        IAtomContainer ac = cList.get(0);
 
         Assert.assertNotNull(ac);
         addExplicitHydrogens(ac);
-        CDKHueckelAromaticityDetector.detectAromaticity(ac);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(ac);
+        Aromaticity.cdkLegacy().apply(ac);
 
         addExplicitHydrogens(ac);
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(ac);

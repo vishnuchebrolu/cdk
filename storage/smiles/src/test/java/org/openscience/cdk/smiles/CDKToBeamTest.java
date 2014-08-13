@@ -26,13 +26,12 @@ package org.openscience.cdk.smiles;
 
 import org.junit.Test;
 import org.openscience.cdk.CDKConstants;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IStereoElement;
-import org.openscience.cdk.interfaces.ITetrahedralChirality;
 import org.openscience.cdk.silent.Atom;
 import org.openscience.cdk.silent.AtomContainer;
 import org.openscience.cdk.silent.Bond;
@@ -44,10 +43,8 @@ import org.openscience.cdk.stereo.TetrahedralChirality;
 import org.openscience.cdk.templates.TestMoleculeFactory;
 import org.openscience.cdk.tools.CDKHydrogenAdder;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
-import uk.ac.ebi.beam.Configuration;
 import uk.ac.ebi.beam.Graph;
 import uk.ac.ebi.beam.Element;
-import uk.ac.ebi.beam.Functions;
 
 import java.util.Collections;
 import java.util.Map;
@@ -185,7 +182,7 @@ public class CDKToBeamTest {
         IAtom u = mock(IAtom.class);
         IAtom v = mock(IAtom.class);
         IBond b = new Bond(u, v, IBond.Order.UNSET);
-        Map mock = mock(Map.class);
+        Map<IAtom,Integer> mock = mock(Map.class);
         when(mock.get(u)).thenReturn(0);
         when(mock.get(v)).thenReturn(1);
         new CDKToBeam().toBeamEdge(b, mock);
@@ -197,7 +194,7 @@ public class CDKToBeamTest {
         IAtom u = mock(IAtom.class);
         IAtom v = mock(IAtom.class);
         IBond b = new Bond(u, v, null);
-        Map mock = mock(Map.class);
+        Map<IAtom,Integer> mock = mock(Map.class);
         when(mock.get(u)).thenReturn(0);
         when(mock.get(v)).thenReturn(1);
         new CDKToBeam().toBeamEdge(b, mock);
@@ -224,7 +221,7 @@ public class CDKToBeamTest {
         IAtom u = mock(IAtom.class);
         IAtom v = mock(IAtom.class);
         IBond b = new Bond(u, v);
-        Map mock = mock(Map.class);
+        Map<IAtom,Integer> mock = mock(Map.class);
         when(mock.get(u)).thenReturn(0);
         when(mock.get(v)).thenReturn(1);
         CDKToBeam c2g = new CDKToBeam();
@@ -238,7 +235,7 @@ public class CDKToBeamTest {
         IAtom v = mock(IAtom.class);
         IBond b = new Bond(u, v);
         b.setFlag(CDKConstants.ISAROMATIC, true);
-        Map mock = mock(Map.class);
+        Map<IAtom,Integer> mock = mock(Map.class);
         when(mock.get(u)).thenReturn(0);
         when(mock.get(v)).thenReturn(1);
         CDKToBeam c2g = new CDKToBeam();
@@ -251,7 +248,7 @@ public class CDKToBeamTest {
         IAtom u = mock(IAtom.class);
         IAtom v = mock(IAtom.class);
         IBond b = new Bond(u, v, IBond.Order.DOUBLE);
-        Map mock = mock(Map.class);
+        Map<IAtom,Integer> mock = mock(Map.class);
         when(mock.get(u)).thenReturn(0);
         when(mock.get(v)).thenReturn(1);
         CDKToBeam c2g = new CDKToBeam();
@@ -264,7 +261,7 @@ public class CDKToBeamTest {
         IAtom u = mock(IAtom.class);
         IAtom v = mock(IAtom.class);
         IBond b = new Bond(u, v, IBond.Order.TRIPLE);
-        Map mock = mock(Map.class);
+        Map<IAtom,Integer> mock = mock(Map.class);
         when(mock.get(u)).thenReturn(0);
         when(mock.get(v)).thenReturn(1);
         CDKToBeam c2g = new CDKToBeam();
@@ -277,7 +274,7 @@ public class CDKToBeamTest {
         IAtom u = mock(IAtom.class);
         IAtom v = mock(IAtom.class);
         IBond b = new Bond(u, v, IBond.Order.QUADRUPLE);
-        Map mock = mock(Map.class);
+        Map<IAtom,Integer> mock = mock(Map.class);
         when(mock.get(u)).thenReturn(0);
         when(mock.get(v)).thenReturn(1);
         CDKToBeam c2g = new CDKToBeam();
@@ -714,7 +711,7 @@ public class CDKToBeamTest {
         CDKHydrogenAdder.getInstance(SilentChemObjectBuilder.getInstance())
                         .addImplicitHydrogens(ac);
         if (perceiveAromaticity)
-            CDKHueckelAromaticityDetector.detectAromaticity(ac);
+            Aromaticity.cdkLegacy().apply(ac);
         return new CDKToBeam(isomeric, aromatic, atomClasses).toBeamGraph(ac);
     }
 }

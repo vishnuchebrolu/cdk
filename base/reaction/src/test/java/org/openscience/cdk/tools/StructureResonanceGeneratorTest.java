@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2004-2007  Miguel Rojas <miguel.rojas@uni-koeln.de>
+/* Copyright (C) 2004-2007  Miguel Rojas <miguel.rojas@uni-koeln.de>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -27,13 +25,12 @@ import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.LonePair;
 import org.openscience.cdk.SingleElectron;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
-import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.isomorphism.UniversalIsomorphismTester;
 import org.openscience.cdk.isomorphism.matchers.QueryAtomContainer;
 import org.openscience.cdk.isomorphism.matchers.QueryAtomContainerCreator;
@@ -1040,7 +1037,7 @@ public class StructureResonanceGeneratorTest  extends CDKTestCase{
 		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule);
         lpcheck.saturate(molecule);
 		
-        boolean isAromatic = CDKHueckelAromaticityDetector.detectAromaticity(molecule);
+        boolean isAromatic = Aromaticity.cdkLegacy().apply(molecule);
         Assert.assertTrue("Molecule is expected to be marked aromatic!", isAromatic);
         
         Assert.assertTrue("Bond is expected to be marked aromatic!", molecule.getBond(1).getFlag(CDKConstants.ISAROMATIC));
@@ -1612,7 +1609,7 @@ public class StructureResonanceGeneratorTest  extends CDKTestCase{
 		 AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule);
          lpcheck.saturate(molecule);
 
-         Assert.assertTrue(CDKHueckelAromaticityDetector.detectAromaticity(molecule));
+         Assert.assertTrue(Aromaticity.cdkLegacy().apply(molecule));
 
 		StructureResonanceGenerator gRI = new StructureResonanceGenerator();
 		IAtomContainerSet setOfContainers = gRI.getContainers(molecule);
@@ -1653,7 +1650,7 @@ public class StructureResonanceGeneratorTest  extends CDKTestCase{
 		 AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule);
          lpcheck.saturate(molecule);
 
-         Assert.assertTrue(CDKHueckelAromaticityDetector.detectAromaticity(molecule));
+         Assert.assertTrue(Aromaticity.cdkLegacy().apply(molecule));
 
 		StructureResonanceGenerator gRI = new StructureResonanceGenerator(true);
 		IAtomContainerSet setOfContainers = gRI.getContainers(molecule);

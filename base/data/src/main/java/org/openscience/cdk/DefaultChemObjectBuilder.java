@@ -60,6 +60,7 @@ import org.openscience.cdk.interfaces.IRing;
 import org.openscience.cdk.interfaces.IRingSet;
 import org.openscience.cdk.interfaces.ISingleElectron;
 import org.openscience.cdk.interfaces.IStrand;
+import org.openscience.cdk.interfaces.ISubstance;
 import org.openscience.cdk.interfaces.ITetrahedralChirality;
 import org.openscience.cdk.protein.data.PDBAtom;
 import org.openscience.cdk.protein.data.PDBMonomer;
@@ -88,7 +89,8 @@ import org.openscience.cdk.stereo.TetrahedralChirality;
  */
 public class DefaultChemObjectBuilder implements IChemObjectBuilder {
 
-	private static IChemObjectBuilder instance = null;
+	private static volatile IChemObjectBuilder instance = null;
+    private static final Object lock = new Object();
     private final DynamicFactory factory = new DynamicFactory(200);
 
 	private DefaultChemObjectBuilder() {
@@ -140,6 +142,7 @@ public class DefaultChemObjectBuilder implements IChemObjectBuilder {
         factory.register(IChemModel.class,           ChemModel.class);
         factory.register(IChemFile.class,            ChemFile.class);
         factory.register(IChemSequence.class,        ChemSequence.class);
+        factory.register(ISubstance.class,           Substance.class);
 
         // stereo components (requires some modification after instantiation)
         factory.register(ITetrahedralChirality.class,
@@ -183,10 +186,16 @@ public class DefaultChemObjectBuilder implements IChemObjectBuilder {
      * @return a DefaultChemObjectBuilder instance
      */
 	public static IChemObjectBuilder getInstance() {
-		if (instance == null) {
-			instance = new DefaultChemObjectBuilder();
-		}
-		return instance;
+        IChemObjectBuilder result = instance;
+        if (result == null) {
+            result = instance;
+            synchronized (lock) {
+                if (result == null) {
+                    instance = result = new DefaultChemObjectBuilder();
+                }
+            }
+        }
+        return result;
 	}
 
 

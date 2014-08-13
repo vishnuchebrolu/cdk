@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2005-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2005-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -109,7 +107,7 @@ public class DebugSingleElectron extends SingleElectron
 	}
 
     /** {@inheritDoc} */ @Override
-    public Object getProperty(Object description) {
+    public <T> T getProperty(Object description) {
 		logger.debug("Getting property: ", description + "=" + super.getProperty(description));
 		return super.getProperty(description);
 	}

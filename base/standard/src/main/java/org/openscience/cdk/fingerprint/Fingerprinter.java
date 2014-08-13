@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2002-2007  Christoph Steinbeck <steinbeck@users.sf.net>
+/* Copyright (C) 2002-2007  Christoph Steinbeck <steinbeck@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -27,7 +25,7 @@ package org.openscience.cdk.fingerprint;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.graph.PathTools;
 import org.openscience.cdk.interfaces.IAtom;
@@ -173,7 +171,7 @@ public class Fingerprinter implements IFingerprinter {
 		logger.debug("Starting Aromaticity Detection");
 		long before = System.currentTimeMillis();
 		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(container);
-		CDKHueckelAromaticityDetector.detectAromaticity(container);
+        Aromaticity.cdkLegacy().apply(container);
 		long after = System.currentTimeMillis();
 		logger.debug("time for aromaticity calculation: " 
 		             + (after - before) + " milliseconds");
@@ -209,7 +207,7 @@ public class Fingerprinter implements IFingerprinter {
     /**
      * Get all paths of lengths 0 to the specified length.
      *
-     * This method will find all paths upto length N starting from each
+     * This method will find all paths up to length N starting from each
      * atom in the molecule and return the unique set of such paths.
      *
      * @param container The molecule to search

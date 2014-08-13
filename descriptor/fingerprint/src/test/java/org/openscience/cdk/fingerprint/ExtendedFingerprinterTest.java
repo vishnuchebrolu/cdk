@@ -35,13 +35,13 @@ import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.Bond;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IRingSet;
 import org.openscience.cdk.io.MDLV2000Reader;
 import org.openscience.cdk.ringsearch.RingPartitioner;
-import org.openscience.cdk.ringsearch.SSSRFinder;
 import org.openscience.cdk.templates.MoleculeFactory;
 import org.openscience.cdk.tools.diff.AtomContainerDiff;
 
@@ -77,8 +77,8 @@ public class ExtendedFingerprinterTest extends AbstractFixedLengthFingerprinterT
 		Assert.assertNotNull(fingerprinter);
 		
 		IAtomContainer mol = MoleculeFactory.makeIndole();
-		IRingSet rs=new SSSRFinder(mol).findSSSR();
-		List rslist=RingPartitioner.partitionRings(rs);
+		IRingSet rs= Cycles.sssr(mol).toRingSet();
+		List<IRingSet> rslist=RingPartitioner.partitionRings(rs);
 		BitSet bs = fingerprinter.getBitFingerprint(mol,rs, rslist).asBitSet();
 		IAtomContainer frag1 = MoleculeFactory.makePyrrole();
 		BitSet bs1 = fingerprinter.getBitFingerprint(frag1).asBitSet();
@@ -341,7 +341,7 @@ public class ExtendedFingerprinterTest extends AbstractFixedLengthFingerprinterT
 	/*
 	 * The power of the extended fingerprinter could not distinguish these before the change in r11932
 	 */
-	@Test public void testChebi() throws java.lang.Exception
+	@Test public void testChebi() throws Exception
 	{
 		IAtomContainer searchmol = null;
 		IAtomContainer findmol = null;
@@ -349,10 +349,12 @@ public class ExtendedFingerprinterTest extends AbstractFixedLengthFingerprinterT
 		InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
 		MDLV2000Reader reader = new MDLV2000Reader(ins);
 		searchmol = reader.read(new AtomContainer());
+        reader.close();
 		filename = "data/mdl/chebifind.mol";
 		ins = this.getClass().getClassLoader().getResourceAsStream(filename);
 		reader = new MDLV2000Reader(ins);
 		findmol = reader.read(new AtomContainer());
+        reader.close();
 		IFingerprinter fingerprinter = new ExtendedFingerprinter();
 		BitSet superBS = fingerprinter.getBitFingerprint(findmol).asBitSet();
 		BitSet subBS = fingerprinter.getBitFingerprint(searchmol).asBitSet();

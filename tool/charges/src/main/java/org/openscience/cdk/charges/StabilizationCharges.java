@@ -1,6 +1,4 @@
-/*  $Revision: 10199 $ $Author: rajarshi $ $Date: 2008-02-21 19:19:31 +0100 (Thu, 21 Feb 2008) $
- *
- *  Copyright (C) 2008  Miguel Rojas <miguelrojasch@yahoo.es>
+/*  Copyright (C) 2008  Miguel Rojas <miguelrojasch@yahoo.es>
  *
  *  Contact: cdk-devel@list.sourceforge.net
  *
@@ -24,12 +22,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org._3pq.jgrapht.Edge;
-import org._3pq.jgrapht.graph.SimpleGraph;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.graph.BFSShortestPath;
-import org.openscience.cdk.graph.MoleculeGraphs;
+import org.openscience.cdk.graph.ShortestPaths;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
@@ -83,17 +78,19 @@ public class StabilizationCharges {
     	if(resonanceS.getAtomContainerCount() < 2)// meaning it was not find any resonance structure
 			return 0.0;
 		
-		int positionStart = atomContainer.getAtomNumber(atom);
+		final int positionStart = atomContainer.getAtomNumber(atom);
 		
 		List<Double> result1 = new ArrayList<Double>();
     	List<Integer> distance1 = new ArrayList<Integer>();
     	
     	resonanceS.removeAtomContainer(0);// the first is the initial structure
     	for(Iterator<IAtomContainer> itA = resonanceS.atomContainers().iterator(); itA.hasNext();){
-			IAtomContainer resonance = itA.next();
-
+			final IAtomContainer resonance = itA.next();
+            
 			if(resonance.getAtomCount() < 2) // resonance with only one atom donnot have resonance
 				continue;
+            
+            final ShortestPaths shortestPaths = new ShortestPaths(resonance, resonance.getAtom(positionStart));
 			
 		    /*search positive charge*/
 			
@@ -108,7 +105,7 @@ public class StabilizationCharges {
 						 double result = electronegativity.calculatePiElectronegativity(resonance, atomP);
 					     result1.add(result);
 					        
-						 int dis = calculateBondsToAtom(resonance.getAtom(positionStart),atomP, resonance);
+						 int dis = shortestPaths.distanceTo(atomP);
 						 distance1.add(dis);
 					}
 				 
@@ -128,21 +125,5 @@ public class StabilizationCharges {
 	    	
     	return value;
     }
-	 /**
-     * Calculate the distance in bonds far from a atom.
-     * 
-     * @param startAtom       The atom as reference
-     * @param focusAtom       The atom as focus
-     * @param container       The IAtomContainer to study
-     * @return                The distance
-     */
-	 private int calculateBondsToAtom(IAtom startAtom, IAtom focusAtom, IAtomContainer container) {
-		 SimpleGraph mygraph = MoleculeGraphs.getMoleculeGraph(container);
-	        
-		 List<Edge> mylist = BFSShortestPath.findPathBetween(mygraph,startAtom,focusAtom);
-	    
-		 return mylist.size();
-	}
-
 }
 

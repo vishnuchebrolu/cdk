@@ -1,10 +1,4 @@
-/*
- *  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -24,9 +18,12 @@
  */
 package org.openscience.cdk.qsar.descriptors.atomic;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.graph.invariant.ConjugatedPiSystemsDetector;
 import org.openscience.cdk.interfaces.IAtom;
@@ -156,7 +153,7 @@ public class IsProtonInConjugatedPiSystemDescriptor extends AbstractAtomicDescri
         if (checkAromaticity) {
             try {
                 AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
-                CDKHueckelAromaticityDetector.detectAromaticity(mol);
+                Aromaticity.cdkLegacy().apply(mol);
             } catch (CDKException e) {
                 return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
                         new BooleanResult(false),
@@ -168,12 +165,12 @@ public class IsProtonInConjugatedPiSystemDescriptor extends AbstractAtomicDescri
                 acold=clonedAtomContainer;
                 acSet = ConjugatedPiSystemsDetector.detect(mol);
             }
-            java.util.Iterator<IAtomContainer> detected = acSet.atomContainers().iterator();
-            java.util.List neighboors = mol.getConnectedAtomsList(clonedAtom);
-            for (Object neighboor : neighboors) {
+            Iterator<IAtomContainer> detected = acSet.atomContainers().iterator();
+            List<IAtom> neighboors = mol.getConnectedAtomsList(clonedAtom);
+            for (IAtom neighboor : neighboors) {
                 while (detected.hasNext()) {
-                    IAtomContainer detectedAC = (IAtomContainer) detected.next();
-                    if ((detectedAC != null) && (detectedAC.contains((IAtom) neighboor))) {
+                    IAtomContainer detectedAC = detected.next();
+                    if ((detectedAC != null) && (detectedAC.contains(neighboor))) {
                         isProtonInPiSystem = true;
                         break;
                     }

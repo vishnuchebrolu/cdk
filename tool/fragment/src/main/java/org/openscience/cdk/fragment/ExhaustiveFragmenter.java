@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2010  Rajarshi Guha <rajarshi.guha@gmail.com>
+/* Copyright (C) 2010  Rajarshi Guha <rajarshi.guha@gmail.com>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -26,7 +24,7 @@ package org.openscience.cdk.fragment;
 
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.aromaticity.DoubleBondAcceptingAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.graph.SpanningTree;
 import org.openscience.cdk.interfaces.IAtom;
@@ -122,9 +120,12 @@ public class ExhaustiveFragmenter implements IFragmenter {
             List<IAtomContainer> parts = FragmentUtils.splitMolecule(atomContainer, bond);
             // make sure we don't add the same fragment twice
             for (IAtomContainer partContainer : parts) {
+                AtomContainerManipulator.clearAtomConfigurations(partContainer);
+                for (IAtom atom : partContainer.atoms())
+                    atom.setImplicitHydrogenCount(null);
                 AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(partContainer);
                 CDKHydrogenAdder.getInstance(partContainer.getBuilder()).addImplicitHydrogens(partContainer);
-                DoubleBondAcceptingAromaticityDetector.detectAromaticity(partContainer);
+                Aromaticity.cdkLegacy().apply(partContainer);
                 tmpSmiles = smilesGenerator.create(partContainer);
                 if (partContainer.getAtomCount() >= minFragSize &&
                         !fragMap.containsKey(tmpSmiles)) {
@@ -145,9 +146,12 @@ public class ExhaustiveFragmenter implements IFragmenter {
 
             for (IAtomContainer frag : frags) {
                 if (frag.getBondCount() < 3) continue;
+                AtomContainerManipulator.clearAtomConfigurations(frag);
+                for (IAtom atom : frag.atoms())
+                    atom.setImplicitHydrogenCount(null);
                 AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(frag);
                 CDKHydrogenAdder.getInstance(frag.getBuilder()).addImplicitHydrogens(frag);
-                DoubleBondAcceptingAromaticityDetector.detectAromaticity(frag);
+                Aromaticity.cdkLegacy().apply(frag);
                 tmpSmiles = smilesGenerator.create(frag);
                 if (frag.getAtomCount() >= minFragSize && !fragMap.containsKey(tmpSmiles)) {
                     tmp.add(frag);

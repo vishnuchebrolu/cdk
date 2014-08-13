@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$    
- * $Date$    
- * $Revision$
- * 
- * Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -1312,7 +1307,7 @@ public class MoleculeFactory {
 			FileInputStream fis = new FileInputStream(inFile);
 			mr = new MDLReader(fis);
 			chemFile = (ChemFile)mr.read((ChemObject)new ChemFile());
-			fis.close();
+	        mr.close();
 			chemSequence = chemFile.getChemSequence(0);
 			chemModel = chemSequence.getChemModel(0);
 			setOfMolecules = chemModel.getMoleculeSet();

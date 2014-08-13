@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$ 
- *
- * Copyright (C) 2007  Egon Willighagen <egonw@sci.kun.nl>
+/* Copyright (C) 2007  Egon Willighagen <egonw@sci.kun.nl>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -41,6 +39,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomType;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IChemFile;
+import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.interfaces.IElement;
 import org.openscience.cdk.interfaces.IMolecularFormula;
 import org.openscience.cdk.io.MDLV2000Reader;
@@ -50,6 +49,9 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import org.openscience.cdk.tools.manipulator.AtomTypeManipulator;
 import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Tests CDK's hydrogen adding capabilities in terms of
@@ -780,6 +782,30 @@ public class CDKHydrogenAdderTest extends CDKTestCase {
         	if (neighbors.next().getSymbol().equals("H")) hCount++;
         }
         Assert.assertEquals(1, hCount);
+    }
+    
+    @Test public void unknownAtomTypeLeavesHydrogenCountAlone() throws Exception {
+        IChemObjectBuilder bldr = SilentChemObjectBuilder.getInstance();
+        CDKHydrogenAdder   hydrogenAdder = CDKHydrogenAdder.getInstance(bldr);
+        IAtomContainer container = bldr.newInstance(IAtomContainer.class);
+        IAtom atom = bldr.newInstance(IAtom.class, "C");
+        atom.setImplicitHydrogenCount(3);
+        atom.setAtomTypeName("X");
+        container.addAtom(atom);
+        hydrogenAdder.addImplicitHydrogens(container);
+        assertThat(atom.getImplicitHydrogenCount(), is(3));
+    }
+
+    @Test public void unknownAtomTypeLeavesHydrogenCountAloneUnlessNull() throws Exception {
+        IChemObjectBuilder bldr = SilentChemObjectBuilder.getInstance();
+        CDKHydrogenAdder   hydrogenAdder = CDKHydrogenAdder.getInstance(bldr);
+        IAtomContainer container = bldr.newInstance(IAtomContainer.class);
+        IAtom atom = bldr.newInstance(IAtom.class, "C");
+        atom.setImplicitHydrogenCount(null);
+        atom.setAtomTypeName("X");
+        container.addAtom(atom);
+        hydrogenAdder.addImplicitHydrogens(container);
+        assertThat(atom.getImplicitHydrogenCount(), is(0));
     }
 
     private void findAndConfigureAtomTypesForAllAtoms(IAtomContainer container) throws Exception {

@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2004-2007  Rajarshi Guha <rajarshi.guha@gmail.com>
+/* Copyright (C) 2004-2007  Rajarshi Guha <rajarshi.guha@gmail.com>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -105,10 +103,10 @@ public class HINReader extends DefaultChemObjectReader {
     }
 
 	@TestMethod("testAccepts")
-    public boolean accepts(Class classObject) {
+    public boolean accepts(Class<? extends IChemObject> classObject) {
         if (IChemFile.class.equals(classObject)) return true;
-		Class[] interfaces = classObject.getInterfaces();
-        for (Class anInterface : interfaces) {
+		Class<?>[] interfaces = classObject.getInterfaces();
+        for (Class<?> anInterface : interfaces) {
             if (IChemFile.class.equals(anInterface)) return true;
         }
         Class superClass = classObject.getSuperclass();

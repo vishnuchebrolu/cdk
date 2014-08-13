@@ -1,10 +1,4 @@
-/*
- *  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -61,6 +55,10 @@ public class AtomTypeManipulator {
         if (atomType == null) {
             throw new IllegalArgumentException("The IAtomType was null.");
         }
+        if ("X".equals(atomType.getAtomTypeName())) {
+            atom.setAtomTypeName("X");
+            return;
+        }
 
         // we set the atom type name, but nothing else
         atom.setAtomTypeName(atomType.getAtomTypeName());
@@ -112,6 +110,10 @@ public class AtomTypeManipulator {
     public static void configureUnsetProperties(IAtom atom, IAtomType atomType) {
         if (atomType == null) {
             throw new IllegalArgumentException("The IAtomType was null.");
+        }
+        if ("X".equals(atomType.getAtomTypeName())) {
+            if (atom.getAtomTypeName() == null) atom.setAtomTypeName("X");
+            return;
         }
 
         if (atom.getSymbol() == CDKConstants.UNSET && atomType.getSymbol() != CDKConstants.UNSET) atom.setSymbol(atomType.getSymbol());

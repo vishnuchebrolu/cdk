@@ -1,6 +1,4 @@
-/*  $Revision$ $Author$ $Date$
- *
- *  Copyright (C) 2004-2007  Christian Hoppe <chhoppe@users.sf.net>
+/* Copyright (C) 2004-2007  Christian Hoppe <chhoppe@users.sf.net>
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -34,9 +32,10 @@ import java.util.regex.Pattern;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.NoSuchAtomTypeException;
+import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomType;
@@ -45,7 +44,6 @@ import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.interfaces.IPseudoAtom;
 import org.openscience.cdk.interfaces.IRing;
 import org.openscience.cdk.interfaces.IRingSet;
-import org.openscience.cdk.ringsearch.SSSRFinder;
 import org.openscience.cdk.tools.HOSECodeGenerator;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import org.openscience.cdk.tools.manipulator.RingSetManipulator;
@@ -261,11 +259,11 @@ public class ForceFieldConfigurator {
 		HOSECodeGenerator hcg = new HOSECodeGenerator();
 		int NumberOfRingAtoms = 0;
 		IRingSet ringSetA = null;
-		IRingSet ringSetMolecule = new SSSRFinder(molecule).findSSSR();
+		IRingSet ringSetMolecule = Cycles.sssr(molecule).toRingSet();
 		boolean isInHeteroRing = false;
 		try {
 			AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule);
-			CDKHueckelAromaticityDetector.detectAromaticity(molecule);
+            Aromaticity.cdkLegacy().apply(molecule);
 		} catch (Exception cdk1) {
 			throw new CDKException(
                 "AROMATICITYError: Cannot determine aromaticity due to: " +

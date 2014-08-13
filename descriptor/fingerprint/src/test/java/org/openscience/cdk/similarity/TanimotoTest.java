@@ -1,10 +1,4 @@
-/*
- * $RCSfile$    
- * $Author$    
- * $Date$    
- * $Revision$
- * 
- * Copyright (C) 1997-2007  The Chemistry Development Kit (CKD) project
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CKD) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -44,6 +38,7 @@ import org.openscience.cdk.fingerprint.LingoFingerprinter;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.templates.MoleculeFactory;
+import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 import java.util.BitSet;
 import java.util.HashMap;
@@ -102,6 +97,8 @@ public class TanimotoTest extends CDKTestCase
         addImplicitHydrogens(mol1);
         addImplicitHydrogens(mol2);
         LingoFingerprinter fingerprinter = new LingoFingerprinter();
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol1);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol2);
         Map<String, Integer> feat1 = fingerprinter.getRawFingerprint(mol1);
         Map<String, Integer> feat2 = fingerprinter.getRawFingerprint(mol2);
         float tanimoto = Tanimoto.calculate(feat1, feat2);

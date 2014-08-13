@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -21,7 +19,6 @@
 package org.openscience.cdk.ringsearch;
 
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Iterator;
 
 import org.junit.Assert;
@@ -32,7 +29,6 @@ import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.Ring;
-import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
@@ -43,7 +39,6 @@ import org.openscience.cdk.interfaces.IRingSet;
 import org.openscience.cdk.io.CMLReader;
 import org.openscience.cdk.io.MDLV2000Reader;
 import org.openscience.cdk.silent.ChemFile;
-import org.openscience.cdk.smiles.SmilesGenerator;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.templates.MoleculeFactory;
 
@@ -277,9 +272,9 @@ public class AllRingsFinderTest extends CDKTestCase
         arf.findAllRings(molecule);
 
         int count = 0;
-        Iterator atoms = molecule.atoms().iterator();
+        Iterator<IAtom> atoms = molecule.atoms().iterator();
         while (atoms.hasNext()) {
-            IAtom atom = (IAtom) atoms.next();
+            IAtom atom = atoms.next();
             if (atom.getFlag(CDKConstants.ISINRING)) count++;
         }
         Assert.assertEquals("All atoms in benzene were not marked as being in a ring", 6, count);
@@ -296,9 +291,9 @@ public class AllRingsFinderTest extends CDKTestCase
 
 
         int count = 0;
-        Iterator atoms = molecule.atoms().iterator();
+        Iterator<IAtom> atoms = molecule.atoms().iterator();
         while (atoms.hasNext()) {
-            IAtom atom = (IAtom) atoms.next();
+            IAtom atom = atoms.next();
             if (atom.getFlag(CDKConstants.ISINRING)) count++;
         }
         Assert.assertEquals("All atoms in 1-ethyl-cyclopentane were not marked as being in a ring", 5, count);

@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -23,12 +21,11 @@ package org.openscience.cdk.qsar.descriptors.molecular;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openscience.cdk.BioPolymer;
 import org.openscience.cdk.interfaces.IBioPolymer;
-import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.qsar.IMolecularDescriptor;
 import org.openscience.cdk.qsar.result.IDescriptorResult;
 import org.openscience.cdk.qsar.result.IntegerArrayResult;
+import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.tools.ProteinBuilderTool;
 
 /**
@@ -47,7 +44,7 @@ public class AminoAcidCountDescriptorTest extends MolecularDescriptorTest {
     }
 
 	@Test public void testAACount() throws Exception {
-        IBioPolymer protein = ProteinBuilderTool.createProtein("ARNDCFQEGHIPLKMSTYVW");
+        IBioPolymer protein = ProteinBuilderTool.createProtein("ARNDCFQEGHIPLKMSTYVW", SilentChemObjectBuilder.getInstance());
         IDescriptorResult result = descriptor.calculate(protein).getValue();
         Assert.assertTrue(result instanceof IntegerArrayResult);
         IntegerArrayResult iaResult = (IntegerArrayResult)result;
@@ -59,7 +56,7 @@ public class AminoAcidCountDescriptorTest extends MolecularDescriptorTest {
 
 	@Test
     public void testFCount() throws Exception {
-        IBioPolymer protein = ProteinBuilderTool.createProtein("FF");
+        IBioPolymer protein = ProteinBuilderTool.createProtein("FF", SilentChemObjectBuilder.getInstance());
         IDescriptorResult result = descriptor.calculate(protein).getValue();
         Assert.assertTrue(result instanceof IntegerArrayResult);
         IntegerArrayResult iaResult = (IntegerArrayResult)result;
@@ -68,7 +65,7 @@ public class AminoAcidCountDescriptorTest extends MolecularDescriptorTest {
 	}
 
 	@Test public void testTCount() throws Exception {
-        IBioPolymer protein = ProteinBuilderTool.createProtein("TT");
+        IBioPolymer protein = ProteinBuilderTool.createProtein("TT", SilentChemObjectBuilder.getInstance());
         IDescriptorResult result = descriptor.calculate(protein).getValue();
         Assert.assertTrue(result instanceof IntegerArrayResult);
         IntegerArrayResult iaResult = (IntegerArrayResult)result;

@@ -1,6 +1,4 @@
-/* $Revision: 10838 $ $Author: egonw $ $Date: 2008-05-05 23:03:59 +0200 (Mon, 05 May 2008) $
- *
- * Copyright (C) 2006-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2006-2007  Egon Willighagen <egonw@users.sf.net>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -60,6 +58,7 @@ public class PCCompoundXMLReaderTest extends SimpleChemObjectReaderTest {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         PCCompoundXMLReader reader = new PCCompoundXMLReader(ins);
         IAtomContainer molecule = (IAtomContainer)reader.read(new AtomContainer());
+        reader.close();
         Assert.assertNotNull(molecule);
 
         // check atom stuff
@@ -87,6 +86,7 @@ public class PCCompoundXMLReaderTest extends SimpleChemObjectReaderTest {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         PCCompoundXMLReader reader = new PCCompoundXMLReader(ins);
         IAtomContainer molecule = (IAtomContainer)reader.read(new AtomContainer());
+        reader.close();
         Assert.assertNotNull(molecule);
 
         // check atom stuff

@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2004-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2004-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -26,23 +24,19 @@ import java.io.InputStreamReader;
 import com.google.common.io.CharStreams;
 import org.junit.Assert;
 import org.junit.Test;
-import org.openscience.cdk.CDKConstants;
+import org.junit.experimental.categories.Category;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.DefaultChemObjectBuilder;
+import org.openscience.cdk.SlowTest;
 import org.openscience.cdk.aromaticity.Aromaticity;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
 import org.openscience.cdk.aromaticity.ElectronDonation;
-import org.openscience.cdk.atomtype.CDKAtomTypeMatcher;
 import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IAtomType;
-import org.openscience.cdk.interfaces.IPseudoAtom;
 import org.openscience.cdk.io.iterator.IteratingSMILESReader;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.smiles.smarts.SMARTSQueryTool;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
-import org.openscience.cdk.tools.manipulator.AtomTypeManipulator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -64,7 +58,8 @@ public class RecursiveTest extends CDKTestCase {
         SMARTSQueryTool sqt = new SMARTSQueryTool(smarts, DefaultChemObjectBuilder.getInstance());
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer atomContainer = sp.parseSmiles(smiles);
-        CDKHueckelAromaticityDetector.detectAromaticity(atomContainer);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(atomContainer);
+        Aromaticity.cdkLegacy().apply(atomContainer);
         boolean status = sqt.matches(atomContainer);
         if (status) {
             nmatch = sqt.countMatches();
@@ -382,6 +377,7 @@ public class RecursiveTest extends CDKTestCase {
     }
 
 
+    @Category(SlowTest.class)
     @Test public void testBasicAmineOnDrugs_cdkAromaticModel() throws Exception {
         String filename = "drugs.smi";
         InputStream ins = this.getClass().getResourceAsStream(filename);
@@ -417,6 +413,7 @@ public class RecursiveTest extends CDKTestCase {
         Assert.assertEquals(4, nmatch);
     }
 
+    @Category(SlowTest.class)
     @Test public void testBasicAmineOnDrugs() throws Exception {
         String filename = "drugs.smi";
         InputStream ins = this.getClass().getResourceAsStream(filename);

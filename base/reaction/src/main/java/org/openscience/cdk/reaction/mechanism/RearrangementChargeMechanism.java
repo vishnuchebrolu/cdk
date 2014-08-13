@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2008  Miguel Rojas <miguelrojasch@yahoo.es>
+/* Copyright (C) 2008  Miguel Rojas <miguelrojasch@yahoo.es>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -141,10 +139,10 @@ public class RearrangementChargeMechanism implements IReactionMechanism{
 		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(reactantCloned);
 		
 		IAtomType type = atMatcher.findMatchingAtomType(reactantCloned, atom1C);
-		if (type == null) return null;
+		if (type == null || type.getAtomTypeName().equals("X")) return null;
 
 		type = atMatcher.findMatchingAtomType(reactantCloned, atom3C);
-		if (type == null) return null;
+		if (type == null || type.getAtomTypeName().equals("X")) return null;
 		
 		IReaction reaction = bond2.getBuilder().newInstance(IReaction.class);
 		reaction.addReactant(molecule);

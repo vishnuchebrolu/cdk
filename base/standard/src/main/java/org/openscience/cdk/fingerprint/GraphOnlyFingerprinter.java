@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2002-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2002-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -30,7 +28,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
 import java.util.BitSet;
-import java.util.Map;
 import java.util.Random;
 
 /**

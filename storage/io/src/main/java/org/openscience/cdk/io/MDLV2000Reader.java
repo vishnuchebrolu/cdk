@@ -466,9 +466,9 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                 if (valence < 0) {
                     hasQueryBonds = true; // also counts aromatic bond as query
                 } else {
+                    int unpaired = outputContainer.getConnectedSingleElectronsCount(outputContainer.getAtom(i));
                     applyMDLValenceModel(outputContainer.getAtom(i),
-                                         valence,
-                                         outputContainer.getConnectedSingleElectronsCount(outputContainer.getAtom(i)));
+                                         valence + unpaired);
                 }
             }
 
@@ -512,11 +512,11 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
      * @param atom            the atom to apply the model to
      * @param explicitValence the explicit valence (bond order sum)
      */
-    private void applyMDLValenceModel(IAtom atom, int explicitValence, int unpaired) {
+    private void applyMDLValenceModel(IAtom atom, int explicitValence) {
         
         if (atom.getValency() != null) {
             if (atom.getValency() >= explicitValence)
-                atom.setImplicitHydrogenCount(atom.getValency() - explicitValence - unpaired);
+                atom.setImplicitHydrogenCount(atom.getValency() - explicitValence);
             else
                 atom.setImplicitHydrogenCount(0);
         }
@@ -536,7 +536,7 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
             }
             else {
                 atom.setValency(implicitValence);
-                atom.setImplicitHydrogenCount(implicitValence - explicitValence - unpaired);
+                atom.setImplicitHydrogenCount(implicitValence - explicitValence);
             }
         }
     }
@@ -1739,8 +1739,8 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                 st.nextToken();
                 //Process the R group numbers as defined in RGP line.
                 while (st.hasMoreTokens()) {
-                    Integer position = new Integer(st.nextToken());
-                    int rNumber = new Integer(st.nextToken());
+                    Integer position = Integer.valueOf(st.nextToken());
+                    int rNumber = Integer.valueOf(st.nextToken());
                     // the container may have already had atoms before the new atoms were read
                     int index   = container.getAtomCount() - nAtoms + position - 1;
                     IPseudoAtom pseudoAtom = (IPseudoAtom) container.getAtom(index);
@@ -1750,7 +1750,7 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                 }
             }
             if (line.startsWith("V  ")) {
-                Integer atomNumber = new Integer(line.substring(3, 6).trim());
+                Integer atomNumber = Integer.valueOf(line.substring(3, 6).trim());
                 IAtom atomWithComment = container.getAtom(atomNumber - 1);
                 atomWithComment.setProperty(CDKConstants.COMMENT, line.substring(7));
             }
@@ -1797,8 +1797,6 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
     static void readNonStructuralData(final BufferedReader input,
                                       final IAtomContainer container) throws IOException {
 
-        final String newline = System.getProperty("line.separator");
-
         String line, header = null;
         boolean wrap = false;
 
@@ -1827,7 +1825,7 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                     continue;
 
                 if (!wrap && data.length() > 0)
-                    data.append(newline);
+                    data.append('\n');
                 data.append(line);
 
                 wrap = line.length() == 80;

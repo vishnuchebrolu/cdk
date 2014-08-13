@@ -1,9 +1,4 @@
-/*  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2004-2007  Rajarshi Guha <rajarshi@users.sourceforge.net> 
+/* Copyright (C) 2004-2007  Rajarshi Guha <rajarshi@users.sourceforge.net> 
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -26,7 +21,7 @@ package org.openscience.cdk.qsar.descriptors.molecular;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.charges.GasteigerMarsiliPartialCharges;
 import org.openscience.cdk.charges.GasteigerPEPEPartialCharges;
 import org.openscience.cdk.charges.Polarizability;
@@ -343,7 +338,7 @@ public class BCUTDescriptor extends AbstractMolecularDescriptor implements IMole
                 return getDummyDescriptorValue(new CDKException("Error in atom typing: " + e.getMessage(), e));
             }
             try {
-                CDKHueckelAromaticityDetector.detectAromaticity(molecule);
+                Aromaticity.cdkLegacy().apply(molecule);
             } catch (CDKException e) {
                 return getDummyDescriptorValue(new CDKException("Error in aromaticity perception: " + e.getMessage()));
             }

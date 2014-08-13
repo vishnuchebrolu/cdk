@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2002-2007  Stephane Werner <mail@ixelis.net>
+/* Copyright (C) 2002-2007  Stephane Werner <mail@ixelis.net>
  *  
  * This code has been kindly provided by Stephane Werner 
  * and Thierry Hanser from IXELIS mail@ixelis.net.
@@ -74,7 +72,7 @@ import java.util.List;
   *  from any kind of source graphs, thus it is not restricted to a chemical
   *  context.
   *
-  *  <p>The RGraph model is indendant from the CDK model and the link between
+  *  <p>The RGraph model is independent from the CDK model and the link between
   *  both model is performed by the RTools class. In this way the RGraph 
   *  class may be reused in other graph context (conceptual graphs,....)
   *

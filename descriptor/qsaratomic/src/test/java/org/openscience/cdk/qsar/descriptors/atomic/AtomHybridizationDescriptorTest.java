@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- * 
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -91,7 +86,7 @@ public class AtomHybridizationDescriptorTest extends AtomicDescriptorTest {
 
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer mol;
-        Iterator atoms;
+        Iterator<IAtom> atoms;
 
         for (String smile : smiles) {
             mol = sp.parseSmiles(smile);
@@ -99,7 +94,7 @@ public class AtomHybridizationDescriptorTest extends AtomicDescriptorTest {
             AtomContainerManipulator.convertImplicitToExplicitHydrogens(mol);
             atoms = mol.atoms().iterator();
             while (atoms.hasNext()) {
-                IAtom atom = (IAtom) atoms.next();
+                IAtom atom = atoms.next();
                 ((IntegerResult) descriptor.calculate(atom, mol).getValue()).intValue();
             }
         }

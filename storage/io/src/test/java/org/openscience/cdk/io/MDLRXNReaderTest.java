@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@slists.sourceforge.net
  * 
@@ -41,6 +36,7 @@ import org.openscience.cdk.interfaces.IAtomContainerSet;
 import org.openscience.cdk.interfaces.IChemFile;
 import org.openscience.cdk.interfaces.IChemModel;
 import org.openscience.cdk.interfaces.IChemObject;
+import org.openscience.cdk.interfaces.IMapping;
 import org.openscience.cdk.interfaces.IReaction;
 import org.openscience.cdk.interfaces.IReactionSet;
 import org.openscience.cdk.silent.AtomContainer;
@@ -48,6 +44,7 @@ import org.openscience.cdk.tools.ILoggingTool;
 import org.openscience.cdk.tools.LoggingToolFactory;
 
 import java.io.InputStream;
+import java.util.Iterator;
 
 /**
  * TestCase for the reading MDL RXN files using one test file.
@@ -142,7 +139,7 @@ public class MDLRXNReaderTest extends SimpleChemObjectReaderTest {
 		reader2.close();
 
 		Assert.assertNotNull(reaction2);
-		java.util.Iterator maps = reaction2.mappings().iterator();
+		Iterator<IMapping> maps = reaction2.mappings().iterator();
 		maps.next();
 		Assert.assertTrue(maps.hasNext());
     }
@@ -155,6 +152,7 @@ public class MDLRXNReaderTest extends SimpleChemObjectReaderTest {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         MDLRXNReader reader = new MDLRXNReader(ins);
         IChemFile chemFile = (IChemFile)reader.read(new ChemFile());
+        reader.close();
         Assert.assertNotNull(chemFile);
         
         
@@ -183,6 +181,7 @@ public class MDLRXNReaderTest extends SimpleChemObjectReaderTest {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         MDLRXNReader reader = new MDLRXNReader(ins);
         IChemModel chemModel = (IChemModel)reader.read(new ChemModel());
+        reader.close();
         Assert.assertNotNull(chemModel);
         
         
@@ -210,6 +209,7 @@ public class MDLRXNReaderTest extends SimpleChemObjectReaderTest {
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         MDLRXNReader reader = new MDLRXNReader(ins);
         IReactionSet reactionSet = (IReactionSet)reader.read(new ReactionSet());
+        reader.close();
         Assert.assertNotNull(reactionSet);
         
         
@@ -232,17 +232,19 @@ public class MDLRXNReaderTest extends SimpleChemObjectReaderTest {
     /**
      * This test checks of different numbering for the same mapping gives the same result. 
      */
-    @Test public void testAsadExamples() throws CDKException{
+    @Test public void testAsadExamples() throws Exception{
         String filename = "data/mdl/output.rxn";
         logger.info("Testing: " + filename);
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         MDLRXNReader reader = new MDLRXNReader(ins);
         IReactionSet reactionSet = (IReactionSet)reader.read(new ReactionSet());
+        reader.close();
         filename = "data/mdl/output_Cleaned.rxn";
         logger.info("Testing: " + filename);
         ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         reader = new MDLRXNReader(ins);
         IReactionSet reactionSet2 = (IReactionSet)reader.read(new ReactionSet());
+        reader.close();
         Assert.assertEquals(reactionSet.getReaction(0).getMappingCount(),reactionSet2.getReaction(0).getMappingCount());
         for(int i=0;i<reactionSet.getReaction(0).getMappingCount();i++){
             Assert.assertEquals(

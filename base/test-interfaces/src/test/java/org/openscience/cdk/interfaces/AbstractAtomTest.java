@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$    
- * $Date$    
- * $Revision$
- * 
- * Copyright (C) 2002-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2002-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -224,6 +219,13 @@ public abstract class AbstractAtomTest extends AbstractAtomTypeTest {
             Assert.assertTrue('\n' != description.charAt(i));
             Assert.assertTrue('\r' != description.charAt(i));
         }
+    }
+
+    @Test public void testToString_FractionalCoordinates() {
+        IAtom atom = (IAtom)newChemObject();
+        atom.setFractionalPoint3d(new Point3d(2, 3, 4));
+        String description = atom.toString();
+        Assert.assertTrue(description.contains("F3D"));
     }
 
     /**

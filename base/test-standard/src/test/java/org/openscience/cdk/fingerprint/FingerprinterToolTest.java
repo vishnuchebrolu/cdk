@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$    
- * 
- * Copyright (C) 1997-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 1997-2007  Egon Willighagen <egonw@users.sf.net>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -25,8 +23,6 @@
 package org.openscience.cdk.fingerprint;
 
 import java.util.BitSet;
-import java.util.List;
-import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;

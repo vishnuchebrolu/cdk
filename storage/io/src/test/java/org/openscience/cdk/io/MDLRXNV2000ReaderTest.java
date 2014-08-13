@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2007  Egon Willighagen <egonw@users.sf.net>
  * 
  * Contact: cdk-devel@slists.sourceforge.net
  * 
@@ -25,6 +23,7 @@
 package org.openscience.cdk.io;
 
 import java.io.InputStream;
+import java.util.Iterator;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -33,6 +32,7 @@ import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.ChemModel;
 import org.openscience.cdk.Reaction;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IMapping;
 import org.openscience.cdk.interfaces.IReaction;
 import org.openscience.cdk.io.IChemObjectReader.Mode;
 import org.openscience.cdk.tools.ILoggingTool;
@@ -123,7 +123,7 @@ public class MDLRXNV2000ReaderTest extends SimpleChemObjectReaderTest {
         reader2.close();
 
         Assert.assertNotNull(reaction2);
-        java.util.Iterator maps = reaction2.mappings().iterator();
+        Iterator<IMapping> maps = reaction2.mappings().iterator();
         maps.next();
         Assert.assertTrue(maps.hasNext());
     }

@@ -22,18 +22,19 @@ package org.openscience.cdk.fragment;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.DefaultChemObjectBuilder;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
-import org.openscience.cdk.aromaticity.DoubleBondAcceptingAromaticityDetector;
+import org.openscience.cdk.SlowTest;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smiles.SmilesGenerator;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.templates.MoleculeFactory;
+import org.openscience.cdk.tools.CDKHydrogenAdder;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -122,7 +123,7 @@ public class MurckoFragmenterTest extends CDKTestCase {
     public void testMF2() throws Exception {
         IAtomContainer mol = smilesParser.parseSmiles("C1(c2ccccc2)(CC(CC1)CCc1ccccc1)CC1C=CC=C1");
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
-        CDKHueckelAromaticityDetector.detectAromaticity(mol);
+        Aromaticity.cdkLegacy().apply(mol);
         fragmenter.generateFragments(mol);
 
         String[] rings = fragmenter.getRingSystems();
@@ -154,13 +155,14 @@ public class MurckoFragmenterTest extends CDKTestCase {
     @Test
     public void testMF4() throws Exception {
         IAtomContainer mol = smilesParser.parseSmiles("c1ccc(cc1)c2c(oc(n2)N(CCO)CCO)c3ccccc3");
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
         fragmenter.generateFragments(mol);
 
         List<String> frameworks = Arrays.asList(fragmenter.getFrameworks());
         Assert.assertEquals(3, frameworks.size());
-        assertThat(frameworks, hasItems("n1coc(c1)c2ccccc2",
-                                        "n1coc(c2ccccc2)c1c3ccccc3",
-                                        "n1cocc1c2ccccc2"));
+        assertThat(frameworks, hasItems("n1coc(c1)-c2ccccc2",
+                                        "n1coc(-c2ccccc2)c1-c3ccccc3",
+                                        "n1cocc1-c2ccccc2"));
     }
 
     @Test
@@ -219,7 +221,8 @@ public class MurckoFragmenterTest extends CDKTestCase {
     @Test
     public void testCarbinoxamine_Bug3088164() throws Exception {
         IAtomContainer mol = smilesParser.parseSmiles("CN(C)CCOC(C1=CC=C(Cl)C=C1)C1=CC=CC=N1");
-        CDKHueckelAromaticityDetector.detectAromaticity(mol);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+        Aromaticity.cdkLegacy().apply(mol);
         MurckoFragmenter fragmenter = new MurckoFragmenter(true, 6);
         fragmenter.generateFragments(mol);
 
@@ -232,7 +235,7 @@ public class MurckoFragmenterTest extends CDKTestCase {
         SmilesGenerator sg = SmilesGenerator.unique()
                                             .aromatic();
         for (int i = 0; i < f.length; i++) {
-            DoubleBondAcceptingAromaticityDetector.detectAromaticity(fc[i]);
+            Aromaticity.cdkLegacy().apply(fc[i]);
             String newsmiles = sg.create(fc[i]);
             Assert.assertTrue(f[i] + " did not match the container, " + newsmiles, f[i].equals(newsmiles));
         }
@@ -247,15 +250,23 @@ public class MurckoFragmenterTest extends CDKTestCase {
                                             .aromatic();
 
         IAtomContainer mol = smilesParser.parseSmiles("Fc1ccc(cc1)C(=O)C4CCN(CCC\\3=C(\\N=C2\\C=C/C=C\\N2C/3=O)C)CC4");
-        CDKHueckelAromaticityDetector.detectAromaticity(mol);
+        AtomContainerManipulator.clearAtomConfigurations(mol);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+        Aromaticity.cdkLegacy().apply(mol);
         MurckoFragmenter fragmenter = new MurckoFragmenter(true, 6);
         fragmenter.generateFragments(mol);
 
         String[] f = fragmenter.getFrameworks();
         IAtomContainer[] fc = fragmenter.getFrameworksAsContainers();
-
+        
         Assert.assertEquals(1, f.length);
         Assert.assertEquals(f.length, fc.length);
+
+        AtomContainerManipulator.clearAtomConfigurations(mol);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+        CDKHydrogenAdder.getInstance(mol.getBuilder()).addImplicitHydrogens(mol);
+        Aromaticity.cdkLegacy().apply(mol);
+                
         Assert.assertEquals("N=1C=C(CN2C=CC=CC12)CCN3CCC(Cc4ccccc4)CC3", f[0]);
 
         for (int i = 0; i < f.length; i++) {
@@ -273,7 +284,8 @@ public class MurckoFragmenterTest extends CDKTestCase {
                                             .aromatic();
 
         IAtomContainer mol = smilesParser.parseSmiles("CC(C)NCC(O)COC1=C(C=CC=C1)N1C=CC=C1");
-        CDKHueckelAromaticityDetector.detectAromaticity(mol);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+        Aromaticity.cdkLegacy().apply(mol);
         MurckoFragmenter fragmenter = new MurckoFragmenter(true, 6);
         fragmenter.generateFragments(mol);
 
@@ -284,7 +296,7 @@ public class MurckoFragmenterTest extends CDKTestCase {
         Assert.assertEquals("c1ccc(cc1)-n2cccc2", f[0]);
 
         for (int i = 0; i < f.length; i++) {
-            DoubleBondAcceptingAromaticityDetector.detectAromaticity(fc[i]);
+            Aromaticity.cdkLegacy().apply(fc[i]);
             String newsmiles = sg.create(fc[i]);
             Assert.assertTrue(f[i] + " did not match the container, " + newsmiles, f[i].equals(newsmiles));
         }
@@ -293,7 +305,8 @@ public class MurckoFragmenterTest extends CDKTestCase {
     @Test public void testGetFragmentsAsContainers() throws Exception {
 
         IAtomContainer biphenyl = MoleculeFactory.makeBiphenyl();
-        CDKHueckelAromaticityDetector.detectAromaticity(biphenyl);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(biphenyl);
+        Aromaticity.cdkLegacy().apply(biphenyl);
 
         MurckoFragmenter fragmenter = new MurckoFragmenter(true, 6);
         fragmenter.generateFragments(biphenyl);
@@ -311,9 +324,11 @@ public class MurckoFragmenterTest extends CDKTestCase {
      * @throws Exception
      */
     @Test
+    @Category(SlowTest.class)
     public void testMacrocycle() throws Exception {
         IAtomContainer mol = smilesParser.parseSmiles("C1=C(C=C(C(=C1O)O)O)C(=O)OC2=CC(=CC(=C2O)O)C(=O)OCC3C(C(C(C(O3)OC(=O)C4=CC(=C(C(=C4)OC(=O)C5=CC(=C(C(=C5)O)O)O)O)O)OC(=O)C6=CC(=C(C(=C6)OC(=O)C7=CC(=C(C(=C7)O)O)O)O)O)OC(=O)C8=CC(=C(C(=C8)OC(=O)C9=CC(=C(C(=C9)O)O)O)O)O)OC(=O)C1=CC(=C(C(=C1)OC(=O)C1=CC(=C(C(=C1)O)O)O)O)O");
-        CDKHueckelAromaticityDetector.detectAromaticity(mol);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+        Aromaticity.cdkLegacy().apply(mol);
         MurckoFragmenter fragmenter = new MurckoFragmenter(true, 6);
         fragmenter.generateFragments(mol);
 

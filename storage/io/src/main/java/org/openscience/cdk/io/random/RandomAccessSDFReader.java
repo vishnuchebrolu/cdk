@@ -1,6 +1,4 @@
-/* $Revision:$
- * 
- * Copyright (C) 2005-2008   Nina Jeliazkova <nina@acad.bg>
+/* Copyright (C) 2005-2008   Nina Jeliazkova <nina@acad.bg>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -89,9 +87,9 @@ public class RandomAccessSDFReader extends RandomAccessReader {
             if (co instanceof IChemFile) {
                 int c = ((IChemFile) co).getChemSequenceCount();
                 for (int i=0; i <c;i++) {
-                    Iterator cm = ((IChemFile) co).getChemSequence(i).chemModels().iterator();
+                    Iterator<IChemModel> cm = ((IChemFile) co).getChemSequence(i).chemModels().iterator();
                     while (cm.hasNext()) {
-                    	Iterator<IAtomContainer> sm = ((IChemModel)cm.next()).getMoleculeSet().atomContainers().iterator();
+                    	Iterator<IAtomContainer> sm = (cm.next()).getMoleculeSet().atomContainers().iterator();
                         while (sm.hasNext()) {
                         	
                         	co = sm.next();
@@ -119,7 +117,7 @@ public class RandomAccessSDFReader extends RandomAccessReader {
 	}
 	
     @TestMethod("testAccepts")
-    public boolean accepts(Class classObject) {
+    public boolean accepts(Class<? extends IChemObject> classObject) {
 		return chemObjectReader.accepts(classObject);
 	}
 

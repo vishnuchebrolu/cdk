@@ -1,9 +1,4 @@
-/*  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2001-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2001-2007  The Chemistry Development Kit (CDK) project
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -35,6 +30,7 @@ import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.config.AtomTypeFactory;
 import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomType;
@@ -43,7 +39,6 @@ import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.interfaces.IPseudoAtom;
 import org.openscience.cdk.interfaces.IRingSet;
 import org.openscience.cdk.ringsearch.RingPartitioner;
-import org.openscience.cdk.ringsearch.SSSRFinder;
 import org.openscience.cdk.tools.manipulator.BondManipulator;
 import org.openscience.cdk.tools.manipulator.RingSetManipulator;
 
@@ -285,7 +280,7 @@ public class SaturationChecker implements IValencyChecker, IDeduceBondOrderTool 
 
 	/**
 	 * Saturates a molecule by setting appropriate bond orders.
-	 * This method is known to fail, especially on pyrolle-like compounts.
+	 * This method is known to fail, especially on pyrolle-like compounds.
 	 * Consider using import org.openscience.cdk.smiles.DeduceBondSystemTool, which should work better
 	 *
 	 * @cdk.keyword bond order, calculation
@@ -322,7 +317,7 @@ public class SaturationChecker implements IValencyChecker, IDeduceBondOrderTool 
 
     /**
      * Saturates a set of Bonds in an AtomContainer.
-	 * This method is known to fail, especially on pyrolle-like compounts.
+	 * This method is known to fail, especially on pyrolle-like compounds.
 	 * Consider using import org.openscience.cdk.smiles.DeduceBondSystemTool, which should work better
      */
     public boolean newSaturate(IBond[] bonds, IAtomContainer atomContainer) throws CDKException {
@@ -394,7 +389,7 @@ public class SaturationChecker implements IValencyChecker, IDeduceBondOrderTool 
     
     /**
      * Saturate atom by adjusting its bond orders.
-	 * This method is known to fail, especially on pyrolle-like compounts.
+	 * This method is known to fail, especially on pyrolle-like compounds.
 	 * Consider using import org.openscience.cdk.smiles.DeduceBondSystemTool, which should work better
      */
     public boolean newSaturate(IBond bond, IAtomContainer atomContainer) throws CDKException {
@@ -451,7 +446,7 @@ public class SaturationChecker implements IValencyChecker, IDeduceBondOrderTool 
     /**
      * The method is known to fail for certain compounds. For more information, see
      * cdk.test.limitations package.
-	 * This method is known to fail, especially on pyrolle-like compounts.
+	 * This method is known to fail, especially on pyrolle-like compounds.
 	 * Consider using import org.openscience.cdk.smiles.DeduceBondSystemTool, which should work better
      *
      */
@@ -543,7 +538,7 @@ public class SaturationChecker implements IValencyChecker, IDeduceBondOrderTool 
     
 	public void saturateRingSystems(IAtomContainer atomContainer) throws CDKException
 	{
-		IRingSet rs = new SSSRFinder(atomContainer.getBuilder().newInstance(IAtomContainer.class,atomContainer)).findSSSR();
+		IRingSet rs = Cycles.sssr(atomContainer.getBuilder().newInstance(IAtomContainer.class,atomContainer)).toRingSet();
 		List<IRingSet> ringSets = RingPartitioner.partitionRings(rs);
 		IAtomContainer ac = null;
 		IAtom atom = null;
@@ -572,7 +567,7 @@ public class SaturationChecker implements IValencyChecker, IDeduceBondOrderTool 
 	}
 	
 	/*
-	 * Recursivly fixes bond orders in a molecule for 
+	 * Recursively fixes bond orders in a molecule for 
 	 * which only connectivities but no bond orders are know.
 	 *
 	 *@ param  molecule  The molecule to fix the bond orders for
@@ -621,7 +616,7 @@ public class SaturationChecker implements IValencyChecker, IDeduceBondOrderTool 
 	}*/
 
 	/**
-	 * Calculate the number of missing hydrogens by substracting the number of
+	 * Calculate the number of missing hydrogens by subtracting the number of
 	 * bonds for the atom from the expected number of bonds. Charges are included
 	 * in the calculation. The number of expected bonds is defined by the AtomType
 	 * generated with the AtomTypeFactory.
@@ -650,7 +645,7 @@ public class SaturationChecker implements IValencyChecker, IDeduceBondOrderTool 
     }
     
     /**
-	 * Calculate the number of missing hydrogens by substracting the number of
+	 * Calculate the number of missing hydrogens by subtracting the number of
 	 * bonds for the atom from the expected number of bonds. Charges are included
 	 * in the calculation. The number of expected bonds is defined by the AtomType
 	 * generated with the AtomTypeFactory.

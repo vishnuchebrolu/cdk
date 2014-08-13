@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2008  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2008  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -27,7 +25,7 @@ import java.util.Map;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.atomtype.mapper.AtomTypeMapper;
 import org.openscience.cdk.config.AtomTypeFactory;
 import org.openscience.cdk.exception.CDKException;
@@ -90,7 +88,7 @@ public class SybylAtomTypeMatcher implements IAtomTypeMatcher {
             atom.setAtomTypeName(type == null ? null : type.getAtomTypeName());
             atom.setHybridization(type == null ? null : type.getHybridization());
         }
-        CDKHueckelAromaticityDetector.detectAromaticity(atomContainer);
+        Aromaticity.cdkLegacy().apply(atomContainer);
         IAtomType[] types = new IAtomType[atomContainer.getAtomCount()];
         int typeCounter = 0;
         for (IAtom atom : atomContainer.atoms()) {

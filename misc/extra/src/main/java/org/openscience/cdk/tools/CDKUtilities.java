@@ -21,7 +21,7 @@ package org.openscience.cdk.tools;
 import java.util.List;
 
 import org.openscience.cdk.CDKConstants;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
@@ -66,7 +66,7 @@ public class CDKUtilities {
 			boolean nitro=false;
 			
 			if (a.getSymbol().equals("N")) {
-				List ca=m.getConnectedAtomsList(a);
+				List<IAtom> ca=m.getConnectedAtomsList(a);
 				
 				if (ca.size()==3) {					
 					
@@ -213,7 +213,7 @@ public class CDKUtilities {
 		try {
 			// figure out which atoms are in aromatic rings:
 			AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(m);
-			CDKHueckelAromaticityDetector.detectAromaticity(m);
+            Aromaticity.cdkLegacy().apply(m);
 			// figure out which rings are aromatic:
 			RingSetManipulator.markAromaticRings(rs);
 			// figure out which simple (non cycles) rings are aromatic:

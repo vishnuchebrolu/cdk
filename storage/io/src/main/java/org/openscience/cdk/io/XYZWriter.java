@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2002  Bradley A. Smith <bradley@baysmith.com>
+/* Copyright (C) 2002  Bradley A. Smith <bradley@baysmith.com>
  *               2002  Miguel Howard
  *               2003-2007  Egon Willighagen <egonw@users.sf.net>
  * 
@@ -113,9 +111,9 @@ public class XYZWriter extends DefaultChemObjectWriter {
     }
     
 	@TestMethod("testAccepts")
-    public boolean accepts(Class classObject) {
+    public boolean accepts(Class<? extends IChemObject> classObject) {
 		if (IAtomContainer.class.equals(classObject)) return true;
-		Class[] interfaces = classObject.getInterfaces();
+		Class<?>[] interfaces = classObject.getInterfaces();
 		for (int i=0; i<interfaces.length; i++) {
 			if (IAtomContainer.class.equals(interfaces[i])) return true;
 		}

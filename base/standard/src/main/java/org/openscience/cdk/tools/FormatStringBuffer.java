@@ -1,10 +1,6 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+/* Copyright (C) 2002  Antti S. Brax
  *
  *  FormatStringBuffer: printf style output formatter for Java
- *  Copyright (C) 2002  Antti S. Brax  
  *  All rights reserved.
  *  
  *  Downloaded from: http://www.cs.helsinki.fi/u/abrax/HACK/JAVA/PRINTF.html
@@ -93,7 +89,7 @@ public class FormatStringBuffer {
     /** Use scientific notation */
     private static final int SCI = 128;
 
-    /** Use uppercase E */
+    /** Use upper case E */
     private static final int UPPER = 256;
 
     /** Use grouping character */
@@ -162,7 +158,7 @@ public class FormatStringBuffer {
     // ==================================================================== //
 
     /**
-     * Get the nect format token from the format string. Copy every
+     * Get the next format token from the format string. Copy every
      * character from <tt>format</tt> to <tt>buffer</tt> between
      * <tt>index</tt> and the next format token.
      */
@@ -398,7 +394,7 @@ public class FormatStringBuffer {
     		pad = '0';
     	}
     	
-    	// Convert numberto String.
+    	// Convert number to String.
     	String str;
     	String prefix = "";
     	switch (fmt.base) {

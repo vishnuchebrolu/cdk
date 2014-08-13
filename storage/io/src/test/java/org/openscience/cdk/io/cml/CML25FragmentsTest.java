@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -31,7 +26,6 @@ import java.io.ByteArrayInputStream;
 
 import org.junit.Assert;
 import org.junit.Ignore;
-import org.junit.Test;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -84,6 +78,7 @@ public class CML25FragmentsTest extends CDKTestCase {
         IChemFile chemFile = null;
         CMLReader reader = new CMLReader(new ByteArrayInputStream(cmlString.getBytes()));
         chemFile = (IChemFile)reader.read(new ChemFile());
+        reader.close();
         return chemFile;
     }
 

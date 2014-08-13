@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2007  Rajarshi Guha <rajarshi@users.sourceforge.net>
+/* Copyright (C) 2007  Rajarshi Guha <rajarshi@users.sourceforge.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -20,7 +18,6 @@
  */
 package org.openscience.cdk.smiles.smarts;
 
-import com.google.common.collect.Collections2;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Ints;
@@ -38,22 +35,17 @@ import org.openscience.cdk.interfaces.IRingSet;
 import org.openscience.cdk.isomorphism.ComponentGrouping;
 import org.openscience.cdk.isomorphism.SmartsStereoMatch;
 import org.openscience.cdk.isomorphism.Ullmann;
-import org.openscience.cdk.isomorphism.VentoFoggia;
 import org.openscience.cdk.isomorphism.matchers.IQueryAtom;
 import org.openscience.cdk.isomorphism.matchers.QueryAtomContainer;
 import org.openscience.cdk.isomorphism.matchers.smarts.SmartsMatchers;
 import org.openscience.cdk.isomorphism.mcss.RMap;
-import org.openscience.cdk.ringsearch.SSSRFinder;
 import org.openscience.cdk.smiles.smarts.parser.SMARTSParser;
 import org.openscience.cdk.smiles.smarts.parser.TokenMgrError;
 import org.openscience.cdk.tools.ILoggingTool;
 import org.openscience.cdk.tools.LoggingToolFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.BitSet;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,8 +97,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * work around to get <code>*</code> to match <code>[H][H]</code> is to write it in the form <code>[1H][1H]</code>.
  * <p/>
  * It's not entirely clear what the behavior of * should be with respect to hydrogens. it is possible that the code will
- * be updated so that <code>*</code> will not match <i>any</i> hydrogen in the future.</li> <li>The {@link
- * org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector} only considers single rings and two fused non-spiro
+ * be updated so that <code>*</code> will not match <i>any</i> hydrogen in the future.</li> <li>The 
+ * org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector only considers single rings and two fused non-spiro
  * rings. As a result, it does not properly detect aromaticity in polycyclic systems such as
  * <code>[O-]C(=O)c1ccccc1c2c3ccc([O-])cc3oc4cc(=O)ccc24</code>. Thus SMARTS patterns that depend on proper aromaticity
  * detection may not work correctly in such polycyclic systems</li> </ul>
@@ -141,7 +133,7 @@ public class SMARTSQueryTool {
          */
         SmallestSetOfSmallestRings {
             @Override IRingSet ringSet(IAtomContainer m) {
-                return new SSSRFinder(m).findSSSR();
+                return Cycles.sssr(m).toRingSet();
             }
         },
 
@@ -151,7 +143,7 @@ public class SMARTSQueryTool {
          */
         EssentialRings {
             @Override IRingSet ringSet(IAtomContainer m) {
-                return new SSSRFinder(m).findEssentialRings();
+                return Cycles.essential(m).toRingSet();
             }
         },
 
@@ -161,7 +153,7 @@ public class SMARTSQueryTool {
          */
         RelevantRings {
             @Override IRingSet ringSet(IAtomContainer m) {
-                return new SSSRFinder(m).findRelevantRings();
+                return Cycles.relevant(m).toRingSet();
             }
         };
 

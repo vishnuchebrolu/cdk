@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -33,6 +31,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 import javax.vecmath.Point3d;
@@ -106,7 +105,7 @@ public class PDBReader extends DefaultChemObjectReader {
 	 * As CONNECT is deliberately fully redundant (a->b and b->a)
 	 * we need to use this to weed out the duplicates.
 	 */
-	private ArrayList bondsFromConnectRecords;
+	private List<IBond> bondsFromConnectRecords;
 	
 	private static AtomTypeFactory pdbFactory;
 	
@@ -173,7 +172,7 @@ public class PDBReader extends DefaultChemObjectReader {
 	
 	@TestMethod("testAccepts")
     public boolean accepts(Class<? extends IChemObject> classObject) {
-		Class[] interfaces = classObject.getInterfaces();
+		Class<?>[] interfaces = classObject.getInterfaces();
 		for (int i=0; i<interfaces.length; i++) {
 			if (IChemFile.class.equals(interfaces[i])) return true;
 		}
@@ -248,7 +247,7 @@ public class PDBReader extends DefaultChemObjectReader {
 		
 		atomNumberMap = new Hashtable<Integer, IAtom>();
 		if (readConnect.isSet()) {
-		    bondsFromConnectRecords = new ArrayList();
+		    bondsFromConnectRecords = new ArrayList<IBond>();
 		}
 		
 		// do the reading of the Input		

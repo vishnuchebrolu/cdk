@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2006-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2006-2007  Egon Willighagen <egonw@users.sf.net>
  * 
  * Contact: cdk-devel@lists.sourceforge.net
  * 
@@ -27,6 +25,8 @@ package org.openscience.cdk.io.cml;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openscience.cdk.CDKTestCase;
+
+import static org.hamcrest.CoreMatchers.is;
 
 /**
  * TestCase for the CMLStack class.
@@ -100,5 +100,16 @@ public class CMLStackTest extends CDKTestCase {
     	stack.push("second");
     	stack.push("third");
     	Assert.assertTrue(stack.endsWith("first", "second", "third"));
+    }
+    
+    @Test public void testSize() {
+        CMLStack stack = new CMLStack();
+        Assert.assertThat(stack.size(), is(0));
+        stack.push("first");
+        Assert.assertThat(stack.size(), is(1));
+        stack.push("second");
+        Assert.assertThat(stack.size(), is(2));
+        stack.push("third");
+        Assert.assertThat(stack.size(), is(3));
     }
 }
