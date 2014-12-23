@@ -60,7 +60,7 @@ import org.openscience.cdk.qsar.result.IntegerResult;
  *     <td>no parameters</td>
  *   </tr>
  * </table>
- * 
+ *
  * @author      ulif
  * @cdk.created 2005-22-07
  * @cdk.module  qsarmolecular
@@ -70,13 +70,13 @@ import org.openscience.cdk.qsar.result.IntegerResult;
  */
 @TestClass("org.openscience.cdk.qsar.descriptors.molecular.HBondDonorCountDescriptorTest")
 public class HBondDonorCountDescriptor extends AbstractMolecularDescriptor implements IMolecularDescriptor {
-    private static final String[] names = {"nHBDon"};
+
+    private static final String[] NAMES = {"nHBDon"};
 
     /**
      *  Constructor for the HBondDonorCountDescriptor object
      */
-    public HBondDonorCountDescriptor() { }
-
+    public HBondDonorCountDescriptor() {}
 
     /**
      * Gets the specification attribute of the HBondDonorCountDescriptor
@@ -85,13 +85,12 @@ public class HBondDonorCountDescriptor extends AbstractMolecularDescriptor imple
      * @return    The specification value
      */
     @TestMethod("testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
         return new DescriptorSpecification(
-            "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#hBondDonors",
-            this.getClass().getName(),
-            "The Chemistry Development Kit");
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#hBondDonors", this.getClass()
+                        .getName(), "The Chemistry Development Kit");
     }
-
 
     /**
      * Sets the parameter of this HBondDonorCountDescriptor instance.
@@ -100,10 +99,10 @@ public class HBondDonorCountDescriptor extends AbstractMolecularDescriptor imple
      * @exception  CDKException  Description of the Exception
      */
     @TestMethod("testSetParameters_arrayObject")
+    @Override
     public void setParameters(Object[] params) throws CDKException {
-    // this descriptor has no parameters; nothing has to be done here
+        // this descriptor has no parameters; nothing has to be done here
     }
-
 
     /**
      * Gets the parameters of the HBondDonorCountDescriptor instance.
@@ -111,19 +110,21 @@ public class HBondDonorCountDescriptor extends AbstractMolecularDescriptor imple
      * @return    null as this descriptor does not have any parameters
      */
     @TestMethod("testGetParameters")
+    @Override
     public Object[] getParameters() {
-    // no parameters; thus we return null
+        // no parameters; thus we return null
         return null;
     }
 
-    @TestMethod(value="testNamesConsistency")
+    @TestMethod(value = "testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
-        return names;
+        return NAMES;
     }
 
     private DescriptorValue getDummyDescriptorValue(Exception e) {
-        return new DescriptorValue(getSpecification(), getParameterNames(),
-                getParameters(), new IntegerResult((int) Double.NaN), getDescriptorNames(), e);
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new IntegerResult(
+                (int) Double.NaN), getDescriptorNames(), e);
     }
 
     /**
@@ -133,6 +134,7 @@ public class HBondDonorCountDescriptor extends AbstractMolecularDescriptor imple
      * @return                   number of H bond donors
      */
     @TestMethod("testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtomContainer atomContainer) {
         int hBondDonors = 0;
 
@@ -145,8 +147,7 @@ public class HBondDonorCountDescriptor extends AbstractMolecularDescriptor imple
 
         //org.openscience.cdk.interfaces.IAtom[] atoms = ac.getAtoms();
         // iterate over all atoms of this AtomContainer; use label atomloop to allow for labelled continue
-        atomloop:
-        for (int atomIndex = 0; atomIndex < ac.getAtomCount(); atomIndex++) {
+        atomloop: for (int atomIndex = 0; atomIndex < ac.getAtomCount(); atomIndex++) {
             IAtom atom = (IAtom) ac.getAtom(atomIndex);
             // checking for O and N atoms where the formal charge is >= 0
             if ((atom.getSymbol().equals("O") || atom.getSymbol().equals("N")) && atom.getFormalCharge() >= 0) {
@@ -168,9 +169,8 @@ public class HBondDonorCountDescriptor extends AbstractMolecularDescriptor imple
             }
         }
 
-        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                new IntegerResult(hBondDonors),
-                getDescriptorNames());
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new IntegerResult(
+                hBondDonors), getDescriptorNames());
     }
 
     /**
@@ -185,10 +185,10 @@ public class HBondDonorCountDescriptor extends AbstractMolecularDescriptor imple
      *         the actual type of values returned by the descriptor in the {@link org.openscience.cdk.qsar.DescriptorValue} object
      */
     @TestMethod("testGetDescriptorResultType")
+    @Override
     public IDescriptorResult getDescriptorResultType() {
         return new IntegerResult(1);
     }
-
 
     /**
      * Gets the parameterNames of the HBondDonorCountDescriptor.
@@ -196,12 +196,11 @@ public class HBondDonorCountDescriptor extends AbstractMolecularDescriptor imple
      * @return    null as this descriptor does not have any parameters
      */
     @TestMethod("testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
-    // no parameters; thus we return null
+        // no parameters; thus we return null
         return null;
     }
-
-
 
     /**
      * Gets the parameterType of the HBondDonorCountDescriptor.
@@ -210,9 +209,9 @@ public class HBondDonorCountDescriptor extends AbstractMolecularDescriptor imple
      * @return       null as this descriptor does not have any parameters
      */
     @TestMethod("testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
-    // no parameters; thus we return null
+        // no parameters; thus we return null
         return null;
     }
 }
-

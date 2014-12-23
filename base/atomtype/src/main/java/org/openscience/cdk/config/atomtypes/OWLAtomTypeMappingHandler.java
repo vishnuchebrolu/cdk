@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA. 
+ *  Foundation, 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.openscience.cdk.config.atomtypes;
 
@@ -35,13 +35,13 @@ import java.util.Map;
 @TestClass("org.openscience.cdk.config.atomtypes.OWLAtomTypeMappingHandlerTest")
 public class OWLAtomTypeMappingHandler extends DefaultHandler {
 
-	private final String NS_ATOMTYPE_MAPPING = "http://cdk.sf.net/ontologies/atomtypemappings#";
-	private final String NS_OWL = "http://www.w3.org/2002/07/owl#";
-	
-    private Map<String,String> atomTypeMappings;
-    
-    private String fromType;
-    private String toType;
+    private final String        NS_ATOMTYPE_MAPPING = "http://cdk.sf.net/ontologies/atomtypemappings#";
+    private final String        NS_OWL              = "http://www.w3.org/2002/07/owl#";
+
+    private Map<String, String> atomTypeMappings;
+
+    private String              fromType;
+    private String              toType;
 
     /**
      * Constructs a new OWLAtomTypeMappingHandler.
@@ -51,64 +51,67 @@ public class OWLAtomTypeMappingHandler extends DefaultHandler {
 
     /**
      * Returns a {@link Map} with atom type mappings.
-     * 
+     *
      * @return a {@link Map} with the atom type name of the source schema as key, and the atom type name of
      *         the target schema as values.
      */
     @TestMethod("testGetAtomTypeMappings")
-    public Map<String,String> getAtomTypeMappings() {
+    public Map<String, String> getAtomTypeMappings() {
         return atomTypeMappings;
     }
 
     // SAX Parser methods
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     @TestMethod("testStartDocument")
     public void startDocument() {
-    	atomTypeMappings = new Hashtable<String,String>();
+        atomTypeMappings = new Hashtable<String, String>();
     }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     @TestMethod("testEndElement_String_String_String")
     public void endElement(String uri, String local, String raw) {
         if (NS_OWL.equals(uri)) {
-        	endAtomTypeElement(local);
+            endAtomTypeElement(local);
         } // ignore other namespaces
     }
 
-	private void endAtomTypeElement(String local) {
-    	if ("Thing".equals(local) && toType != null && fromType != null) {
-    		atomTypeMappings.put(fromType, toType);
-    	}
-	}
+    private void endAtomTypeElement(String local) {
+        if ("Thing".equals(local) && toType != null && fromType != null) {
+            atomTypeMappings.put(fromType, toType);
+        }
+    }
 
-    /** {@inheritDoc} */ @Override
-	@TestMethod("testStartElement_String_String_String_Attributes")
-    public void startElement(String uri, String local,
-                             String raw, Attributes atts) {
+    /** {@inheritDoc} */
+    @Override
+    @TestMethod("testStartElement_String_String_String_Attributes")
+    public void startElement(String uri, String local, String raw, Attributes atts) {
         if (NS_OWL.equals(uri)) {
-        	startOWLElement(local, atts);
+            startOWLElement(local, atts);
         } else if (NS_ATOMTYPE_MAPPING.equals(uri)) {
-        	startAtomTypeMappingElement(local, atts);
+            startAtomTypeMappingElement(local, atts);
         } // ignore other namespaces
     }
 
-	private void startOWLElement(String local, Attributes atts) {
-    	if ("Thing".equals(local)) {
-    		toType = null;
-    		fromType = atts.getValue("rdf:about");
-    		fromType = fromType.substring(fromType.indexOf('#')+1);
-    	}
-	}
+    private void startOWLElement(String local, Attributes atts) {
+        if ("Thing".equals(local)) {
+            toType = null;
+            fromType = atts.getValue("rdf:about");
+            fromType = fromType.substring(fromType.indexOf('#') + 1);
+        }
+    }
 
-	private void startAtomTypeMappingElement(String local, Attributes atts) {
-    	if ("mapsToType".equals(local) || "equivalentAsType".equals(local)) {
-    		toType = atts.getValue("rdf:resource");
-    		toType = toType.substring(toType.indexOf('#')+1);
-    	}
-	}
+    private void startAtomTypeMappingElement(String local, Attributes atts) {
+        if ("mapsToType".equals(local) || "equivalentAsType".equals(local)) {
+            toType = atts.getValue("rdf:resource");
+            toType = toType.substring(toType.indexOf('#') + 1);
+        }
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     @TestMethod("testCharacters_arraychar_int_int")
     public void characters(char chars[], int start, int length) {}
 

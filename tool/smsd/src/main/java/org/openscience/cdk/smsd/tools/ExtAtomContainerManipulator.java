@@ -89,18 +89,19 @@ public class ExtAtomContainerManipulator extends AtomContainerManipulator {
     @TestMethod("testMakeDeepCopy")
     public static IAtomContainer makeDeepCopy(IAtomContainer container) {
 
-
         IAtomContainer newAtomContainer = container.getBuilder().newInstance(IAtomContainer.class);
-//      Deep copy of the Atoms
+        //      Deep copy of the Atoms
         IAtom[] atoms = copyAtoms(container, newAtomContainer);
 
-//      Deep copy of the bonds
+        //      Deep copy of the bonds
         copyBonds(atoms, container, newAtomContainer);
 
-//      Deep copy of the LonePairs
+        //      Deep copy of the LonePairs
         for (int index = 0; index < container.getLonePairCount(); index++) {
-            if (container.getAtom(index).getSymbol().equalsIgnoreCase("R") || container.getAtom(index).getSymbol().equalsIgnoreCase("A")) {
-                newAtomContainer.addLonePair(container.getBuilder().newInstance(ILonePair.class, container.getAtom(index)));
+            if (container.getAtom(index).getSymbol().equalsIgnoreCase("R")
+                    || container.getAtom(index).getSymbol().equalsIgnoreCase("A")) {
+                newAtomContainer.addLonePair(container.getBuilder().newInstance(ILonePair.class,
+                        container.getAtom(index)));
             } else {
                 newAtomContainer.addLonePair(index);
             }
@@ -141,20 +142,19 @@ public class ExtAtomContainerManipulator extends AtomContainerManipulator {
 
         try {
             // figure out which atoms are in aromatic rings:
-//            printAtoms(atomContainer);
+            //            printAtoms(atomContainer);
             ExtAtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
-//            printAtoms(atomContainer);
+            //            printAtoms(atomContainer);
             Aromaticity.cdkLegacy().apply(mol);
-//            printAtoms(atomContainer);
+            //            printAtoms(atomContainer);
             // figure out which rings are aromatic:
             RingSetManipulator.markAromaticRings(ringSet);
-//            printAtoms(atomContainer);
+            //            printAtoms(atomContainer);
             // figure out which simple (non cycles) rings are aromatic:
             // HueckelAromaticityDetector.detectAromaticity(atomContainer, srs);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
         // only atoms in 6 membered rings are aromatic
         // determine largest ring that each atom is atom part of
@@ -163,8 +163,7 @@ public class ExtAtomContainerManipulator extends AtomContainerManipulator {
 
             mol.getAtom(i).setFlag(CDKConstants.ISAROMATIC, false);
 
-            jloop:
-            for (int j = 0; j <= ringSet.getAtomContainerCount() - 1; j++) {
+            jloop: for (int j = 0; j <= ringSet.getAtomContainerCount() - 1; j++) {
                 //logger.debug(i+"\t"+j);
                 IRing ring = (IRing) ringSet.getAtomContainer(j);
                 if (!ring.getFlag(CDKConstants.ISAROMATIC)) {
@@ -230,8 +229,8 @@ public class ExtAtomContainerManipulator extends AtomContainerManipulator {
      */
     @TestMethod("testRemoveHydrogensAndPreserveAtomID")
     public static IAtomContainer removeHydrogensExceptSingleAndPreserveAtomID(IAtomContainer atomContainer) {
-        Map<IAtom, IAtom> map = new HashMap<IAtom, IAtom>();        // maps original atoms to clones.
-        List<IAtom> remove = new ArrayList<IAtom>();  // lists removed Hs.
+        Map<IAtom, IAtom> map = new HashMap<IAtom, IAtom>(); // maps original atoms to clones.
+        List<IAtom> remove = new ArrayList<IAtom>(); // lists removed Hs.
         IAtomContainer mol = null;
         if (atomContainer.getBondCount() > 0) {
             // Clone atoms except those to be removed.
@@ -260,12 +259,12 @@ public class ExtAtomContainerManipulator extends AtomContainerManipulator {
                     map.put(atom, clonedAtom);
 
                 } else {
-                    remove.add(atom);   // maintain list of removed H.
+                    remove.add(atom); // maintain list of removed H.
                 }
             }
-//            Clone bonds except those involving removed atoms.
+            //            Clone bonds except those involving removed atoms.
             mol = cloneAndMarkNonHBonds(mol, atomContainer, remove, map);
-//            Recompute hydrogen counts of neighbours of removed Hydrogens.
+            //            Recompute hydrogen counts of neighbours of removed Hydrogens.
             mol = reComputeHydrogens(mol, atomContainer, remove, map);
 
         } else {
@@ -348,9 +347,9 @@ public class ExtAtomContainerManipulator extends AtomContainerManipulator {
             setID(container, index, atoms);
             setHydrogenCount(container, index, atoms);
             setCharge(container, index, atoms);
-            newAtomContainer.addAtom(atoms[index]);            
+            newAtomContainer.addAtom(atoms[index]);
         }
-        
+
         for (IStereoElement stereoElement : container.stereoElements()) {
             newAtomContainer.addStereoElement(stereoElement);
         }
@@ -363,23 +362,23 @@ public class ExtAtomContainerManipulator extends AtomContainerManipulator {
         IBond[] bonds = new IBond[bondCount];
         for (int index = 0; index < container.getBondCount(); index++) {
             bonds[index] = new Bond();
-            int IndexI = 999;
+            int indexI = 999;
             for (int i = 0; i < container.getAtomCount(); i++) {
                 if (container.getBond(index).getAtom(0) == container.getAtom(i)) {
-                    IndexI = i;
+                    indexI = i;
                     break;
                 }
             }
-            int IndexJ = 999;
+            int indexJ = 999;
             for (int j = 0; j < container.getAtomCount(); j++) {
                 if (container.getBond(index).getAtom(1) == container.getAtom(j)) {
-                    IndexJ = j;
+                    indexJ = j;
                     break;
                 }
             }
 
-            IAtom atom1 = atoms[IndexI];
-            IAtom atom2 = atoms[IndexJ];
+            IAtom atom1 = atoms[indexI];
+            IAtom atom2 = atoms[indexJ];
 
             Order order = container.getBond(index).getOrder();
             IBond.Stereo stereo = container.getBond(index).getStereo();
@@ -392,11 +391,8 @@ public class ExtAtomContainerManipulator extends AtomContainerManipulator {
         }
     }
 
-    private static IAtomContainer reComputeHydrogens(
-            IAtomContainer mol,
-            IAtomContainer atomContainer,
-            List<IAtom> remove,
-            Map<IAtom, IAtom> map) {
+    private static IAtomContainer reComputeHydrogens(IAtomContainer mol, IAtomContainer atomContainer,
+            List<IAtom> remove, Map<IAtom, IAtom> map) {
 
         // Recompute hydrogen counts of neighbours of removed Hydrogens.
         for (IAtom aRemove : remove) {
@@ -408,8 +404,8 @@ public class ExtAtomContainerManipulator extends AtomContainerManipulator {
                 }
                 //Added by Asad
                 if (!(neighb instanceof IPseudoAtom)) {
-                    neighb.setImplicitHydrogenCount(
-                            (neighb.getImplicitHydrogenCount() == null ? 0 : neighb.getImplicitHydrogenCount()) + 1);
+                    neighb.setImplicitHydrogenCount((neighb.getImplicitHydrogenCount() == null ? 0 : neighb
+                            .getImplicitHydrogenCount()) + 1);
                 } else {
                     neighb.setImplicitHydrogenCount(0);
                 }
@@ -423,11 +419,8 @@ public class ExtAtomContainerManipulator extends AtomContainerManipulator {
         return mol;
     }
 
-    private static IAtomContainer cloneAndMarkNonHBonds(
-            IAtomContainer mol,
-            IAtomContainer atomContainer,
-            List<IAtom> remove,
-            Map<IAtom, IAtom> map) {
+    private static IAtomContainer cloneAndMarkNonHBonds(IAtomContainer mol, IAtomContainer atomContainer,
+            List<IAtom> remove, Map<IAtom, IAtom> map) {
         // Clone bonds except those involving removed atoms.
         int count = atomContainer.getBondCount();
         for (int i = 0; i < count; i++) {

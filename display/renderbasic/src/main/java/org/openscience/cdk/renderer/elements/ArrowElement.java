@@ -1,8 +1,8 @@
 /* Copyright (C) 2009  Stefan Kuhn <shk3@users.sf.net>
  *               2011  Egon Willighagen <egonw@users.sf.net>
- *  
+ *
  * Contact: cdk-devel@list.sourceforge.net
- * 
+ *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public License
  *  as published by the Free Software Foundation; either version 2.1
@@ -25,7 +25,7 @@ import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
 
 /**
- * {@link IRenderingElement} for linear arrows. 
+ * {@link IRenderingElement} for linear arrows.
  *
  * @cdk.module renderbasic
  * @cdk.githash
@@ -33,18 +33,18 @@ import org.openscience.cdk.annotations.TestMethod;
 @TestClass("org.openscience.cdk.renderer.elements.ArrowElementTest")
 public class ArrowElement implements IRenderingElement {
 
-	/** X coordinate of the point where the arrow starts. */
-    public final double startX;
-	/** Y coordinate of the point where the arrow starts. */
-    public final double startY;
-	/** X coordinate of the point where the arrow ends. */
-    public final double endX;
-	/** Y coordinate of the point where the arrow ends. */
-    public final double endY;
-	/** Width of the arrow line. */
-    public final double width;
+    /** X coordinate of the point where the arrow starts. */
+    public final double  startX;
+    /** Y coordinate of the point where the arrow starts. */
+    public final double  startY;
+    /** X coordinate of the point where the arrow ends. */
+    public final double  endX;
+    /** Y coordinate of the point where the arrow ends. */
+    public final double  endY;
+    /** Width of the arrow line. */
+    public final double  width;
     /** Color of the arrow. */
-    public final Color color;
+    public final Color   color;
     /** Boolean that is true if the arrow points from start to end, false if from end to start. */
     public final boolean direction;
 
@@ -60,8 +60,8 @@ public class ArrowElement implements IRenderingElement {
      * @param direction true is the arrow points from start to end, false if from end to start
      * @param color     {@link Color} of the arrow
      */
-    public ArrowElement(double startX, double startY, double endX, double endY,
-            double width, boolean direction, Color color) {
+    public ArrowElement(double startX, double startY, double endX, double endY, double width, boolean direction,
+            Color color) {
         this.endX = startX;
         this.endY = startY;
         this.startX = endX;
@@ -73,6 +73,7 @@ public class ArrowElement implements IRenderingElement {
 
     /** {@inheritDoc} */
     @TestMethod("testAccept")
+    @Override
     public void accept(IRenderingVisitor v) {
         v.visit(this);
     }

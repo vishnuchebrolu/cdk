@@ -73,29 +73,28 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
  */
 public class PiContactDetectionDescriptor extends AbstractAtomPairDescriptor implements IAtomPairDescriptor {
 
-    private static final String[] names = {"piContact"};
+    private static final String[] NAMES            = {"piContact"};
 
-    private boolean checkAromaticity = false;
-    IAtomContainerSet acSet = null;
-    private IAtomContainer acold=null;
+    private boolean               checkAromaticity = false;
+    IAtomContainerSet             acSet            = null;
+    private IAtomContainer        acold            = null;
 
     /**
      * Constructor for the PiContactDetectionDescriptor object.
      */
-    public PiContactDetectionDescriptor() { }
+    public PiContactDetectionDescriptor() {}
 
     /**
      * Gets the specification attribute of the PiContactDetectionDescriptor object.
      *
      * @return    The specification value
      */
+    @Override
     public DescriptorSpecification getSpecification() {
         return new DescriptorSpecification(
-                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#piContact",
-                this.getClass().getName(),
-                "The Chemistry Development Kit");
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#piContact", this.getClass()
+                        .getName(), "The Chemistry Development Kit");
     }
-
 
     /**
      * Sets the parameters attribute of the PiContactDetectionDescriptor object.
@@ -104,6 +103,7 @@ public class PiContactDetectionDescriptor extends AbstractAtomPairDescriptor imp
      *                boolean (true if is needed a checkAromaticity)
      * @exception     CDKException  Description of the Exception
      */
+    @Override
     public void setParameters(Object[] params) throws CDKException {
         if (params.length != 1) {
             throw new CDKException("PiContactDetectionDescriptor expects 1 parameters");
@@ -114,12 +114,12 @@ public class PiContactDetectionDescriptor extends AbstractAtomPairDescriptor imp
         checkAromaticity = (Boolean) params[0];
     }
 
-
     /**
      * Gets the parameters attribute of the PiContactDetectionDescriptor object.
      *
      * @return    The parameters value
      */
+    @Override
     public Object[] getParameters() {
         // return the parameters as used for the descriptor calculation
         Object[] params = new Object[1];
@@ -127,16 +127,15 @@ public class PiContactDetectionDescriptor extends AbstractAtomPairDescriptor imp
         return params;
     }
 
-    @TestMethod(value="testNamesConsistency")
+    @TestMethod(value = "testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
-        return names;
+        return NAMES;
     }
 
-     private DescriptorValue getDummyDescriptorValue(Exception e) {
-        return new DescriptorValue(
-                getSpecification(), getParameterNames(),
-                getParameters(), new BooleanResult(false),
-                names, e);
+    private DescriptorValue getDummyDescriptorValue(Exception e) {
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new BooleanResult(false),
+                NAMES, e);
     }
 
     /**
@@ -145,7 +144,8 @@ public class PiContactDetectionDescriptor extends AbstractAtomPairDescriptor imp
      * @param  atomContainer                AtomContainer
      * @return                   true if the atoms have pi-contact
      */
-    public DescriptorValue calculate(IAtom first, IAtom second, IAtomContainer atomContainer)  {
+    @Override
+    public DescriptorValue calculate(IAtom first, IAtom second, IAtomContainer atomContainer) {
         IAtomContainer ac;
         try {
             ac = (IAtomContainer) atomContainer.clone();
@@ -167,22 +167,23 @@ public class PiContactDetectionDescriptor extends AbstractAtomPairDescriptor imp
         boolean piContact = false;
         int counter = 0;
 
-        if(acold!=ac){
-          acold=ac;
-          acSet = ConjugatedPiSystemsDetector.detect(mol);
+        if (acold != ac) {
+            acold = ac;
+            acSet = ConjugatedPiSystemsDetector.detect(mol);
         }
         java.util.Iterator<IAtomContainer> detected = acSet.atomContainers().iterator();
 
-        java.util.List<IAtom> neighboorsFirst = mol.getConnectedAtomsList(clonedFirst);
-        java.util.List<IAtom> neighboorsSecond = mol.getConnectedAtomsList(clonedSecond);
+        List<IAtom> neighboorsFirst = mol.getConnectedAtomsList(clonedFirst);
+        List<IAtom> neighboorsSecond = mol.getConnectedAtomsList(clonedSecond);
 
         while (detected.hasNext()) {
-        	IAtomContainer detectedAC = detected.next();
+            IAtomContainer detectedAC = detected.next();
             if (detectedAC.contains(clonedFirst) && detectedAC.contains(clonedSecond)) {
                 counter += 1;
                 break;
             }
-            if (isANeighboorsInAnAtomContainer(neighboorsFirst, detectedAC) && isANeighboorsInAnAtomContainer(neighboorsSecond, detectedAC)) {
+            if (isANeighboorsInAnAtomContainer(neighboorsFirst, detectedAC)
+                    && isANeighboorsInAnAtomContainer(neighboorsSecond, detectedAC)) {
                 counter += 1;
                 break;
             }
@@ -191,10 +192,9 @@ public class PiContactDetectionDescriptor extends AbstractAtomPairDescriptor imp
         if (counter > 0) {
             piContact = true;
         }
-        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                new BooleanResult(piContact), getDescriptorNames());
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new BooleanResult(
+                piContact), getDescriptorNames());
     }
-
 
     /**
      * Gets if neighboors of an atom are in an atom container.
@@ -217,19 +217,18 @@ public class PiContactDetectionDescriptor extends AbstractAtomPairDescriptor imp
         return isIn;
     }
 
-
     /**
      * Gets the parameterNames attribute of the PiContactDetectionDescriptor
      * object.
      *
      * @return    The parameterNames value
      */
+    @Override
     public String[] getParameterNames() {
         String[] params = new String[1];
         params[0] = "checkAromaticity";
         return params;
     }
-
 
     /**
      * Gets the parameterType attribute of the PiContactDetectionDescriptor object.
@@ -237,9 +236,9 @@ public class PiContactDetectionDescriptor extends AbstractAtomPairDescriptor imp
      * @param  name  Description of the Parameter
      * @return       The parameterType value
      */
+    @Override
     public Object getParameterType(String name) {
         if (name.equals("checkAromaticity")) return true;
         return null;
     }
 }
-

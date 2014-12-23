@@ -24,6 +24,18 @@
       <bibtex:url>http://www.openrasmol.org/doc/rasmol.html#cpkcolours</bibtex:url>
     </bibtex:misc>
   </bibtex:entry>
+  
+  <bibtex:entry id="Brecher08">
+      <bibtex:article>
+        <bibtex:author>Jonathan Brecher</bibtex:author>
+        <bibtex:title>Graphical representation standards for chemical structure diagrams (IUPAC Recommendations 2008)</bibtex:title>
+        <bibtex:journal>Pure Appl. Chem</bibtex:journal>
+        <bibtex:year>2008</bibtex:year>
+        <bibtex:volume>80</bibtex:volume>
+        <bibtex:number>2</bibtex:number>
+        <bibtex:pages>277–410</bibtex:pages>
+      </bibtex:article>
+    </bibtex:entry>
 
   <bibtex:entry id="BGdV04a">
     <bibtex:article>
@@ -58,6 +70,17 @@
       <bibtex:pages>915-926</bibtex:pages>
     </bibtex:article>
   </bibtex:entry>
+  
+   <bibtex:entry id="Clark13">
+      <bibtex:article>
+        <bibtex:author>Clark A.</bibtex:author>
+        <bibtex:title>Rendering Molecular Sketches for Publication Quality Output</bibtex:title>
+        <bibtex:journal>Molecular Informatics</bibtex:journal>
+        <bibtex:year>2013</bibtex:year>
+        <bibtex:volume>32</bibtex:volume>      
+        <bibtex:pages>291-301</bibtex:pages>
+      </bibtex:article>
+    </bibtex:entry>
 
   <bibtex:entry id="Downs89">
     <bibtex:article>
@@ -786,6 +809,30 @@ obtained by accurate mass spectrometry</bibtex:title>
       <bibtex:pages>493-500</bibtex:pages>
       <bibtex:doi>10.1021/ci025584y</bibtex:doi>
       <bibtex:url>http://www.cdk.org/</bibtex:url>
+    </bibtex:article>
+  </bibtex:entry>
+  
+  <bibtex:entry id="Steffen09">
+    <bibtex:article>
+      <bibtex:author>Andreas Steffen, Thierry Kogej, Christian Tyrchan and Ola Engkvist</bibtex:author>
+      <bibtex:title>Comparison of Molecular Fingerprint Methods on the Basis of Biological Profile Data</bibtex:title>
+      <bibtex:journal>J. Chem. Inf. Model.</bibtex:journal>
+      <bibtex:year>2009</bibtex:year>
+      <bibtex:volume>49</bibtex:volume>
+      <bibtex:pages>338–347</bibtex:pages>
+      <bibtex:doi>10.1021/ci800326z</bibtex:doi>
+    </bibtex:article>
+  </bibtex:entry>
+  
+  <bibtex:entry id="Grant06">
+    <bibtex:article>
+      <bibtex:author>J.A. Grant, J.A. Haigh, B.T. Pickup, A. Nicholls and R.A. Sayle</bibtex:author>
+      <bibtex:title>Lingos, Finite State Machines, and Fast Similarity Searching</bibtex:title>
+      <bibtex:journal>J. Chem. Inf. Model.</bibtex:journal>
+      <bibtex:year>2006</bibtex:year>
+      <bibtex:volume>46</bibtex:volume>
+      <bibtex:pages>1912-1918</bibtex:pages>
+      <bibtex:doi>10.1021/ci6002152</bibtex:doi>
     </bibtex:article>
   </bibtex:entry>
 

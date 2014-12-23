@@ -1,20 +1,20 @@
 /* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
- * 
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA. 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.openscience.cdk.modulesuites;
 
@@ -124,105 +124,33 @@ import org.openscience.cdk.io.formats.ZindoFormatTest;
  *
  * @cdk.module test-ioformats
  */
-@RunWith(value=Suite.class)
-@SuiteClasses(value={
-    IoformatsCoverageTest.class,
-    FormatFactoryTest.class,
+@RunWith(value = Suite.class)
+@SuiteClasses(value = {IoformatsCoverageTest.class, FormatFactoryTest.class,
 
-    ABINITFormatTest.class,
-    Aces2FormatTest.class,
-    ADFFormatTest.class,
-    AlchemyFormatTest.class,
-    BGFFormatTest.class,
-    BSFormatTest.class,
-    CacaoCartesianFormatTest.class,
-    CacaoInternalFormatTest.class,
-    CACheFormatTest.class,
-    CDKOWLFormatTest.class,
-    CDKSourceCodeFormatTest.class,
-    Chem3D_Cartesian_1FormatTest.class,
-    Chem3D_Cartesian_2FormatTest.class,
-    ChemDrawFormatTest.class,
-    ChemtoolFormatTest.class,
-    CIFFormatTest.class,
-    CMLFormatTest.class,
-    CMLRSSFormatTest.class,
-    CRK2DFormatTest.class,
-    CRK3DFormatTest.class,
-    CrystClustFormatTest.class,
-    CTXFormatTest.class,
-    DaltonFormatTest.class,
-    DMol3FormatTest.class,
-    DOCK5FormatTest.class,
-    FenskeHall_ZMatrixFormatTest.class,
-    FingerprintFormatTest.class,
-    GamessFormatTest.class,
-    Gaussian03FormatTest.class,
-    Gaussian90FormatTest.class,
-    Gaussian92FormatTest.class,
-    Gaussian94FormatTest.class,
-    Gaussian95FormatTest.class,
-    Gaussian98FormatTest.class,
-    GaussianInputFormatTest.class,
-    GhemicalMMFormatTest.class,
-    GhemicalSPMFormatTest.class,
-    GROMOS96FormatTest.class,
-    HINFormatTest.class,
-    INChIFormatTest.class,
-    INChIPlainTextFormatTest.class,
-    JaguarFormatTest.class,
-    JMEFormatTest.class,
-    MacroModelFormatTest.class,
-    MDLFormatTest.class,
-    MDLRXNFormatTest.class,
-    MDLRXNV3000FormatTest.class,
-    MDLV2000FormatTest.class,
-    MDLV3000FormatTest.class,
-    MMODFormatTest.class,
-    Mol2FormatTest.class,
-    MOPAC2002FormatTest.class,
-    MOPAC2007FormatTest.class,
-    MOPAC2009FormatTest.class,
-    MOPAC2012FormatTest.class,
-    MOPAC7FormatTest.class,
-    MOPAC93FormatTest.class,
-    MOPAC97FormatTest.class,
-    MoSSOutputFormatTest.class,
-    MPQCFormatTest.class,
-    NWChemFormatTest.class,
-    PCModelFormatTest.class,
-    PDBFormatTest.class,
-    PDBMLFormatTest.class,
-    PMPFormatTest.class,
-    POVRayFormatTest.class,
-    PQSChemFormatTest.class,
-    PubChemASNFormatTest.class,
-    PubChemFormatTest.class,
-    PubChemCompoundsXMLFormatTest.class,
-    PubChemCompoundXMLFormatTest.class,
-    PubChemSubstancesASNFormatTest.class,
-    PubChemSubstancesXMLFormatTest.class,
-    PubChemSubstanceXMLFormatTest.class,
-    QChemFormatTest.class,
-    RawCopyFormatTest.class,
-    SDFFormatTest.class,
-    ShelXFormatTest.class,
-    SMARTSFormatTest.class,
-    SMILESFIXFormatTest.class,
-    SMILESFormatTest.class,
-    SpartanFormatTest.class,
-    SVGFormatTest.class,
-    SybylDescriptorFormatTest.class,
-    TinkerMM2FormatTest.class,
-    TinkerXYZFormatTest.class,
-    TurboMoleFormatTest.class,
-    UniChemXYZFormatTest.class,
-    VASPFormatTest.class,
-    ViewmolFormatTest.class,
-    XEDFormatTest.class,
-    XYZFormatTest.class,
-    YasaraFormatTest.class,
-    ZindoFormatTest.class,
-    ZMatrixFormatTest.class
-})
-public class MioformatsTests {}
+ABINITFormatTest.class, Aces2FormatTest.class, ADFFormatTest.class, AlchemyFormatTest.class, BGFFormatTest.class,
+        BSFormatTest.class, CacaoCartesianFormatTest.class, CacaoInternalFormatTest.class, CACheFormatTest.class,
+        CDKOWLFormatTest.class, CDKSourceCodeFormatTest.class, Chem3D_Cartesian_1FormatTest.class,
+        Chem3D_Cartesian_2FormatTest.class, ChemDrawFormatTest.class, ChemtoolFormatTest.class, CIFFormatTest.class,
+        CMLFormatTest.class, CMLRSSFormatTest.class, CRK2DFormatTest.class, CRK3DFormatTest.class,
+        CrystClustFormatTest.class, CTXFormatTest.class, DaltonFormatTest.class, DMol3FormatTest.class,
+        DOCK5FormatTest.class, FenskeHall_ZMatrixFormatTest.class, FingerprintFormatTest.class, GamessFormatTest.class,
+        Gaussian03FormatTest.class, Gaussian90FormatTest.class, Gaussian92FormatTest.class, Gaussian94FormatTest.class,
+        Gaussian95FormatTest.class, Gaussian98FormatTest.class, GaussianInputFormatTest.class,
+        GhemicalMMFormatTest.class, GhemicalSPMFormatTest.class, GROMOS96FormatTest.class, HINFormatTest.class,
+        INChIFormatTest.class, INChIPlainTextFormatTest.class, JaguarFormatTest.class, JMEFormatTest.class,
+        MacroModelFormatTest.class, MDLFormatTest.class, MDLRXNFormatTest.class, MDLRXNV3000FormatTest.class,
+        MDLV2000FormatTest.class, MDLV3000FormatTest.class, MMODFormatTest.class, Mol2FormatTest.class,
+        MOPAC2002FormatTest.class, MOPAC2007FormatTest.class, MOPAC2009FormatTest.class, MOPAC2012FormatTest.class,
+        MOPAC7FormatTest.class, MOPAC93FormatTest.class, MOPAC97FormatTest.class, MoSSOutputFormatTest.class,
+        MPQCFormatTest.class, NWChemFormatTest.class, PCModelFormatTest.class, PDBFormatTest.class,
+        PDBMLFormatTest.class, PMPFormatTest.class, POVRayFormatTest.class, PQSChemFormatTest.class,
+        PubChemASNFormatTest.class, PubChemFormatTest.class, PubChemCompoundsXMLFormatTest.class,
+        PubChemCompoundXMLFormatTest.class, PubChemSubstancesASNFormatTest.class, PubChemSubstancesXMLFormatTest.class,
+        PubChemSubstanceXMLFormatTest.class, QChemFormatTest.class, RawCopyFormatTest.class, SDFFormatTest.class,
+        ShelXFormatTest.class, SMARTSFormatTest.class, SMILESFIXFormatTest.class, SMILESFormatTest.class,
+        SpartanFormatTest.class, SVGFormatTest.class, SybylDescriptorFormatTest.class, TinkerMM2FormatTest.class,
+        TinkerXYZFormatTest.class, TurboMoleFormatTest.class, UniChemXYZFormatTest.class, VASPFormatTest.class,
+        ViewmolFormatTest.class, XEDFormatTest.class, XYZFormatTest.class, YasaraFormatTest.class,
+        ZindoFormatTest.class, ZMatrixFormatTest.class})
+public class MioformatsTests {
+}

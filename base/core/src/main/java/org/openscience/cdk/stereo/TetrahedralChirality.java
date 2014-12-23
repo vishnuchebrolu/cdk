@@ -44,14 +44,14 @@ import java.util.Map;
 @TestClass("org.openscience.cdk.stereo.TetrahedralChiralityTest")
 public class TetrahedralChirality implements ITetrahedralChirality {
 
-    private IAtom chiralAtom;
-    private IAtom[] ligandAtoms;
-    private Stereo stereo;
+    private IAtom              chiralAtom;
+    private IAtom[]            ligandAtoms;
+    private Stereo             stereo;
     private IChemObjectBuilder builder;
 
     /**
      * Constructor to create a new {@link ITetrahedralChirality} implementation instance.
-     * 
+     *
      * @param chiralAtom  The chiral {@link IAtom}.
      * @param ligandAtoms The ligand atoms around the chiral atom.
      * @param chirality   The {@link Stereo} chirality.
@@ -69,6 +69,7 @@ public class TetrahedralChirality implements ITetrahedralChirality {
      * @return an array of four {@link IAtom}s.
      */
     @TestMethod("testGetLigands")
+    @Override
     public IAtom[] getLigands() {
         IAtom[] arrayCopy = new IAtom[4];
         System.arraycopy(ligandAtoms, 0, arrayCopy, 0, 4);
@@ -81,6 +82,7 @@ public class TetrahedralChirality implements ITetrahedralChirality {
      * @return the chiral {@link IAtom}.
      */
     @TestMethod("testGetChiralAtom")
+    @Override
     public IAtom getChiralAtom() {
         return chiralAtom;
     }
@@ -91,6 +93,7 @@ public class TetrahedralChirality implements ITetrahedralChirality {
      * @return the {@link Stereo} for this stereo element.
      */
     @TestMethod("testGetStereo")
+    @Override
     public Stereo getStereo() {
         return stereo;
     }
@@ -108,6 +111,7 @@ public class TetrahedralChirality implements ITetrahedralChirality {
 
     /** {@inheritDoc} */
     @TestMethod("testBuilder")
+    @Override
     public IChemObjectBuilder getBuilder() {
         return builder;
     }
@@ -116,12 +120,11 @@ public class TetrahedralChirality implements ITetrahedralChirality {
      * @inheritDoc
      */
     @TestMethod("contains")
-    @Override public boolean contains(IAtom atom) {
-        if (chiralAtom.equals(atom))
-            return true;
+    @Override
+    public boolean contains(IAtom atom) {
+        if (chiralAtom.equals(atom)) return true;
         for (IAtom ligand : ligandAtoms)
-            if (ligand.equals(atom)) 
-                return true;
+            if (ligand.equals(atom)) return true;
         return false;
     }
 
@@ -133,16 +136,14 @@ public class TetrahedralChirality implements ITetrahedralChirality {
     public ITetrahedralChirality map(Map<IAtom, IAtom> atoms, Map<IBond, IBond> bonds) {
 
         // don't check bond map as we don't use it
-        if(atoms == null)
-            throw new IllegalArgumentException("null atom mapping provided");
+        if (atoms == null) throw new IllegalArgumentException("null atom mapping provided");
 
         // convert the chiral atom and it's ligands to their equivalent
-        IAtom   chiral  = chiralAtom != null ? atoms.get(chiralAtom) : null;
+        IAtom chiral = chiralAtom != null ? atoms.get(chiralAtom) : null;
         IAtom[] ligands = new IAtom[ligandAtoms.length];
 
         for (int i = 0; i < ligands.length; i++) {
-            if(ligandAtoms[i] != null)
-                ligands[i] = atoms.get(ligandAtoms[i]);
+            if (ligandAtoms[i] != null) ligands[i] = atoms.get(ligandAtoms[i]);
         }
 
         // create a new tetrahedral instance with the mapped chiral atom and ligands
@@ -152,20 +153,21 @@ public class TetrahedralChirality implements ITetrahedralChirality {
 
     /**
      * Returns a {@link String} representation of this chiral element.
-     * 
+     *
      * @return the String representation
      */
     @TestMethod("testToString")
+    @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("Tetrahedral{").append(this.hashCode()).append(", ");
         builder.append(this.getStereo()).append(", ");
         builder.append("c:").append(this.getChiralAtom()).append(", ");
         IAtom[] ligands = this.getLigands();
-        for (int i=0; i<ligands.length; i++) {
-            builder.append(i+1).append(":").append(ligands[i]).append(", ");
+        for (int i = 0; i < ligands.length; i++) {
+            builder.append(i + 1).append(':').append(ligands[i]).append(", ");
         }
-        builder.append("}");
+        builder.append('}');
         return builder.toString();
     }
 }

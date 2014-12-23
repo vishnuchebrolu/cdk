@@ -56,13 +56,15 @@ import java.util.Map;
  */
 @TestClass("org.openscience.cdk.fragment.ExhaustiveFragmenterTest")
 public class ExhaustiveFragmenter implements IFragmenter {
-    private static final int DEFAULT_MIN_FRAG_SIZE = 6;
+
+    private static final int    DEFAULT_MIN_FRAG_SIZE = 6;
 
     Map<String, IAtomContainer> fragMap;
-    SmilesGenerator smilesGenerator;
-    String[] fragments = null;
-    int minFragSize = 6;
-    private static ILoggingTool logger = LoggingToolFactory.createLoggingTool(ExhaustiveFragmenter.class);
+    SmilesGenerator             smilesGenerator;
+    String[]                    fragments             = null;
+    int                         minFragSize           = 6;
+    private static ILoggingTool logger                = LoggingToolFactory
+                                                              .createLoggingTool(ExhaustiveFragmenter.class);
 
     /**
      * Instantiate fragmenter with default minimum fragment size.
@@ -81,8 +83,7 @@ public class ExhaustiveFragmenter implements IFragmenter {
     public ExhaustiveFragmenter(int minFragSize) {
         this.minFragSize = minFragSize;
         fragMap = new HashMap<String, IAtomContainer>();
-        smilesGenerator = SmilesGenerator.unique()
-                                         .aromatic();
+        smilesGenerator = SmilesGenerator.unique().aromatic();
     }
 
     /**
@@ -101,6 +102,7 @@ public class ExhaustiveFragmenter implements IFragmenter {
      * @param atomContainer The input molecule.
      */
     @TestMethod("testEF1,testEF2,testEF3,testEF4,testEF5,testEF6,testEF7")
+    @Override
     public void generateFragments(IAtomContainer atomContainer) throws CDKException {
         fragMap.clear();
         run(atomContainer);
@@ -127,8 +129,7 @@ public class ExhaustiveFragmenter implements IFragmenter {
                 CDKHydrogenAdder.getInstance(partContainer.getBuilder()).addImplicitHydrogens(partContainer);
                 Aromaticity.cdkLegacy().apply(partContainer);
                 tmpSmiles = smilesGenerator.create(partContainer);
-                if (partContainer.getAtomCount() >= minFragSize &&
-                        !fragMap.containsKey(tmpSmiles)) {
+                if (partContainer.getAtomCount() >= minFragSize && !fragMap.containsKey(tmpSmiles)) {
                     fragments.add(partContainer);
                     fragMap.put(tmpSmiles, partContainer);
                 }
@@ -177,8 +178,7 @@ public class ExhaustiveFragmenter implements IFragmenter {
 
             // lets see if it's in a ring
             IRingSet rings = allRings.getRings(bond);
-            if (rings.getAtomContainerCount() != 0)
-                isInRing = true;
+            if (rings.getAtomContainerCount() != 0) isInRing = true;
 
             // lets see if it is a terminal bond
             for (IAtom atom : bond.atoms()) {
@@ -188,8 +188,7 @@ public class ExhaustiveFragmenter implements IFragmenter {
                 }
             }
 
-            if (!(isInRing || isTerminal))
-                splitableBonds.add(bond);
+            if (!(isInRing || isTerminal)) splitableBonds.add(bond);
         }
         return splitableBonds;
     }
@@ -200,6 +199,7 @@ public class ExhaustiveFragmenter implements IFragmenter {
      * @return a String[] of the fragments.
      */
     @TestMethod("testEF1,testEF2,testEF3,testEF4,testEF5,testEF6,testEF7")
+    @Override
     public String[] getFragments() {
         return (new ArrayList<String>(fragMap.keySet())).toArray(new String[0]);
     }
@@ -210,9 +210,9 @@ public class ExhaustiveFragmenter implements IFragmenter {
      * @return a IAtomContainer[] of the fragments.
      */
     @TestMethod("testEF5,testEF6,testEF7")
+    @Override
     public IAtomContainer[] getFragmentsAsContainers() {
         return (new ArrayList<IAtomContainer>(fragMap.values())).toArray(new IAtomContainer[0]);
     }
-
 
 }

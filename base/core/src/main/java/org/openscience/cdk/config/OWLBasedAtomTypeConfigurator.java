@@ -40,28 +40,28 @@ import org.openscience.cdk.tools.LoggingToolFactory;
 @TestClass("org.openscience.cdk.config.OWLBasedAtomTypeConfiguratorTest")
 public class OWLBasedAtomTypeConfigurator implements IAtomTypeConfigurator {
 
-    private InputStream ins = null;
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(OWLBasedAtomTypeConfigurator.class);
+    private InputStream         ins    = null;
+    private static ILoggingTool logger = LoggingToolFactory.createLoggingTool(OWLBasedAtomTypeConfigurator.class);
 
     @TestMethod("testCDKBasedAtomTypeConfigurator")
-    public OWLBasedAtomTypeConfigurator() {
-    }
+    public OWLBasedAtomTypeConfigurator() {}
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     @TestMethod("testSetInputStream_InputStream")
     public void setInputStream(InputStream ins) {
         this.ins = ins;
     }
-    
+
     /**
      * Reads the atom types from the OWL based atom type list.
-     * 
+     *
      * @param builder IChemObjectBuilder used to construct the IAtomType's.
      * @throws        IOException when a problem occurred with reading from the InputStream
      * @return        A List with read IAtomType's.
      */
     @TestMethod("testReadAtomTypes_IChemObjectBuilder")
+    @Override
     public List<IAtomType> readAtomTypes(IChemObjectBuilder builder) throws IOException {
         List<IAtomType> atomTypes;
         if (ins == null) throw new IOException("There was a problem getting an input stream");
@@ -74,5 +74,5 @@ public class OWLBasedAtomTypeConfigurator implements IAtomTypeConfigurator {
         }
         return atomTypes;
     }
-   
+
 }

@@ -34,15 +34,15 @@ public class TextElement implements IRenderingElement {
 
     /** The x coordinate where the text should be displayed. */
     public final double xCoord;
-    
+
     /** The y coordinate where the text should be displayed. */
     public final double yCoord;
-    
+
     /** The text to be displayed. */
     public final String text;
-    
+
     /** The color of the text. */
-    public final Color color;
+    public final Color  color;
 
     /**
      * Constructs a new TextElement with the content <code>text</code> to be
@@ -63,6 +63,7 @@ public class TextElement implements IRenderingElement {
 
     /** {@inheritDoc} */
     @TestMethod("testAccept")
+    @Override
     public void accept(IRenderingVisitor visotor) {
         visotor.visit(this);
     }

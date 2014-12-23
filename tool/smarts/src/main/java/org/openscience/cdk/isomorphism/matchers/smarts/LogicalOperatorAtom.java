@@ -27,51 +27,51 @@ import org.openscience.cdk.isomorphism.matchers.IQueryAtom;
  *
  * @cdk.module  smarts
  * @cdk.githash
- * @cdk.keyword SMARTS 
+ * @cdk.keyword SMARTS
  */
 public final class LogicalOperatorAtom extends SMARTSAtom {
 
-	/**
-	 * Left child
-	 */
-	private IQueryAtom left;
+    /**
+     * Left child
+     */
+    private IQueryAtom left;
 
     /**
      * Name of operator
      */
-    private String operator;
+    private String     operator;
 
     /**
      * Right child
      */
     private IQueryAtom right;
 
-    public LogicalOperatorAtom(IChemObjectBuilder builder){
+    public LogicalOperatorAtom(IChemObjectBuilder builder) {
         super(builder);
     }
-    
+
     @Deprecated
     public IQueryAtom getLeft() {
         return left;
     }
-    
+
     @Deprecated
     public String getOperator() {
         return operator;
     }
-    
+
     @Deprecated
     public IQueryAtom getRight() {
         return right;
     }
-    
+
     @Deprecated
     public void setLeft(IQueryAtom left) {
         this.left = left;
     }
 
     /**
-     * 
+     *
      * @deprecated use static utility methods to create logical atom matcher,
      * {@link #and}, {@link #or} or {@link #not}.
      */
@@ -79,60 +79,66 @@ public final class LogicalOperatorAtom extends SMARTSAtom {
     public void setOperator(String name) {
         this.operator = name;
     }
-    
+
     @Deprecated
     public void setRight(IQueryAtom right) {
         this.right = right;
     }
-    
-    /* (non-Javadoc)
-     * @see org.openscience.cdk.isomorphism.matchers.smarts.SMARTSAtom#matches(org.openscience.cdk.interfaces.IAtom)
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.openscience.cdk.isomorphism.matchers.smarts.SMARTSAtom#matches(org
+     * .openscience.cdk.interfaces.IAtom)
      */
     @Deprecated
+    @Override
     public boolean matches(IAtom atom) {
-    	boolean val = false;
-    	boolean matchesLeft = left.matches(atom);
-    	if (right != null) {
-    		if ("and".equals(operator) && matchesLeft) {
-        		boolean matchesRight = right.matches(atom);
-    			val = matchesLeft && matchesRight;
-    		} else if ("or".equals(operator)) {
-        		boolean matchesRight = right.matches(atom);
-    			val = matchesLeft || matchesRight;
-    		}
-    	} else {
-    		if ("not".equals(operator)) {
-    			val = (!matchesLeft);
-    		} else {
-    			val = matchesLeft;
-    		}
-    	}
-    	return val;
+        boolean val = false;
+        boolean matchesLeft = left.matches(atom);
+        if (right != null) {
+            if ("and".equals(operator) && matchesLeft) {
+                boolean matchesRight = right.matches(atom);
+                val = matchesLeft && matchesRight;
+            } else if ("or".equals(operator)) {
+                boolean matchesRight = right.matches(atom);
+                val = matchesLeft || matchesRight;
+            }
+        } else {
+            if ("not".equals(operator)) {
+                val = (!matchesLeft);
+            } else {
+                val = matchesLeft;
+            }
+        }
+        return val;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see org.openscience.cdk.ChemObject#getFlag(int)
      */
     @Deprecated
+    @Override
     public boolean getFlag(int flagType) {
-    	boolean val = false;
-    	boolean leftFlag = left.getFlag(flagType);
-    	if (right != null) {
-    		if ("and".equals(operator) && leftFlag) {
-        		boolean rightFlag = right.getFlag(flagType);
-    			val = leftFlag && rightFlag;
-    		} else if ("or".equals(operator)) {
-        		boolean rightFlag = right.getFlag(flagType);
-    			val = leftFlag || rightFlag;
-    		}
-    	} else {
-    		if ("not".equals(operator)) {
-    			val = (!leftFlag);
-    		} else {
-    			val = leftFlag;
-    		}
-    	}
-    	return val;
+        boolean val = false;
+        boolean leftFlag = left.getFlag(flagType);
+        if (right != null) {
+            if ("and".equals(operator) && leftFlag) {
+                boolean rightFlag = right.getFlag(flagType);
+                val = leftFlag && rightFlag;
+            } else if ("or".equals(operator)) {
+                boolean rightFlag = right.getFlag(flagType);
+                val = leftFlag || rightFlag;
+            }
+        } else {
+            if ("not".equals(operator)) {
+                val = (!leftFlag);
+            } else {
+                val = leftFlag;
+            }
+        }
+        return val;
     }
 
     /**
@@ -159,7 +165,7 @@ public final class LogicalOperatorAtom extends SMARTSAtom {
 
     /**
      * Negate the provided expression.
-     * 
+     *
      * @param expr expression to negate
      * @return a SMARTS atom which is the negation of the expression
      */
@@ -187,12 +193,14 @@ public final class LogicalOperatorAtom extends SMARTSAtom {
         }
 
         /** @inheritDoc */
-        @Override public boolean matches(IAtom atom) {
+        @Override
+        public boolean matches(IAtom atom) {
             return left.matches(atom) && right.matches(atom);
         }
 
         /** @inheritDoc */
-        @Override public boolean chiralityMatches(IAtom target, int tParity, int permParity) {
+        @Override
+        public boolean chiralityMatches(IAtom target, int tParity, int permParity) {
             // contract dictates that left.matches() & right.matches() are known to be true
             return left.chiralityMatches(target, tParity, permParity)
                     && right.chiralityMatches(target, tParity, permParity);
@@ -219,16 +227,18 @@ public final class LogicalOperatorAtom extends SMARTSAtom {
         }
 
         /** @inheritDoc */
-        @Override public boolean matches(IAtom atom) {
+        @Override
+        public boolean matches(IAtom atom) {
             return left.matches(atom) || right.matches(atom);
         }
 
         /** @inheritDoc */
-        @Override public boolean chiralityMatches(IAtom target, int tParity, int permParity) {
+        @Override
+        public boolean chiralityMatches(IAtom target, int tParity, int permParity) {
             // we know the left or right was true, for each side which matched try to verify
             // the chirality
-            return left.matches(target) && left.chiralityMatches(target, tParity, permParity)
-                    || right.matches(target) && right.chiralityMatches(target, tParity, permParity);
+            return left.matches(target) && left.chiralityMatches(target, tParity, permParity) || right.matches(target)
+                    && right.chiralityMatches(target, tParity, permParity);
         }
     }
 
@@ -237,7 +247,7 @@ public final class LogicalOperatorAtom extends SMARTSAtom {
 
         /** Expression to negate. */
         private SMARTSAtom expression;
-        
+
         /** Is the expression chiral - if so, always true! */
         private boolean    chiral;
 
@@ -250,16 +260,18 @@ public final class LogicalOperatorAtom extends SMARTSAtom {
         private Negation(IChemObjectBuilder builder, IQueryAtom expression) {
             super(builder);
             this.expression = (SMARTSAtom) expression;
-            this.chiral     = expression.getClass().equals(ChiralityAtom.class); 
+            this.chiral = expression.getClass().equals(ChiralityAtom.class);
         }
 
         /** @inheritDoc */
-        @Override public boolean matches(IAtom atom) {
+        @Override
+        public boolean matches(IAtom atom) {
             return chiral || !expression.matches(atom);
         }
 
         /** @inheritDoc */
-        @Override public boolean chiralityMatches(IAtom target, int tParity, int permParity) {
+        @Override
+        public boolean chiralityMatches(IAtom target, int tParity, int permParity) {
             return !expression.chiralityMatches(target, tParity, permParity);
         }
     }

@@ -39,11 +39,12 @@ import org.openscience.cdk.geometry.cip.ILigand;
 @TestClass("org.openscience.cdk.geometry.cip.rules.CombinedAtomicMassNumberRuleTest")
 class CombinedAtomicMassNumberRule implements ISequenceSubRule<ILigand> {
 
-    MassNumberRule massNumberRule = new MassNumberRule();
+    MassNumberRule   massNumberRule   = new MassNumberRule();
     AtomicNumberRule atomicNumberRule = new AtomicNumberRule();
 
     /** {@inheritDoc} */
     @TestMethod("testCompare,testCompare_Identity,testOrder")
+    @Override
     public int compare(ILigand ligand1, ILigand ligand2) {
         int atomicNumberComp = atomicNumberRule.compare(ligand1, ligand2);
         if (atomicNumberComp != 0) return atomicNumberComp;

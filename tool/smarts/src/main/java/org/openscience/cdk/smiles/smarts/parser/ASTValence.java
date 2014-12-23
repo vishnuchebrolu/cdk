@@ -18,7 +18,7 @@
 package org.openscience.cdk.smiles.smarts.parser;
 
 /**
- * An AST node. It represents valence (v) in smarts 
+ * An AST node. It represents valence (v) in smarts
  *
  * @author Dazhi Jiao
  * @cdk.created 2007-04-24
@@ -27,6 +27,7 @@ package org.openscience.cdk.smiles.smarts.parser;
  * @cdk.keyword SMARTS AST
  */
 class ASTValence extends SimpleNode {
+
     /**
      * Valence order.
      */
@@ -53,9 +54,13 @@ class ASTValence extends SimpleNode {
         return order;
     }
 
-    /* (non-Javadoc)
-     * @see org.openscience.cdk.smiles.smarts.parser.SimpleNode#jjtAccept(org.openscience.cdk.smiles.smarts.parser.SMARTSParserVisitor, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.openscience.cdk.smiles.smarts.parser.SimpleNode#jjtAccept(org.openscience
+     * .cdk.smiles.smarts.parser.SMARTSParserVisitor, java.lang.Object)
      */
+    @Override
     public Object jjtAccept(SMARTSParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }

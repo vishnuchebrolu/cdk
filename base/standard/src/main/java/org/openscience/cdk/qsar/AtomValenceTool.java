@@ -35,7 +35,7 @@ import java.util.Map;
  */
 public class AtomValenceTool {
 
-    private static Map<String,Integer> valencesTable = null;
+    private static Map<String, Integer> valencesTable = null;
 
     public static int getValence(IAtom atom) {
         if (valencesTable == null) {
@@ -89,9 +89,8 @@ public class AtomValenceTool {
             valencesTable.put("Mn", 2);
             valencesTable.put("Co", 2);
         }
-        
+
         return valencesTable.get(atom.getSymbol());
     }
 
 }
-

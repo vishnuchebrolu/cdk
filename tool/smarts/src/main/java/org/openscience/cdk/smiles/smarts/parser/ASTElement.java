@@ -18,10 +18,10 @@
 package org.openscience.cdk.smiles.smarts.parser;
 
 /**
- * An AST node. It can represent any element except for hydrogen. 
- * It also can represent the lower case aromatic notation "o", "c", "n", "s", 
+ * An AST node. It can represent any element except for hydrogen.
+ * It also can represent the lower case aromatic notation "o", "c", "n", "s",
  * etc.
- * 
+ *
  * @author Dazhi Jiao
  * @cdk.created 2007-04-24
  * @cdk.module smarts
@@ -29,6 +29,7 @@ package org.openscience.cdk.smiles.smarts.parser;
  * @cdk.keyword SMARTS
  */
 class ASTElement extends SimpleNode {
+
     /**
      * The element symbol.
      */
@@ -55,9 +56,13 @@ class ASTElement extends SimpleNode {
         return symbol;
     }
 
-    /* (non-Javadoc)
-     * @see org.openscience.cdk.smiles.smarts.parser.SimpleNode#jjtAccept(org.openscience.cdk.smiles.smarts.parser.SMARTSParserVisitor, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.openscience.cdk.smiles.smarts.parser.SimpleNode#jjtAccept(org.openscience
+     * .cdk.smiles.smarts.parser.SMARTSParserVisitor, java.lang.Object)
      */
+    @Override
     public Object jjtAccept(SMARTSParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }

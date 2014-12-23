@@ -88,17 +88,17 @@ import org.openscience.cdk.annotations.TestMethod;
 @TestClass("org.openscience.cdk.tools.LoggingToolTest")
 public class LoggingTool implements ILoggingTool {
 
-    private boolean doDebug = false;
-    private boolean toSTDOUT = false;
+    private boolean             doDebug              = false;
+    private boolean             toSTDOUT             = false;
 
-    private Logger log4jLogger;
+    private Logger              log4jLogger;
     private static ILoggingTool logger;
-    private String classname;
+    private String              classname;
 
-    private int stackLength;  // NOPMD
-    
+    private int                 stackLength;                 // NOPMD
+
     /** Default number of StackTraceElements to be printed by debug(Exception). */
-    public final int DEFAULT_STACK_LENGTH = 5;
+    public final int            DEFAULT_STACK_LENGTH = 5;
 
     /**
      * Constructs a LoggingTool which produces log lines without any special
@@ -119,7 +119,7 @@ public class LoggingTool implements ILoggingTool {
     public LoggingTool(Object object) {
         this(object.getClass());
     }
-    
+
     /**
      * Constructs a LoggingTool which produces log lines indicating them to be
      * for the given Class.
@@ -144,30 +144,30 @@ public class LoggingTool implements ILoggingTool {
             logger.debug("Unknown error occured: ", e.getMessage());
         }
         /* **************************************************************
-         * but some JVMs (i.e. MSFT) won't pass the SecurityException to
-         * this exception handler. So we are going to check the JVM
-         * version first
-         ****************************************************************/
+         * but some JVMs (i.e. MSFT) won't pass the SecurityException to this
+         * exception handler. So we are going to check the JVM version first
+         * **************************************************************
+         */
         doDebug = false;
         String strJvmVersion = System.getProperty("java.version");
         if (strJvmVersion.compareTo("1.2") >= 0) {
-          // Use a try {} to catch SecurityExceptions when used in applets
-          try {
-            // by default debugging is set off, but it can be turned on
-            // with starting java like "java -Dcdk.debugging=true"
-            if (System.getProperty("cdk.debugging", "false").equals("true")) {
-              doDebug = true;
+            // Use a try {} to catch SecurityExceptions when used in applets
+            try {
+                // by default debugging is set off, but it can be turned on
+                // with starting java like "java -Dcdk.debugging=true"
+                if (System.getProperty("cdk.debugging", "false").equals("true")) {
+                    doDebug = true;
+                }
+                if (System.getProperty("cdk.debug.stdout", "false").equals("true")) {
+                    toSTDOUT = true;
+                }
+            } catch (Exception e) {
+                System.err.println("Could not read the System property used to determine "
+                        + "if logging should be turned on. So continuing without logging.");
             }
-            if (System.getProperty("cdk.debug.stdout", "false").equals("true")) {
-              toSTDOUT = true;
-            }
-          } catch (Exception e) {
-            System.err.println("Could not read the System property used to determine " +
-            		               "if logging should be turned on. So continuing without logging.");
-          }
         }
     }
-    
+
     /**
      * Forces the <code>LoggingTool</code> to configurate the Log4J toolkit.
      * Normally this should be done by the application that uses the CDK library,
@@ -177,8 +177,8 @@ public class LoggingTool implements ILoggingTool {
     public static void configureLog4j() {
         LoggingTool localLogger = new LoggingTool(LoggingTool.class);
         try { // NOPMD
-            org.apache.log4j.PropertyConfigurator.configure(
-                    LoggingTool.class.getResource("/org/openscience/cdk/config/data/log4j.properties"));
+            org.apache.log4j.PropertyConfigurator.configure(LoggingTool.class
+                    .getResource("/org/openscience/cdk/config/data/log4j.properties"));
         } catch (NullPointerException e) { // NOPMD
             localLogger.error("Properties file not found: ", e.getMessage());
             localLogger.debug(e);
@@ -194,6 +194,7 @@ public class LoggingTool implements ILoggingTool {
      * and java.vendor.
      */
     @TestMethod("testDumpSystemProperties")
+    @Override
     public void dumpSystemProperties() {
         debug("os.name        : " + System.getProperty("os.name"));
         debug("os.version     : " + System.getProperty("os.version"));
@@ -212,14 +213,16 @@ public class LoggingTool implements ILoggingTool {
      * @see #DEFAULT_STACK_LENGTH
      */
     @TestMethod("testSetStackLength_int")
+    @Override
     public void setStackLength(int length) {
         this.stackLength = length;
     }
-    
+
     /**
      * Outputs the system property for java.class.path.
      */
     @TestMethod("testDumpClasspath")
+    @Override
     public void dumpClasspath() {
         debug("java.class.path: " + System.getProperty("java.class.path"));
     }
@@ -232,16 +235,17 @@ public class LoggingTool implements ILoggingTool {
      * @param object Object to apply toString() too and output
      */
     @TestMethod("testDebug_Object")
+    @Override
     public void debug(Object object) {
         if (doDebug) {
             if (object instanceof Throwable) {
-                debugThrowable((Throwable)object);
+                debugThrowable((Throwable) object);
             } else {
                 debugString("" + object);
             }
         }
     }
-    
+
     private void debugString(String string) {
         if (toSTDOUT) {
             printToSTDOUT("DEBUG", string);
@@ -249,7 +253,7 @@ public class LoggingTool implements ILoggingTool {
             log4jLogger.debug(string);
         }
     }
-    
+
     /**
      * Shows DEBUG output for the given Object's. It uses the
      * toString() method to concatenate the objects.
@@ -258,6 +262,7 @@ public class LoggingTool implements ILoggingTool {
      * @param objects Object[] to apply toString() too and output
      */
     @TestMethod("testDebug_Object_int")
+    @Override
     public void debug(Object object, Object... objects) {
         if (doDebug) {
             StringBuilder result = new StringBuilder();
@@ -288,32 +293,31 @@ public class LoggingTool implements ILoggingTool {
                 if (reader.ready()) {
                     String traceLine = reader.readLine();
                     int counter = 0;
-                    while (reader.ready() && traceLine != null && 
-                    		(counter < stackLength)) {
+                    while (reader.ready() && traceLine != null && (counter < stackLength)) {
                         debug(traceLine);
                         traceLine = reader.readLine();
                         counter++;
                     }
                 }
             } catch (Exception ioException) {
-                error("Serious error in LoggingTool while printing exception stack trace: " + 
-                      ioException.getMessage());
+                error("Serious error in LoggingTool while printing exception stack trace: " + ioException.getMessage());
                 logger.debug(ioException);
             }
-            Throwable cause = problem.getCause(); 
+            Throwable cause = problem.getCause();
             if (cause != null) {
-            	debug("Caused by: ");
-            	debugThrowable(cause);
+                debug("Caused by: ");
+                debugThrowable(cause);
             }
         }
     }
-    
+
     /**
      * Shows ERROR output for the Object. It uses the toString() method.
      *
      * @param object Object to apply toString() too and output
      */
     @TestMethod("testError_Object")
+    @Override
     public void error(Object object) {
         if (doDebug) {
             errorString("" + object);
@@ -328,6 +332,7 @@ public class LoggingTool implements ILoggingTool {
      * @param objects Object[] to apply toString() too and output
      */
     @TestMethod("testError_Object_int")
+    @Override
     public void error(Object object, Object... objects) {
         if (doDebug) {
             StringBuilder result = new StringBuilder();
@@ -338,7 +343,7 @@ public class LoggingTool implements ILoggingTool {
             errorString(result.toString());
         }
     }
-    
+
     private void errorString(String string) {
         if (toSTDOUT) {
             printToSTDOUT("ERROR", string);
@@ -346,13 +351,14 @@ public class LoggingTool implements ILoggingTool {
             log4jLogger.error(string);
         }
     }
-    
+
     /**
      * Shows FATAL output for the Object. It uses the toString() method.
      *
      * @param object Object to apply toString() too and output
      */
     @TestMethod("testFatal_Object")
+    @Override
     public void fatal(Object object) {
         if (doDebug) {
             if (toSTDOUT) {
@@ -369,6 +375,7 @@ public class LoggingTool implements ILoggingTool {
      * @param object Object to apply toString() too and output
      */
     @TestMethod("testInfo_Object")
+    @Override
     public void info(Object object) {
         if (doDebug) {
             infoString("" + object);
@@ -383,6 +390,7 @@ public class LoggingTool implements ILoggingTool {
      * @param objects Object[] to apply toString() too and output
      */
     @TestMethod("testInfo_Object_int")
+    @Override
     public void info(Object object, Object... objects) {
         if (doDebug) {
             StringBuilder result = new StringBuilder();
@@ -393,7 +401,7 @@ public class LoggingTool implements ILoggingTool {
             infoString(result.toString());
         }
     }
-    
+
     private void infoString(String string) {
         if (toSTDOUT) {
             printToSTDOUT("INFO", string);
@@ -401,19 +409,20 @@ public class LoggingTool implements ILoggingTool {
             log4jLogger.info(string);
         }
     }
-    
+
     /**
      * Shows WARN output for the Object. It uses the toString() method.
      *
      * @param object Object to apply toString() too and output
      */
     @TestMethod("testWarn_Object")
+    @Override
     public void warn(Object object) {
         if (doDebug) {
             warnString("" + object);
         }
     }
-    
+
     private void warnString(String string) {
         if (toSTDOUT) {
             printToSTDOUT("WARN", string);
@@ -421,7 +430,7 @@ public class LoggingTool implements ILoggingTool {
             log4jLogger.warn(string);
         }
     }
-    
+
     /**
      * Shows WARN output for the given Object's. It uses the
      * toString() method to concatenate the objects.
@@ -430,6 +439,7 @@ public class LoggingTool implements ILoggingTool {
      * @param objects Object[] to apply toString() too and output
      */
     @TestMethod("testWarn_Object_int")
+    @Override
     public void warn(Object object, Object... objects) {
         if (doDebug) {
             StringBuilder result = new StringBuilder();
@@ -440,6 +450,7 @@ public class LoggingTool implements ILoggingTool {
             warnString(result.toString());
         }
     }
+
     /**
      * Use this method for computational demanding debug info.
      * For example:
@@ -453,10 +464,11 @@ public class LoggingTool implements ILoggingTool {
      * @return true, if debug is enabled
      */
     @TestMethod("testIsDebugEnabled")
+    @Override
     public boolean isDebugEnabled() {
         return doDebug;
     }
-    
+
     private void printToSTDOUT(String level, String message) {
         System.out.print(classname);
         System.out.print(" ");
@@ -477,4 +489,3 @@ public class LoggingTool implements ILoggingTool {
     }
 
 }
-

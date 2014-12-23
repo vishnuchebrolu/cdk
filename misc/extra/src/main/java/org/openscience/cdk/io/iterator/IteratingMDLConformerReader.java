@@ -50,12 +50,13 @@ import org.openscience.cdk.interfaces.IChemObjectBuilder;
  */
 @TestClass("org.openscience.cdk.io.iterator.IteratingMDLConformerReaderTest")
 public class IteratingMDLConformerReader implements Iterator {
+
     private IteratingSDFReader imdlr;
     private ConformerContainer container;
-    private IAtomContainer lastMol = null;
+    private IAtomContainer     lastMol     = null;
 
-    private boolean hasNext = false;
-    private boolean nextIsKnown = false;
+    private boolean            hasNext     = false;
+    private boolean            nextIsKnown = false;
 
     @TestMethod("testSDF")
     public IteratingMDLConformerReader(Reader in, IChemObjectBuilder builder) {
@@ -70,20 +71,21 @@ public class IteratingMDLConformerReader implements Iterator {
     }
 
     @TestMethod("testSDF")
+    @Override
     public boolean hasNext() {
 
         boolean slurpedConformers = false;
-        if (lastMol != null)
-            container = new ConformerContainer(lastMol);
-
+        if (lastMol != null) container = new ConformerContainer(lastMol);
 
         if (!nextIsKnown) {
             while (imdlr.hasNext()) {
                 slurpedConformers = true;
                 IAtomContainer mol = (IAtomContainer) imdlr.next();
-                if (container.size() == 0) container.add(mol);
+                if (container.size() == 0)
+                    container.add(mol);
                 else {
-                    if (container.getTitle().equals(mol.getProperty(CDKConstants.TITLE))) container.add(mol);
+                    if (container.getTitle().equals(mol.getProperty(CDKConstants.TITLE)))
+                        container.add(mol);
                     else {
                         lastMol = mol;
                         hasNext = true;
@@ -100,18 +102,18 @@ public class IteratingMDLConformerReader implements Iterator {
     }
 
     @TestMethod("testSDF")
+    @Override
     public Object next() {
         if (!nextIsKnown) hasNext();
         nextIsKnown = false;
         if (!hasNext) throw new NoSuchElementException();
 
-
-        return container;  //To change body of implemented methods use File | Settings | File Templates.
+        return container; //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @TestMethod("testRemove")
+    @Override
     public void remove() {
         throw new UnsupportedOperationException();
     }
 }
-

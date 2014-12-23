@@ -1,7 +1,7 @@
 /* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
- * 
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -10,12 +10,12 @@
  * - but is not limited to - adding the above copyright notice to the beginning
  * of your source code files, and to any copyright notice that you may distribute
  * with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -47,44 +47,43 @@ public class ReactionManipulator {
 
     @TestMethod("testGetAtomCount_IReaction")
     public static int getAtomCount(IReaction reaction) {
-    	int count = 0;
+        int count = 0;
         IAtomContainerSet reactants = reaction.getReactants();
-        for (int i=0; i<reactants.getAtomContainerCount(); i++) {
-        	count += reactants.getAtomContainer(i).getAtomCount();
+        for (int i = 0; i < reactants.getAtomContainerCount(); i++) {
+            count += reactants.getAtomContainer(i).getAtomCount();
         }
         IAtomContainerSet products = reaction.getProducts();
-        for (int i=0; i<products.getAtomContainerCount(); i++) {
-        	count += products.getAtomContainer(i).getAtomCount();
+        for (int i = 0; i < products.getAtomContainerCount(); i++) {
+            count += products.getAtomContainer(i).getAtomCount();
         }
         return count;
     }
 
     @TestMethod("testGetBondCount_IReaction")
     public static int getBondCount(IReaction reaction) {
-    	int count = 0;
-    	IAtomContainerSet reactants = reaction.getReactants();
-        for (int i=0; i<reactants.getAtomContainerCount(); i++) {
-        	count += reactants.getAtomContainer(i).getBondCount();
+        int count = 0;
+        IAtomContainerSet reactants = reaction.getReactants();
+        for (int i = 0; i < reactants.getAtomContainerCount(); i++) {
+            count += reactants.getAtomContainer(i).getBondCount();
         }
         IAtomContainerSet products = reaction.getProducts();
-        for (int i=0; i<products.getAtomContainerCount(); i++) {
-        	count += products.getAtomContainer(i).getBondCount();
+        for (int i = 0; i < products.getAtomContainerCount(); i++) {
+            count += products.getAtomContainer(i).getBondCount();
         }
         return count;
     }
 
-
     @TestMethod("testRemoveAtomAndConnectedElectronContainers_IReaction_IAtom")
     public static void removeAtomAndConnectedElectronContainers(IReaction reaction, IAtom atom) {
-    	IAtomContainerSet reactants = reaction.getReactants();
-        for (int i=0; i<reactants.getAtomContainerCount(); i++) {
+        IAtomContainerSet reactants = reaction.getReactants();
+        for (int i = 0; i < reactants.getAtomContainerCount(); i++) {
             IAtomContainer mol = reactants.getAtomContainer(i);
             if (mol.contains(atom)) {
                 mol.removeAtomAndConnectedElectronContainers(atom);
             }
         }
         IAtomContainerSet products = reaction.getProducts();
-        for (int i=0; i<products.getAtomContainerCount(); i++) {
+        for (int i = 0; i < products.getAtomContainerCount(); i++) {
             IAtomContainer mol = products.getAtomContainer(i);
             if (mol.contains(atom)) {
                 mol.removeAtomAndConnectedElectronContainers(atom);
@@ -94,27 +93,27 @@ public class ReactionManipulator {
 
     @TestMethod("testRemoveElectronContainer_IReaction_IElectronContainer")
     public static void removeElectronContainer(IReaction reaction, IElectronContainer electrons) {
-    	IAtomContainerSet reactants = reaction.getReactants();
-        for (int i=0; i<reactants.getAtomContainerCount(); i++) {
+        IAtomContainerSet reactants = reaction.getReactants();
+        for (int i = 0; i < reactants.getAtomContainerCount(); i++) {
             IAtomContainer mol = reactants.getAtomContainer(i);
             if (mol.contains(electrons)) {
                 mol.removeElectronContainer(electrons);
             }
         }
         IAtomContainerSet products = reaction.getProducts();
-        for (int i=0; i<products.getAtomContainerCount(); i++) {
+        for (int i = 0; i < products.getAtomContainerCount(); i++) {
             IAtomContainer mol = products.getAtomContainer(i);
             if (mol.contains(electrons)) {
                 mol.removeElectronContainer(electrons);
             }
         }
     }
-    
+
     /**
-     * get all molecule of a IReaction. Reactants + Products
-     * 
+     * Get all molecule of a {@link IReaction}: reactants + products.
+     *
      * @param reaction  The IReaction
-     * @return The IMoleculeSet
+     * @return The IAtomContainerSet
      */
     @TestMethod("testGetAllMolecules_IReaction")
     public static IAtomContainerSet getAllMolecules(IReaction reaction) {
@@ -122,20 +121,21 @@ public class ReactionManipulator {
 
         moleculeSet.add(getAllReactants(reaction));
         moleculeSet.add(getAllProducts(reaction));
-        
+
         return moleculeSet;
     }
+
     /**
      * get all products of a IReaction
-     * 
+     *
      * @param reaction  The IReaction
-     * @return The IMoleculeSet
+     * @return The IAtomContainerSet
      */
     @TestMethod("testGetAllProducts_IReaction")
     public static IAtomContainerSet getAllProducts(IReaction reaction) {
         IAtomContainerSet moleculeSet = reaction.getBuilder().newInstance(IAtomContainerSet.class);
         IAtomContainerSet products = reaction.getProducts();
-        for (int i=0; i<products.getAtomContainerCount(); i++) {
+        for (int i = 0; i < products.getAtomContainerCount(); i++) {
             moleculeSet.addAtomContainer(products.getAtomContainer(i));
         }
         return moleculeSet;
@@ -143,20 +143,20 @@ public class ReactionManipulator {
 
     /**
      * get all reactants of a IReaction
-     * 
+     *
      * @param reaction  The IReaction
-     * @return The IMoleculeSet
+     * @return The IAtomContainerSet
      */
     @TestMethod("testGetAllReactants_IReaction")
     public static IAtomContainerSet getAllReactants(IReaction reaction) {
         IAtomContainerSet moleculeSet = reaction.getBuilder().newInstance(IAtomContainerSet.class);
         IAtomContainerSet reactants = reaction.getReactants();
-        for (int i=0; i<reactants.getAtomContainerCount(); i++) {
+        for (int i = 0; i < reactants.getAtomContainerCount(); i++) {
             moleculeSet.addAtomContainer(reactants.getAtomContainer(i));
         }
         return moleculeSet;
     }
-    
+
     /**
      * Returns a new Reaction object which is the reverse of the given
      * Reaction.
@@ -174,18 +174,18 @@ public class ReactionManipulator {
             reversedReaction.setDirection(IReaction.Direction.FORWARD);
         }
         IAtomContainerSet reactants = reaction.getReactants();
-        for (int i=0; i<reactants.getAtomContainerCount(); i++) {
+        for (int i = 0; i < reactants.getAtomContainerCount(); i++) {
             double coefficient = reaction.getReactantCoefficient(reactants.getAtomContainer(i));
             reversedReaction.addProduct(reactants.getAtomContainer(i), coefficient);
         }
         IAtomContainerSet products = reaction.getProducts();
-        for (int i=0; i<products.getAtomContainerCount(); i++) {
+        for (int i = 0; i < products.getAtomContainerCount(); i++) {
             double coefficient = reaction.getProductCoefficient(products.getAtomContainer(i));
             reversedReaction.addReactant(products.getAtomContainer(i), coefficient);
         }
         return reversedReaction;
     }
-    
+
     /**
      * Returns all the AtomContainer's of a Reaction.
      * @param reaction The reaction being considered
@@ -193,9 +193,7 @@ public class ReactionManipulator {
      */
     @TestMethod("testGetAllAtomContainers_IReaction")
     public static List<IAtomContainer> getAllAtomContainers(IReaction reaction) {
-		return MoleculeSetManipulator.getAllAtomContainers(
-            getAllMolecules(reaction)
-        );
+        return MoleculeSetManipulator.getAllAtomContainers(getAllMolecules(reaction));
     }
 
     @TestMethod("testGetAllIDs_IReaction")
@@ -203,12 +201,12 @@ public class ReactionManipulator {
         List<String> idList = new ArrayList<String>();
         if (reaction.getID() != null) idList.add(reaction.getID());
         IAtomContainerSet reactants = reaction.getReactants();
-        for (int i=0; i<reactants.getAtomContainerCount(); i++) {
+        for (int i = 0; i < reactants.getAtomContainerCount(); i++) {
             IAtomContainer mol = reactants.getAtomContainer(i);
             idList.addAll(AtomContainerManipulator.getAllIDs(mol));
         }
         IAtomContainerSet products = reaction.getProducts();
-        for (int i=0; i<products.getAtomContainerCount(); i++) {
+        for (int i = 0; i < products.getAtomContainerCount(); i++) {
             IAtomContainer mol = products.getAtomContainer(i);
             idList.addAll(AtomContainerManipulator.getAllIDs(mol));
         }
@@ -235,17 +233,13 @@ public class ReactionManipulator {
 
     @TestMethod("testSetAtomProperties_IReactionSet_Object_Object")
     public static void setAtomProperties(IReaction reaction, Object propKey, Object propVal) {
-    	IAtomContainerSet reactants = reaction.getReactants();
-        for (int j=0; j<reactants.getAtomContainerCount(); j++) {
-            AtomContainerManipulator.setAtomProperties(
-                reactants.getAtomContainer(j), propKey, propVal
-            );
+        IAtomContainerSet reactants = reaction.getReactants();
+        for (int j = 0; j < reactants.getAtomContainerCount(); j++) {
+            AtomContainerManipulator.setAtomProperties(reactants.getAtomContainer(j), propKey, propVal);
         }
         IAtomContainerSet products = reaction.getProducts();
-        for (int j=0; j<products.getAtomContainerCount(); j++) {
-            AtomContainerManipulator.setAtomProperties(
-                products.getAtomContainer(j), propKey, propVal
-            );
+        for (int j = 0; j < products.getAtomContainerCount(); j++) {
+            AtomContainerManipulator.setAtomProperties(products.getAtomContainer(j), propKey, propVal);
         }
     }
 
@@ -254,31 +248,31 @@ public class ReactionManipulator {
         ArrayList<IChemObject> list = new ArrayList<IChemObject>();
         list.add(reaction);
         IAtomContainerSet reactants = reaction.getReactants();
-        for (int i=0; i<reactants.getAtomContainerCount(); i++) {
+        for (int i = 0; i < reactants.getAtomContainerCount(); i++) {
             list.add(reactants.getAtomContainer(i));
         }
         IAtomContainerSet products = reaction.getProducts();
-        for (int i=0; i<products.getAtomContainerCount(); i++) {
+        for (int i = 0; i < products.getAtomContainerCount(); i++) {
             list.add(products.getAtomContainer(i));
         }
         return list;
     }
+
     /**
      * get the IAtom which is mapped
-     * 
-     * @param reaction   The IReaction which contains the mapping 
+     *
+     * @param reaction   The IReaction which contains the mapping
      * @param chemObject The IChemObject which will be searched its mapped IChemObject
      * @return           The mapped IChemObject
      */
     @TestMethod("testGetMappedChemObject_IReaction_IAtom,testGetMappedChemObject_IReaction_IBond")
-    public static IChemObject getMappedChemObject(IReaction reaction, IChemObject chemObject){
+    public static IChemObject getMappedChemObject(IReaction reaction, IChemObject chemObject) {
         for (IMapping mapping : reaction.mappings()) {
             if (mapping.getChemObject(0).equals(chemObject)) {
                 return mapping.getChemObject(1);
-            } else if (mapping.getChemObject(1).equals(chemObject))
-                return mapping.getChemObject(0);
+            } else if (mapping.getChemObject(1).equals(chemObject)) return mapping.getChemObject(0);
         }
-    	return null;
+        return null;
     }
-    
+
 }

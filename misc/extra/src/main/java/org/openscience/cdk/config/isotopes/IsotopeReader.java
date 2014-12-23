@@ -27,12 +27,15 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IIsotope;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.tools.ILoggingTool;
 import org.openscience.cdk.tools.LoggingToolFactory;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -52,12 +55,11 @@ import org.xml.sax.XMLReader;
 @TestClass("org.openscience.cdk.config.isotopes.IsotopeReaderTest")
 public class IsotopeReader {
 
-    private XMLReader parser;
-    private InputStream input;
+    private XMLReader           parser;
+    private InputStream         input;
 
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(IsotopeReader.class);
-    private IChemObjectBuilder builder;
+    private static ILoggingTool logger = LoggingToolFactory.createLoggingTool(IsotopeReader.class);
+    private IChemObjectBuilder  builder;
 
     /**
      * Instantiates a new reader that parses the XML from the given <code>input</code>.
@@ -83,7 +85,7 @@ public class IsotopeReader {
                 parser = saxParser.getXMLReader();
                 logger.info("Using JAXP/SAX XML parser.");
                 success = true;
-            } catch (Exception exception) {
+            } catch (ParserConfigurationException | SAXException exception) {
                 logger.warn("Could not instantiate JAXP/SAX XML reader!");
                 logger.debug(exception);
             }
@@ -91,12 +93,11 @@ public class IsotopeReader {
         // Aelfred is first alternative.
         if (!success) {
             try {
-                parser = (XMLReader)this.getClass().getClassLoader().
-                        loadClass("gnu.xml.aelfred2.XmlReader").
-                        newInstance();
+                parser = (XMLReader) this.getClass().getClassLoader().loadClass("gnu.xml.aelfred2.XmlReader")
+                        .newInstance();
                 logger.info("Using Aelfred2 XML parser.");
                 success = true;
-            } catch (Exception e) {
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 logger.warn("Could not instantiate Aelfred2 XML reader!");
                 logger.debug(e);
             }
@@ -104,12 +105,11 @@ public class IsotopeReader {
         // Xerces is second alternative
         if (!success) {
             try {
-                parser = (XMLReader)this.getClass().getClassLoader().
-                        loadClass("org.apache.xerces.parsers.SAXParser").
-                        newInstance();
+                parser = (XMLReader) this.getClass().getClassLoader().loadClass("org.apache.xerces.parsers.SAXParser")
+                        .newInstance();
                 logger.info("Using Xerces XML parser.");
                 success = true;
-            } catch (Exception e) {
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 logger.warn("Could not instantiate Xerces XML reader!");
                 logger.debug(e);
             }
@@ -120,11 +120,11 @@ public class IsotopeReader {
     }
 
     /**
-     * Triggers the XML parsing of the data file and returns the read Isotopes. 
+     * Triggers the XML parsing of the data file and returns the read Isotopes.
      * It turns of XML validation before parsing.
      *
      * @return a List of Isotope's. Returns an empty list is some reading error
-     *         occured.
+     *         occurred.
      */
     @TestMethod("testReadIsotopes,testReadIsotopes2")
     public List<IIsotope> readIsotopes() {
@@ -153,4 +153,3 @@ public class IsotopeReader {
     }
 
 }
-

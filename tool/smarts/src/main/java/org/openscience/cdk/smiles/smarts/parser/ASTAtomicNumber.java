@@ -27,6 +27,7 @@ package org.openscience.cdk.smiles.smarts.parser;
  * @cdk.keyword SMARTS AST
  */
 class ASTAtomicNumber extends SimpleNode {
+
     /**
      * The atomic number
      */
@@ -53,9 +54,13 @@ class ASTAtomicNumber extends SimpleNode {
         return number;
     }
 
-    /* (non-Javadoc)
-     * @see org.openscience.cdk.smiles.smarts.parser.SimpleNode#jjtAccept(org.openscience.cdk.smiles.smarts.parser.SMARTSParserVisitor, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.openscience.cdk.smiles.smarts.parser.SimpleNode#jjtAccept(org.openscience
+     * .cdk.smiles.smarts.parser.SMARTSParserVisitor, java.lang.Object)
      */
+    @Override
     public Object jjtAccept(SMARTSParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }

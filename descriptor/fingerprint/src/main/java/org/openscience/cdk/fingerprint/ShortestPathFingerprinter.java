@@ -24,14 +24,23 @@
 package org.openscience.cdk.fingerprint;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.graph.ConnectivityChecker;
 import org.openscience.cdk.graph.Cycles;
-import org.openscience.cdk.interfaces.*;
+import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IAtomContainerSet;
+import org.openscience.cdk.interfaces.IRingSet;
 import org.openscience.cdk.tools.ILoggingTool;
 import org.openscience.cdk.tools.LoggingToolFactory;
 import org.openscience.cdk.tools.manipulator.RingSetManipulator;
@@ -44,10 +53,10 @@ import org.openscience.cdk.tools.periodictable.PeriodicTable;
  * search in a database. They are also a means for determining the similarity of chemical structures.
 
  * <pre>
- * 
+ *
  * A fingerprint is generated for an AtomContainer with this code:
  * It is recommended to use atomtyped container before generating the fingerprints.
- * 
+ *
  * For example: AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(atomContainer);
  *
  *   AtomContainer molecule = new AtomContainer();
@@ -66,9 +75,9 @@ import org.openscience.cdk.tools.periodictable.PeriodicTable;
  * </P>
  *
  *
- * @author Syed Asad Rahman (2012) 
- * @cdk.keyword fingerprint 
- * @cdk.keyword similarity 
+ * @author Syed Asad Rahman (2012)
+ * @cdk.keyword fingerprint
+ * @cdk.keyword similarity
  * @cdk.module fingerprint
  * @cdk.githash
  *
@@ -79,14 +88,14 @@ public class ShortestPathFingerprinter extends RandomNumber implements IFingerpr
     /**
      * The default length of created fingerprints.
      */
-    public final static int DEFAULT_SIZE = 1024;
-    private static final long serialVersionUID = 7867864332244557861L;
+    public final static int     DEFAULT_SIZE     = 1024;
+    private static final long   serialVersionUID = 7867864332244557861L;
     /**
      * The default length of created fingerprints.
      */
-    private int fingerprintLength;
-    private static ILoggingTool logger =
-            LoggingToolFactory.createLoggingTool(ShortestPathFingerprinter.class);
+    private int                 fingerprintLength;
+    private static ILoggingTool logger           = LoggingToolFactory
+                                                         .createLoggingTool(ShortestPathFingerprinter.class);
 
     /**
      * Creates a fingerprint generator of length
@@ -115,9 +124,7 @@ public class ShortestPathFingerprinter extends RandomNumber implements IFingerpr
      */
     @Override
     @TestMethod("testgetBitFingerprint_IAtomContainer")
-    public IBitFingerprint getBitFingerprint(
-            IAtomContainer ac)
-            throws CDKException {
+    public IBitFingerprint getBitFingerprint(IAtomContainer ac) throws CDKException {
 
         IAtomContainer atomContainer = null;
         try {

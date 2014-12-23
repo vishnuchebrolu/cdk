@@ -60,18 +60,18 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
  */
 @TestClass("org.openscience.cdk.qsar.descriptors.molecular.AromaticAtomsCountDescriptorTest")
 public class AromaticAtomsCountDescriptor extends AbstractMolecularDescriptor implements IMolecularDescriptor {
-    private boolean checkAromaticity = false;
-    private static final String[] names = {"naAromAtom"};
 
+    private boolean               checkAromaticity = false;
+    private static final String[] NAMES            = {"naAromAtom"};
 
     /**
      *  Constructor for the AromaticAtomsCountDescriptor object.
      */
-    public AromaticAtomsCountDescriptor() { }
+    public AromaticAtomsCountDescriptor() {}
 
     /**
      * Returns a <code>Map</code> which specifies which descriptor
-     * is implemented by this class. 
+     * is implemented by this class.
      *
      * These fields are used in the map:
      * <ul>
@@ -85,25 +85,25 @@ public class AromaticAtomsCountDescriptor extends AbstractMolecularDescriptor im
      * @return An object containing the descriptor specification
      */
     @TestMethod("testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
         return new DescriptorSpecification(
-                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#aromaticAtomsCount",
-                this.getClass().getName(),
-                "The Chemistry Development Kit");
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#aromaticAtomsCount", this
+                        .getClass().getName(), "The Chemistry Development Kit");
     }
-
 
     /**
      *  Sets the parameters attribute of the AromaticAtomsCountDescriptor object.
      *
      * This descriptor takes one parameter, which should be Boolean to indicate whether
      * aromaticity has been checked (TRUE) or not (FALSE).
-     * 
+     *
      * @param  params            The new parameters value
      * @exception  CDKException if more than one parameter or a non-Boolean parameter is specified
      * @see #getParameters
      */
     @TestMethod("testSetParameters_arrayObject")
+    @Override
     public void setParameters(Object[] params) throws CDKException {
         if (params.length != 1) {
             throw new CDKException("AromaticAtomsCountDescriptor expects one parameter");
@@ -115,7 +115,6 @@ public class AromaticAtomsCountDescriptor extends AbstractMolecularDescriptor im
         checkAromaticity = (Boolean) params[0];
     }
 
-
     /**
      *  Gets the parameters attribute of the AromaticAtomsCountDescriptor object.
      *
@@ -123,6 +122,7 @@ public class AromaticAtomsCountDescriptor extends AbstractMolecularDescriptor im
      * @see #setParameters
      */
     @TestMethod("testGetParameters")
+    @Override
     public Object[] getParameters() {
         // return the parameters as used for the descriptor calculation
         Object[] params = new Object[1];
@@ -130,15 +130,15 @@ public class AromaticAtomsCountDescriptor extends AbstractMolecularDescriptor im
         return params;
     }
 
-    @TestMethod(value="testNamesConsistency")
+    @TestMethod(value = "testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
-        return names;
+        return NAMES;
     }
-
 
     /**
      * Calculate the count of aromatic atoms in the supplied {@link IAtomContainer}.
-     * 
+     *
      *  The method require one parameter:
      *  if checkAromaticity is true, the method check the aromaticity,
      *  if false, means that the aromaticity has already been checked
@@ -149,32 +149,30 @@ public class AromaticAtomsCountDescriptor extends AbstractMolecularDescriptor im
      *@see #setParameters
      */
     @TestMethod("testCalculate_IAtomContainer,testAromaticAtomsCountDescriptor,testViaFlags")
+    @Override
     public DescriptorValue calculate(IAtomContainer atomContainer) {
         IAtomContainer ac;
         try {
             ac = (IAtomContainer) atomContainer.clone();
         } catch (CloneNotSupportedException e) {
-            return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                    new IntegerResult((int) Double.NaN), getDescriptorNames(),
-                    new CDKException("Error during clone"));
+            return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new IntegerResult(
+                    (int) Double.NaN), getDescriptorNames(), new CDKException("Error during clone"));
         }
-
 
         int aromaticAtomsCount = 0;
         if (checkAromaticity) {
             try {
                 AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(ac);
             } catch (CDKException e) {
-                return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                        new IntegerResult((int) Double.NaN), getDescriptorNames(),
-                        new CDKException("Error during atom type perception"));
+                return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new IntegerResult(
+                        (int) Double.NaN), getDescriptorNames(), new CDKException("Error during atom type perception"));
             }
             try {
                 Aromaticity.cdkLegacy().apply(ac);
             } catch (CDKException e) {
-                return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                        new IntegerResult((int) Double.NaN), getDescriptorNames(),
-                        new CDKException("Error during aromaticity detection: " + e.getMessage()));
+                return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new IntegerResult(
+                        (int) Double.NaN), getDescriptorNames(), new CDKException(
+                        "Error during aromaticity detection: " + e.getMessage()));
             }
         }
         for (int i = 0; i < ac.getAtomCount(); i++) {
@@ -182,8 +180,8 @@ public class AromaticAtomsCountDescriptor extends AbstractMolecularDescriptor im
                 aromaticAtomsCount += 1;
             }
         }
-        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                new IntegerResult(aromaticAtomsCount), getDescriptorNames());
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new IntegerResult(
+                aromaticAtomsCount), getDescriptorNames());
     }
 
     /**
@@ -198,10 +196,10 @@ public class AromaticAtomsCountDescriptor extends AbstractMolecularDescriptor im
      *         the actual type of values returned by the descriptor in the {@link org.openscience.cdk.qsar.DescriptorValue} object
      */
     @TestMethod("testGetDescriptorResultType")
+    @Override
     public IDescriptorResult getDescriptorResultType() {
         return new IntegerResult(1);
     }
-
 
     /**
      *  Gets the parameterNames attribute of the AromaticAtomsCountDescriptor object.
@@ -209,13 +207,12 @@ public class AromaticAtomsCountDescriptor extends AbstractMolecularDescriptor im
      *@return    The parameterNames value
      */
     @TestMethod("testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         String[] params = new String[1];
         params[0] = "checkAromaticity";
         return params;
     }
-
-
 
     /**
      *  Gets the parameterType attribute of the AromaticAtomsCountDescriptor object.
@@ -224,8 +221,8 @@ public class AromaticAtomsCountDescriptor extends AbstractMolecularDescriptor im
      *@return       An Object of class equal to that of the parameter being requested
      */
     @TestMethod("testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
         return true;
     }
 }
-

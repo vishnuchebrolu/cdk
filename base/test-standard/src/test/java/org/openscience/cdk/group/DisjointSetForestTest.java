@@ -33,14 +33,14 @@ import org.junit.Test;
  * @cdk.module test-standard
  */
 public class DisjointSetForestTest {
-    
+
     @Test
     public void constructorTest() {
         int n = 10;
         DisjointSetForest forest = new DisjointSetForest(n);
         Assert.assertNotNull(forest);
     }
-    
+
     @Test
     public void getTest() {
         int n = 10;
@@ -49,7 +49,7 @@ public class DisjointSetForestTest {
             Assert.assertEquals(-1, forest.get(i));
         }
     }
-    
+
     @Test
     public void getRootTest() {
         int n = 2;
@@ -57,7 +57,7 @@ public class DisjointSetForestTest {
         forest.makeUnion(0, 1);
         Assert.assertEquals(0, forest.getRoot(1));
     }
-    
+
     @Test
     public void makeUnionTest() {
         int n = 2;
@@ -65,7 +65,7 @@ public class DisjointSetForestTest {
         forest.makeUnion(0, 1);
         Assert.assertEquals(0, forest.get(1));
     }
-    
+
     @Test
     public void getSetsTest() {
         int n = 6;
@@ -74,9 +74,8 @@ public class DisjointSetForestTest {
         forest.makeUnion(2, 3);
         forest.makeUnion(4, 5);
         int[][] sets = forest.getSets();
-        int[][] expected = new int[][] { {0, 1}, {2, 3}, {4, 5} };
-        String failMessage = "Expected " + Arrays.deepToString(expected)
-                           + " but was " + Arrays.deepToString(sets);
+        int[][] expected = new int[][]{{0, 1}, {2, 3}, {4, 5}};
+        String failMessage = "Expected " + Arrays.deepToString(expected) + " but was " + Arrays.deepToString(sets);
         Assert.assertTrue(failMessage, Arrays.deepEquals(expected, sets));
     }
 

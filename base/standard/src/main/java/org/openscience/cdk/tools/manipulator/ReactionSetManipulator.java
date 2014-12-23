@@ -1,7 +1,7 @@
 /* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
- * 
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -10,12 +10,12 @@
  * - but is not limited to - adding the above copyright notice to the beginning
  * of your source code files, and to any copyright notice that you may distribute
  * with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -47,7 +47,7 @@ public class ReactionSetManipulator {
 
     @TestMethod("testGetAtomCount_IReactionSet")
     public static int getAtomCount(IReactionSet set) {
-    	int count = 0;
+        int count = 0;
         for (IReaction iReaction : set.reactions()) {
             count += ReactionManipulator.getAtomCount(iReaction);
         }
@@ -56,7 +56,7 @@ public class ReactionSetManipulator {
 
     @TestMethod("testGetBondCount_IReactionSet")
     public static int getBondCount(IReactionSet set) {
-    	int count = 0;
+        int count = 0;
         for (IReaction iReaction : set.reactions()) {
             count += ReactionManipulator.getBondCount(iReaction);
         }
@@ -76,16 +76,16 @@ public class ReactionSetManipulator {
             ReactionManipulator.removeElectronContainer(reaction, electrons);
         }
     }
-    
+
     /**
-     * get all Molecules object from a set of Reactions. 
-     * 
+     * get all Molecules object from a set of Reactions.
+     *
      * @param set The set of reaction to inspect
      * @return    The IAtomContanerSet
      */
     @TestMethod("testGetAllMolecules_IReactionSet")
     public static IAtomContainerSet getAllMolecules(IReactionSet set) {
-    	IAtomContainerSet moleculeSet = set.getBuilder().newInstance(IAtomContainerSet.class);
+        IAtomContainerSet moleculeSet = set.getBuilder().newInstance(IAtomContainerSet.class);
         for (IReaction reaction : set.reactions()) {
             IAtomContainerSet molecules = ReactionManipulator.getAllMolecules(reaction);
             for (IAtomContainer ac : molecules.atomContainers()) {
@@ -96,8 +96,7 @@ public class ReactionSetManipulator {
                         break;
                     }
                 }
-                if (!contain)
-                    moleculeSet.addAtomContainer(ac);
+                if (!contain) moleculeSet.addAtomContainer(ac);
 
             }
         }
@@ -105,7 +104,7 @@ public class ReactionSetManipulator {
     }
 
     @TestMethod("testGetAllIDs_IReactionSet")
-	public static List<String> getAllIDs(IReactionSet set) {
+    public static List<String> getAllIDs(IReactionSet set) {
         List<String> IDlist = new ArrayList<String>();
         if (set.getID() != null) IDlist.add(set.getID());
         for (IReaction reaction : set.reactions()) {
@@ -113,7 +112,7 @@ public class ReactionSetManipulator {
         }
         return IDlist;
     }
-    
+
     /**
      * Returns all the AtomContainer's of a Reaction.
      * @param set  the reaction set to get the molecules from
@@ -121,10 +120,8 @@ public class ReactionSetManipulator {
      */
     @TestMethod("testGetAllAtomContainers_IReactionSet")
     public static List<IAtomContainer> getAllAtomContainers(IReactionSet set) {
-    	
-		return MoleculeSetManipulator.getAllAtomContainers(
-            getAllMolecules(set)
-        );
+
+        return MoleculeSetManipulator.getAllAtomContainers(getAllMolecules(set));
     }
 
     @TestMethod("testGetRelevantReaction_IReactionSet_IAtom")
@@ -150,62 +147,60 @@ public class ReactionSetManipulator {
     }
 
     /**
-     * Get all Reactions object containing a Molecule from a set of Reactions. 
-     * 
+     * Get all Reactions object containing a Molecule from a set of Reactions.
+     *
      * @param reactSet The set of reaction to inspect
      * @param molecule The molecule to find
      * @return         The IReactionSet
      */
     @TestMethod("testGetRelevantReactions_IReactionSet_IMolecule")
-    public static IReactionSet getRelevantReactions(IReactionSet reactSet,
-            IAtomContainer molecule) {
+    public static IReactionSet getRelevantReactions(IReactionSet reactSet, IAtomContainer molecule) {
         IReactionSet newReactSet = reactSet.getBuilder().newInstance(IReactionSet.class);
-    	IReactionSet reactSetProd = getRelevantReactionsAsProduct(reactSet, molecule);
-    	for (IReaction reaction : reactSetProd.reactions())
-            	newReactSet.addReaction(reaction);
-    	IReactionSet reactSetReact = getRelevantReactionsAsReactant(reactSet, molecule);
-    	for (IReaction reaction : reactSetReact.reactions())
-        	newReactSet.addReaction(reaction);
-	return newReactSet;
+        IReactionSet reactSetProd = getRelevantReactionsAsProduct(reactSet, molecule);
+        for (IReaction reaction : reactSetProd.reactions())
+            newReactSet.addReaction(reaction);
+        IReactionSet reactSetReact = getRelevantReactionsAsReactant(reactSet, molecule);
+        for (IReaction reaction : reactSetReact.reactions())
+            newReactSet.addReaction(reaction);
+        return newReactSet;
     }
+
     /**
      * Get all Reactions object containing a Molecule as a Reactant from a set
      * of Reactions.
-     * 
+     *
      * @param reactSet The set of reaction to inspect
      * @param molecule The molecule to find as a reactant
      * @return         The IReactionSet
      */
     @TestMethod("testGetRelevantReactionsAsReactant_IReactionSet_IMolecule")
-    public static IReactionSet getRelevantReactionsAsReactant(
-            IReactionSet reactSet, IAtomContainer molecule) {
+    public static IReactionSet getRelevantReactionsAsReactant(IReactionSet reactSet, IAtomContainer molecule) {
         IReactionSet newReactSet = reactSet.getBuilder().newInstance(IReactionSet.class);
-    	for (IReaction reaction : reactSet.reactions()) {
-            for(IAtomContainer atomContainer : reaction.getReactants().atomContainers())
-            	if(atomContainer.equals(molecule))
-            		newReactSet.addReaction(reaction);
+        for (IReaction reaction : reactSet.reactions()) {
+            for (IAtomContainer atomContainer : reaction.getReactants().atomContainers())
+                if (atomContainer.equals(molecule)) newReactSet.addReaction(reaction);
         }
         return newReactSet;
     }
+
     /**
      * Get all Reactions object containing a Molecule as a Product from a set of
      * Reactions.
-     * 
+     *
      * @param reactSet The set of reaction to inspect
      * @param molecule The molecule to find as a product
      * @return         The IReactionSet
      */
     @TestMethod("testGetRelevantReactionsAsProduct_IReactionSet_IMolecule")
-    public static IReactionSet getRelevantReactionsAsProduct(
-            IReactionSet reactSet, IAtomContainer molecule) {
+    public static IReactionSet getRelevantReactionsAsProduct(IReactionSet reactSet, IAtomContainer molecule) {
         IReactionSet newReactSet = reactSet.getBuilder().newInstance(IReactionSet.class);
-    	for (IReaction reaction : reactSet.reactions()) {
-            for(IAtomContainer atomContainer : reaction.getProducts().atomContainers())
-            	if(atomContainer.equals(molecule))
-            		newReactSet.addReaction(reaction);
+        for (IReaction reaction : reactSet.reactions()) {
+            for (IAtomContainer atomContainer : reaction.getProducts().atomContainers())
+                if (atomContainer.equals(molecule)) newReactSet.addReaction(reaction);
         }
         return newReactSet;
     }
+
     @TestMethod("testGetRelevantAtomContainer_IReactionSet_IAtom")
     public static IAtomContainer getRelevantAtomContainer(IReactionSet set, IAtom atom) {
         for (IReaction reaction : set.reactions()) {
@@ -245,49 +240,41 @@ public class ReactionSetManipulator {
         return list;
     }
 
-
-	/**
+    /**
      * Gets a reaction from a ReactionSet by ID of any product or reactant. If several exist,
      * only the first one will be returned.
-     * 
+     *
      * @param reactionSet The reactionSet to search in
      * @param id The id to search for.
      * @return The Reaction or null;
      */
     @TestMethod("testGetReactionByAtomContainerID_IReactionSet_String")
-	public static IReaction getReactionByAtomContainerID(IReactionSet reactionSet,
-			String id) {
+    public static IReaction getReactionByAtomContainerID(IReactionSet reactionSet, String id) {
         for (IReaction reaction : reactionSet.reactions()) {
-        	if(AtomContainerSetManipulator.containsByID(reaction.getProducts(),id))
-                return reaction;
+            if (AtomContainerSetManipulator.containsByID(reaction.getProducts(), id)) return reaction;
         }
         for (IReaction reaction : reactionSet.reactions()) {
-        	if(AtomContainerSetManipulator.containsByID(reaction.getReactants(),id))
-                return reaction;
+            if (AtomContainerSetManipulator.containsByID(reaction.getReactants(), id)) return reaction;
         }
         return null;
-    }  
-	
-	
-	/**
+    }
+
+    /**
      * Gets a reaction from a ReactionSet by ID. If several exist,
      * only the first one will be returned.
-     * 
+     *
      * @param reactionSet The reactionSet to search in
      * @param id The id to search for.
      * @return The Reaction or null;
      */
     @TestMethod("testGetReactionByReactionID_IReactionSet_String")
-	public static IReaction getReactionByReactionID(IReactionSet reactionSet, String id)
-	{
-		Iterable<IReaction> reactionIter = reactionSet.reactions();
-		for (IReaction reaction : reactionIter)
-		{
-			if (reaction.getID()!=null && reaction.getID().equals(id))
-			{
-				return reaction;
-			}
-		}
-		return null;
-	}
+    public static IReaction getReactionByReactionID(IReactionSet reactionSet, String id) {
+        Iterable<IReaction> reactionIter = reactionSet.reactions();
+        for (IReaction reaction : reactionIter) {
+            if (reaction.getID() != null && reaction.getID().equals(id)) {
+                return reaction;
+            }
+        }
+        return null;
+    }
 }

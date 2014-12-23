@@ -7,7 +7,7 @@
     <parent>
         <artifactId>cdk-tool</artifactId>
         <groupId>org.openscience.cdk</groupId>
-        <version>1.5.8-SNAPSHOT</version>
+        <version>1.5.9-SNAPSHOT</version>
     </parent>
 
     <artifactId>cdk-sdg</artifactId>
@@ -100,7 +100,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>cdk-smiles</artifactId>
             <version>${project.parent.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

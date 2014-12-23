@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2013 European Bioinformatics Institute (EMBL-EBI)
  *                    John May <jwmay@users.sf.net>
- *  
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- *  
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version. All we ask is that proper credit is given
- * for our work, which includes - but is not limited to - adding the above 
+ * for our work, which includes - but is not limited to - adding the above
  * copyright notice to the beginning of your source code files, and to any
  * copyright notice that you may distribute with programs based on this work.
  *
@@ -44,7 +44,7 @@ final class CompatibilityMatrix {
 
     /** Value storage. */
     final int[] data;
-    
+
     /** Size of the matrix. */
     final int   nRows, mCols;
 
@@ -66,7 +66,8 @@ final class CompatibilityMatrix {
      * @param i row index
      * @param j column index
      */
-    @TestMethod("accessAndModify") void set(int i, int j) {
+    @TestMethod("accessAndModify")
+    void set(int i, int j) {
         data[(i * mCols) + j] = 1;
     }
 
@@ -76,7 +77,8 @@ final class CompatibilityMatrix {
      * @param i index
      * @return the value is set
      */
-    @TestMethod("accessAndModify") boolean get(int i) {
+    @TestMethod("accessAndModify")
+    boolean get(int i) {
         return data[i] > 0;
     }
 
@@ -87,7 +89,8 @@ final class CompatibilityMatrix {
      * @param i index
      * @return the value is set
      */
-    @TestMethod("accessAndModify") boolean get(int i, int j) {
+    @TestMethod("accessAndModify")
+    boolean get(int i, int j) {
         return get((i * mCols) + j);
     }
 
@@ -98,7 +101,8 @@ final class CompatibilityMatrix {
      * @param j       column index
      * @param marking the marking to store (should be negative)
      */
-    @TestMethod("mark") void mark(int i, int j, int marking) {
+    @TestMethod("mark")
+    void mark(int i, int j, int marking) {
         data[(i * mCols) + j] = marking;
     }
 
@@ -108,10 +112,10 @@ final class CompatibilityMatrix {
      * @param i       row index
      * @param marking the marking to store (should be negative)
      */
-    @TestMethod("markRow") void markRow(int i, int marking) {
+    @TestMethod("markRow")
+    void markRow(int i, int marking) {
         for (int j = (i * mCols), end = j + mCols; j < end; j++)
-            if (data[j] > 0)
-                data[j] = marking;
+            if (data[j] > 0) data[j] = marking;
     }
 
     /**
@@ -120,10 +124,10 @@ final class CompatibilityMatrix {
      * @param i       row index
      * @param marking the marking to reset (should be negative)
      */
-    @TestMethod("mark") void resetRows(int i, int marking) {
+    @TestMethod("mark")
+    void resetRows(int i, int marking) {
         for (int j = (i * mCols); j < data.length; j++)
-            if (data[j] == marking)
-                data[j] = 1;
+            if (data[j] == marking) data[j] = 1;
     }
 
     /**
@@ -131,7 +135,8 @@ final class CompatibilityMatrix {
      *
      * @return a fixed version of the matrix
      */
-    @TestMethod("fix") int[][] fix() {
+    @TestMethod("fix")
+    int[][] fix() {
         int[][] m = new int[nRows][mCols];
         for (int i = 0; i < nRows; i++)
             System.arraycopy(data, (i * mCols), m[i], 0, mCols);

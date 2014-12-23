@@ -13,7 +13,7 @@
  *
  *   You should have received a copy of the GNU Lesser General Public
  *   License along with this library; if not, write to the Free Software
- *   Foundation, 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA. 
+ *   Foundation, 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  *   (or see http://www.gnu.org/copyleft/lesser.html)
  */
 
@@ -31,31 +31,29 @@ import java.util.List;
  * @cdk.require ant1.6
  */
 public class AttachedGroup {
+
     /** The name of the group */
-    private String name = "";
+    private String      name      = "";
     /** The collection of locations the group is attached to */
     private List<Token> locations = new ArrayList<Token>();
     /** The length of the substituent chain */
-    private int length = 0;
-    
+    private int         length    = 0;
+
     /** Creates a new instance of FunctionalGroup */
-    public AttachedGroup() {
-    }
-    
+    public AttachedGroup() {}
+
     /** Creates a new instance of AttachedGroup with a Sting denoting the functional group */
-    public AttachedGroup (List<Token> locations, String name)
-    {
-        setLocations (locations);
-        setName (name);
+    public AttachedGroup(List<Token> locations, String name) {
+        setLocations(locations);
+        setName(name);
     }
-    
+
     /** Creates a new instance of AttachedGroup with an int denoting the length of the substituent chain */
-    public AttachedGroup (List<Token> locations, int length)
-    {
-        setLocations (locations);
-        setLength (length);
+    public AttachedGroup(List<Token> locations, int length) {
+        setLocations(locations);
+        setLength(length);
     }
-    
+
     /** Getter for property name.
      * @return Value of property name.
      *
@@ -63,7 +61,7 @@ public class AttachedGroup {
     public java.lang.String getName() {
         return name;
     }
-    
+
     /** Setter for property name.
      * @param name New value of property name.
      *
@@ -71,7 +69,7 @@ public class AttachedGroup {
     public void setName(java.lang.String name) {
         this.name = name;
     }
-    
+
     /** Getter for property locations.
      * @return Value of property locations.
      *
@@ -79,7 +77,7 @@ public class AttachedGroup {
     public List<Token> getLocations() {
         return locations;
     }
-    
+
     /** Setter for property locations.
      * @param locations New value of property locations.
      *
@@ -87,39 +85,36 @@ public class AttachedGroup {
     public void setLocations(List<Token> locations) {
         this.locations = locations;
     }
-    
+
     /**
      * A debug string which represents the contents of the class.
      */
-    public String toString ()
-    {
+    @Override
+    public String toString() {
         String returnString = name + ": ";
-        
+
         Iterator<Token> locationsIterator = locations.iterator();
-        while (locationsIterator.hasNext())
-        {
+        while (locationsIterator.hasNext()) {
             Token locationToken = locationsIterator.next();
             returnString += locationToken.image + " ";
         }
-        
+
         return returnString;
     }
-    
+
     /** Getter for property length.
      * @return Value of property length.
      *
      */
-    public int getLength()
-    {
+    public int getLength() {
         return length;
     }
-    
+
     /** Setter for property length.
      * @param length New value of property length.
      *
      */
-    public void setLength(int length)
-    {
+    public void setLength(int length) {
         this.length = length;
-    }   
+    }
 }

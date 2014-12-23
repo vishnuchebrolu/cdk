@@ -24,13 +24,13 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 /**
  * Interface for classes that calculate (partial) charges centered
  * on atom nuclei.
- * 
+ *
  * @author      egonw
  * @cdk.module  charges
  * @cdk.githash
  */
 public interface IElectronicPropertyCalculator {
 
-	public void calculateCharges(IAtomContainer container) throws CDKException;
-	
+    public void calculateCharges(IAtomContainer container) throws CDKException;
+
 }

@@ -1,21 +1,21 @@
-/* 
+/*
  * Copyright (C) 2010 Rajarshi Guha <rajarshi.guha@gmail.com>
- * 
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA. 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.openscience.cdk.fragment;
 
@@ -50,7 +50,7 @@ import static org.junit.Assert.assertThat;
 public class MurckoFragmenterTest extends CDKTestCase {
 
     static MurckoFragmenter fragmenter;
-    static SmilesParser smilesParser;
+    static SmilesParser     smilesParser;
 
     @BeforeClass
     public static void setup() {
@@ -118,7 +118,6 @@ public class MurckoFragmenterTest extends CDKTestCase {
         Assert.assertEquals(2, rings.length);
     }
 
-
     @Test
     public void testMF2() throws Exception {
         IAtomContainer mol = smilesParser.parseSmiles("C1(c2ccccc2)(CC(CC1)CCc1ccccc1)CC1C=CC=C1");
@@ -132,13 +131,11 @@ public class MurckoFragmenterTest extends CDKTestCase {
         List<String> frameworks = Arrays.asList(fragmenter.getFrameworks());
         Assert.assertEquals(7, frameworks.size());
 
-        assertThat(frameworks, hasItems("c1ccc(cc1)CCC2CCC(CC3C=CC=C3)C2",
-                                        "c1ccc(cc1)CCC2CCCC2",
-                                        "C=1C=CC(C1)CC2CCCC2",
-                                        "c1ccc(cc1)C2(CCCC2)CC3C=CC=C3",
-                                        "c1ccc(cc1)CCC2CCC(c3ccccc3)(CC4C=CC=C4)C2",
-                                        "c1ccc(cc1)C2CCCC2",
-                                        "c1ccc(cc1)CCC2CCC(c3ccccc3)C2"));
+        assertThat(
+                frameworks,
+                hasItems("c1ccc(cc1)CCC2CCC(CC3C=CC=C3)C2", "c1ccc(cc1)CCC2CCCC2", "C=1C=CC(C1)CC2CCCC2",
+                        "c1ccc(cc1)C2(CCCC2)CC3C=CC=C3", "c1ccc(cc1)CCC2CCC(c3ccccc3)(CC4C=CC=C4)C2",
+                        "c1ccc(cc1)C2CCCC2", "c1ccc(cc1)CCC2CCC(c3ccccc3)C2"));
     }
 
     @Test
@@ -160,9 +157,7 @@ public class MurckoFragmenterTest extends CDKTestCase {
 
         List<String> frameworks = Arrays.asList(fragmenter.getFrameworks());
         Assert.assertEquals(3, frameworks.size());
-        assertThat(frameworks, hasItems("n1coc(c1)-c2ccccc2",
-                                        "n1coc(-c2ccccc2)c1-c3ccccc3",
-                                        "n1cocc1-c2ccccc2"));
+        assertThat(frameworks, hasItems("n1coc(c1)-c2ccccc2", "n1coc(-c2ccccc2)c1-c3ccccc3", "n1cocc1-c2ccccc2"));
     }
 
     @Test
@@ -232,8 +227,7 @@ public class MurckoFragmenterTest extends CDKTestCase {
         Assert.assertEquals(f.length, fc.length);
         Assert.assertEquals("n1ccccc1Cc2ccccc2", f[0]);
 
-        SmilesGenerator sg = SmilesGenerator.unique()
-                                            .aromatic();
+        SmilesGenerator sg = SmilesGenerator.unique().aromatic();
         for (int i = 0; i < f.length; i++) {
             Aromaticity.cdkLegacy().apply(fc[i]);
             String newsmiles = sg.create(fc[i]);
@@ -246,8 +240,7 @@ public class MurckoFragmenterTest extends CDKTestCase {
      */
     @Test
     public void testPirenperone_Bug3088164() throws Exception {
-        SmilesGenerator sg = SmilesGenerator.unique()
-                                            .aromatic();
+        SmilesGenerator sg = SmilesGenerator.unique().aromatic();
 
         IAtomContainer mol = smilesParser.parseSmiles("Fc1ccc(cc1)C(=O)C4CCN(CCC\\3=C(\\N=C2\\C=C/C=C\\N2C/3=O)C)CC4");
         AtomContainerManipulator.clearAtomConfigurations(mol);
@@ -258,7 +251,7 @@ public class MurckoFragmenterTest extends CDKTestCase {
 
         String[] f = fragmenter.getFrameworks();
         IAtomContainer[] fc = fragmenter.getFrameworksAsContainers();
-        
+
         Assert.assertEquals(1, f.length);
         Assert.assertEquals(f.length, fc.length);
 
@@ -266,7 +259,7 @@ public class MurckoFragmenterTest extends CDKTestCase {
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
         CDKHydrogenAdder.getInstance(mol.getBuilder()).addImplicitHydrogens(mol);
         Aromaticity.cdkLegacy().apply(mol);
-                
+
         Assert.assertEquals("N=1C=C(CN2C=CC=CC12)CCN3CCC(Cc4ccccc4)CC3", f[0]);
 
         for (int i = 0; i < f.length; i++) {
@@ -280,8 +273,7 @@ public class MurckoFragmenterTest extends CDKTestCase {
      */
     @Test
     public void testIsomoltane_Bug3088164() throws Exception {
-        SmilesGenerator sg = SmilesGenerator.unique()
-                                            .aromatic();
+        SmilesGenerator sg = SmilesGenerator.unique().aromatic();
 
         IAtomContainer mol = smilesParser.parseSmiles("CC(C)NCC(O)COC1=C(C=CC=C1)N1C=CC=C1");
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
@@ -302,7 +294,8 @@ public class MurckoFragmenterTest extends CDKTestCase {
         }
     }
 
-    @Test public void testGetFragmentsAsContainers() throws Exception {
+    @Test
+    public void testGetFragmentsAsContainers() throws Exception {
 
         IAtomContainer biphenyl = MoleculeFactory.makeBiphenyl();
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(biphenyl);
@@ -326,7 +319,8 @@ public class MurckoFragmenterTest extends CDKTestCase {
     @Test
     @Category(SlowTest.class)
     public void testMacrocycle() throws Exception {
-        IAtomContainer mol = smilesParser.parseSmiles("C1=C(C=C(C(=C1O)O)O)C(=O)OC2=CC(=CC(=C2O)O)C(=O)OCC3C(C(C(C(O3)OC(=O)C4=CC(=C(C(=C4)OC(=O)C5=CC(=C(C(=C5)O)O)O)O)O)OC(=O)C6=CC(=C(C(=C6)OC(=O)C7=CC(=C(C(=C7)O)O)O)O)O)OC(=O)C8=CC(=C(C(=C8)OC(=O)C9=CC(=C(C(=C9)O)O)O)O)O)OC(=O)C1=CC(=C(C(=C1)OC(=O)C1=CC(=C(C(=C1)O)O)O)O)O");
+        IAtomContainer mol = smilesParser
+                .parseSmiles("C1=C(C=C(C(=C1O)O)O)C(=O)OC2=CC(=CC(=C2O)O)C(=O)OCC3C(C(C(C(O3)OC(=O)C4=CC(=C(C(=C4)OC(=O)C5=CC(=C(C(=C5)O)O)O)O)O)OC(=O)C6=CC(=C(C(=C6)OC(=O)C7=CC(=C(C(=C7)O)O)O)O)O)OC(=O)C8=CC(=C(C(=C8)OC(=O)C9=CC(=C(C(=C9)O)O)O)O)O)OC(=O)C1=CC(=C(C(=C1)OC(=O)C1=CC(=C(C(=C1)O)O)O)O)O");
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
         Aromaticity.cdkLegacy().apply(mol);
         MurckoFragmenter fragmenter = new MurckoFragmenter(true, 6);

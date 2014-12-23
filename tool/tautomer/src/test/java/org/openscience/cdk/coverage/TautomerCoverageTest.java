@@ -36,12 +36,14 @@ import org.junit.Test;
 public class TautomerCoverageTest extends CoverageAnnotationTest {
 
     private final static String CLASS_LIST = "tautomer.javafiles";
-    
-    @BeforeClass public static void setUp() throws Exception {
+
+    @BeforeClass
+    public static void setUp() throws Exception {
         loadClassList(CLASS_LIST, TautomerCoverageTest.class.getClassLoader());
     }
 
-    @Test public void testCoverage() {
+    @Test
+    public void testCoverage() {
         Assert.assertTrue(super.runCoverageTest());
     }
 

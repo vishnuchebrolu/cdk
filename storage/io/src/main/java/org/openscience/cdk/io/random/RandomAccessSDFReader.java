@@ -44,7 +44,7 @@ import org.openscience.cdk.io.listener.IReaderListener;
 /**
  * Random access of SDF file. Doesn't load molecules in memory, uses prebuilt
  * index and seeks to find the correct record offset.
- * 
+ *
  * @author     Nina Jeliazkova <nina@acad.bg>
  * @cdk.module io
  * @cdk.githash
@@ -56,74 +56,82 @@ public class RandomAccessSDFReader extends RandomAccessReader {
      * @param builder
      * @throws IOException
      */
-    public RandomAccessSDFReader(File file, IChemObjectBuilder builder)
-            throws IOException {
-        this(file, builder,null);
+    public RandomAccessSDFReader(File file, IChemObjectBuilder builder) throws IOException {
+        this(file, builder, null);
     }
-    public RandomAccessSDFReader(File file, IChemObjectBuilder builder, IReaderListener listener)
-    throws IOException {
-        super(file, builder,listener);
+
+    public RandomAccessSDFReader(File file, IChemObjectBuilder builder, IReaderListener listener) throws IOException {
+        super(file, builder, listener);
     }
+
     @Override
     public ISimpleChemObjectReader createChemObjectReader() {
-    	return new MDLV2000Reader();
+        return new MDLV2000Reader();
     }
+
+    @Override
     protected boolean isRecordEnd(String line) {
         return line.equals("$$$$");
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
      * @see org.openscience.cdk.io.IChemObjectIO#getFormat()
      */
     @TestMethod("testGetFormat")
     public IResourceFormat getFormat() {
         return MDLFormat.getInstance();
     }
+
+    @Override
     protected IChemObject processContent() throws CDKException {
-        	/*
-            return chemObjectReader.read(builder.newInstance(IMolecule.class));
-            */
-            //read(IMolecule) doesn't read properties ...
-            IChemObject co = chemObjectReader.read(builder.newInstance(IChemFile.class));
-            if (co instanceof IChemFile) {
-                int c = ((IChemFile) co).getChemSequenceCount();
-                for (int i=0; i <c;i++) {
-                    Iterator<IChemModel> cm = ((IChemFile) co).getChemSequence(i).chemModels().iterator();
-                    while (cm.hasNext()) {
-                    	Iterator<IAtomContainer> sm = (cm.next()).getMoleculeSet().atomContainers().iterator();
-                        while (sm.hasNext()) {
-                        	
-                        	co = sm.next();
-                        	break;
-                        }	
-                    	break;
+        /*
+         * return chemObjectReader.read(builder.newInstance(IAtomContainer.class));
+         */
+        //read(IAtomContainer) doesn't read properties ...
+        IChemObject co = chemObjectReader.read(builder.newInstance(IChemFile.class));
+        if (co instanceof IChemFile) {
+            int c = ((IChemFile) co).getChemSequenceCount();
+            for (int i = 0; i < c; i++) {
+                Iterator<IChemModel> cm = ((IChemFile) co).getChemSequence(i).chemModels().iterator();
+                while (cm.hasNext()) {
+                    Iterator<IAtomContainer> sm = (cm.next()).getMoleculeSet().atomContainers().iterator();
+                    while (sm.hasNext()) {
+
+                        co = sm.next();
+                        break;
                     }
-                    cm = null;
                     break;
                 }
-                //cs = null;
+                cm = null;
+                break;
             }
-            return co;
-            
+            //cs = null;
         }
-	@TestMethod("testSetReader_Reader")
+        return co;
+
+    }
+
+    @TestMethod("testSetReader_Reader")
     public void setReader(Reader reader) throws CDKException {
-		throw new UnsupportedOperationException();
-		
-	}
-	@TestMethod("testSetReader_InputStream")
+        throw new UnsupportedOperationException();
+
+    }
+
+    @TestMethod("testSetReader_InputStream")
     public void setReader(InputStream reader) throws CDKException {
-		throw new UnsupportedOperationException();
-		
-	}
-	
+        throw new UnsupportedOperationException();
+
+    }
+
     @TestMethod("testAccepts")
     public boolean accepts(Class<? extends IChemObject> classObject) {
-		return chemObjectReader.accepts(classObject);
-	}
+        return chemObjectReader.accepts(classObject);
+    }
 
+    @Override
     public void remove() {
-        throw new UnsupportedOperationException("Cannot remove entries with " +
-            "the RandomAccessSDFReader");
+        throw new UnsupportedOperationException("Cannot remove entries with " + "the RandomAccessSDFReader");
     }
 
 }

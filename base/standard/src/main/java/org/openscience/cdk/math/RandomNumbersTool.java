@@ -1,7 +1,7 @@
 /* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
- * 
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -10,12 +10,12 @@
  * - but is not limited to - adding the above copyright notice to the beginning
  * of your source code files, and to any copyright notice that you may distribute
  * with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -40,8 +40,8 @@ public class RandomNumbersTool extends Random {
 
     private static final long serialVersionUID = -8238833473383641882L;
 
-    private static java.util.Random random;
-    private static long randomSeed;
+    private static Random     random;
+    private static long       randomSeed;
 
     static {
         randomSeed = System.currentTimeMillis();
@@ -55,7 +55,7 @@ public class RandomNumbersTool extends Random {
      * @param base_random a <code>java.util.Random</code> subclass.
      */
     @TestMethod("testSetRandom")
-    public static void setRandom(java.util.Random base_random) {
+    public static void setRandom(Random base_random) {
         random = base_random;
     }
 
@@ -149,8 +149,7 @@ public class RandomNumbersTool extends Random {
      * @see <a href="http://stackoverflow.com/questions/2546078/java-random-long-number-in-0-x-n-range">Random Long Number in range, Stack Overflow</a>
      */
     private static long nextLong(Random rng, long n) {
-        if (n <= 0)
-            throw new IllegalArgumentException("n must be greater than 0");
+        if (n <= 0) throw new IllegalArgumentException("n must be greater than 0");
         long bits, val;
         do {
             bits = (rng.nextLong() << 1) >>> 1;
@@ -284,4 +283,3 @@ public class RandomNumbersTool extends Random {
         return -mean * Math.log(randomDouble());
     }
 }
-

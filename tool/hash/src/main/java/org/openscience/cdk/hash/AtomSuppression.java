@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2013 European Bioinformatics Institute (EMBL-EBI)
  *                    John May <jwmay@users.sf.net>
- *  
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- *  
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version. All we ask is that proper credit is given
- * for our work, which includes - but is not limited to - adding the above 
+ * for our work, which includes - but is not limited to - adding the above
  * copyright notice to the beginning of your source code files, and to any
  * copyright notice that you may distribute with programs based on this work.
  *
@@ -53,7 +53,9 @@ abstract class AtomSuppression {
 
     /** Default implementation - don't suppress anything. */
     private static final class Unsuppressed extends AtomSuppression {
-        @Override Suppressed suppress(IAtomContainer container) {
+
+        @Override
+        Suppressed suppress(IAtomContainer container) {
             return Suppressed.none();
         }
     }
@@ -63,8 +65,10 @@ abstract class AtomSuppression {
      * hydrogen ion or isotope.
      */
     private static final class AnyHydrogens extends AtomSuppression {
+
         /** @inheritDoc */
-        @Override Suppressed suppress(IAtomContainer container) {
+        @Override
+        Suppressed suppress(IAtomContainer container) {
             BitSet hydrogens = new BitSet();
             for (int i = 0; i < container.getAtomCount(); i++) {
                 IAtom atom = container.getAtom(i);
@@ -76,8 +80,10 @@ abstract class AtomSuppression {
 
     /** Suppresses any pseudo atom. */
     private static final class AnyPseudos extends AtomSuppression {
+
         /** @inheritDoc */
-        @Override Suppressed suppress(IAtomContainer container) {
+        @Override
+        Suppressed suppress(IAtomContainer container) {
             BitSet hydrogens = new BitSet();
             for (int i = 0; i < container.getAtomCount(); i++) {
                 IAtom atom = container.getAtom(i);
@@ -103,7 +109,6 @@ abstract class AtomSuppression {
     static AtomSuppression unsuppressed() {
         return unsuppressed;
     }
-
 
     /**
      * Suppress all hydrogens even if they are charged or an isotope.

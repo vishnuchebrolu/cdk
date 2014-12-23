@@ -39,7 +39,7 @@ import org.openscience.cdk.interfaces.IBond.Order;
  * Helper class to represent a immutable hydrogen. All set methods are void, and only
  * {@link #getSymbol()}, {@link #getAtomicNumber()}, and {@link #getMassNumber()} are
  * implemented.
- * 
+ *
  * @author egonw
  * @cdk.module cip
  * @cdk.githash
@@ -51,16 +51,18 @@ class ImmutableHydrogen implements IAtom {
 
     /** {@inheritDoc} */
     @TestMethod("testClone")
+    @Override
     public IAtom clone() {
         return this;
     }
-    
+
     /**
      * This field is not used by this immutable hydrogen.
      *
      * @return null.
      */
     @TestMethod("testReturnsNull")
+    @Override
     public Double getCharge() {
         return null;
     }
@@ -71,6 +73,7 @@ class ImmutableHydrogen implements IAtom {
      * @return null.
      */
     @TestMethod("testReturnsNull")
+    @Override
     public Point3d getFractionalPoint3d() {
         return null;
     }
@@ -81,6 +84,7 @@ class ImmutableHydrogen implements IAtom {
      * @return null.
      */
     @TestMethod("testReturnsNull")
+    @Override
     public Integer getImplicitHydrogenCount() {
         return null;
     }
@@ -91,6 +95,7 @@ class ImmutableHydrogen implements IAtom {
      * @return null.
      */
     @TestMethod("testReturnsNull")
+    @Override
     public Point2d getPoint2d() {
         return null;
     }
@@ -101,6 +106,7 @@ class ImmutableHydrogen implements IAtom {
      * @return null.
      */
     @TestMethod("testReturnsNull")
+    @Override
     public Point3d getPoint3d() {
         return null;
     }
@@ -111,6 +117,7 @@ class ImmutableHydrogen implements IAtom {
      * @return null.
      */
     @TestMethod("testReturnsNull")
+    @Override
     public Integer getStereoParity() {
         return null;
     }
@@ -122,15 +129,17 @@ class ImmutableHydrogen implements IAtom {
      * @param charge The value will be disregarded.
      */
     @TestMethod("testSetIsSilent")
+    @Override
     public void setCharge(Double charge) {}
 
     /**
      * This field is not used by this immutable hydrogen.
      * Any setting will have no effect what so ever.
-     * 
+     *
      * @param point3d The value will be disregarded.
      */
     @TestMethod("testSetIsSilent")
+    @Override
     public void setFractionalPoint3d(Point3d point3d) {}
 
     /**
@@ -140,33 +149,37 @@ class ImmutableHydrogen implements IAtom {
      * @param hydrogenCount The value will be disregarded.
      */
     @TestMethod("testSetIsSilent")
+    @Override
     public void setImplicitHydrogenCount(Integer hydrogenCount) {}
 
     /**
      * This field is not used by this immutable hydrogen.
      * Any setting will have no effect what so ever.
-     * 
+     *
      * @param point2d The value will be disregarded.
      */
     @TestMethod("testSetIsSilent")
+    @Override
     public void setPoint2d(Point2d point2d) {}
 
     /**
      * This field is not used by this immutable hydrogen.
      * Any setting will have no effect what so ever.
-     * 
+     *
      * @param point3d The value will be disregarded.
      */
     @TestMethod("testSetIsSilent")
+    @Override
     public void setPoint3d(Point3d point3d) {}
 
     /**
      * This field is not used by this immutable hydrogen.
      * Any setting will have no effect what so ever.
-     * 
+     *
      * @param stereoParity The value will be disregarded.
      */
     @TestMethod("testSetIsSilent")
+    @Override
     public void setStereoParity(Integer stereoParity) {}
 
     /**
@@ -175,6 +188,7 @@ class ImmutableHydrogen implements IAtom {
      * @return null.
      */
     @TestMethod("testReturnsNull")
+    @Override
     public String getAtomTypeName() {
         return null;
     }
@@ -185,6 +199,7 @@ class ImmutableHydrogen implements IAtom {
      * @return null.
      */
     @TestMethod("testReturnsNull")
+    @Override
     public Double getBondOrderSum() {
         return null;
     }
@@ -195,6 +210,7 @@ class ImmutableHydrogen implements IAtom {
      * @return null.
      */
     @TestMethod("testReturnsNull")
+    @Override
     public Double getCovalentRadius() {
         return null;
     }
@@ -205,6 +221,7 @@ class ImmutableHydrogen implements IAtom {
      * @return null.
      */
     @TestMethod("testReturnsNull")
+    @Override
     public Integer getFormalCharge() {
         return null;
     }
@@ -215,6 +232,7 @@ class ImmutableHydrogen implements IAtom {
      * @return null.
      */
     @TestMethod("testReturnsNull")
+    @Override
     public Integer getFormalNeighbourCount() {
         return null;
     }
@@ -225,6 +243,7 @@ class ImmutableHydrogen implements IAtom {
      * @return null.
      */
     @TestMethod("testReturnsNull")
+    @Override
     public Hybridization getHybridization() {
         return null;
     }
@@ -235,6 +254,7 @@ class ImmutableHydrogen implements IAtom {
      * @return null.
      */
     @TestMethod("testReturnsNull")
+    @Override
     public Order getMaxBondOrder() {
         return null;
     }
@@ -245,6 +265,7 @@ class ImmutableHydrogen implements IAtom {
      * @return null.
      */
     @TestMethod("testReturnsNull")
+    @Override
     public Integer getValency() {
         return null;
     }
@@ -252,73 +273,81 @@ class ImmutableHydrogen implements IAtom {
     /**
      * This field is not used by this immutable hydrogen.
      * Any setting will have no effect what so ever.
-     * 
+     *
      * @param identifier The value will be disregarded.
      */
     @TestMethod("testSetIsSilent")
+    @Override
     public void setAtomTypeName(String identifier) {}
 
     /**
      * This field is not used by this immutable hydrogen.
      * Any setting will have no effect what so ever.
-     * 
+     *
      * @param bondOrderSum The value will be disregarded.
      */
     @TestMethod("testSetIsSilent")
+    @Override
     public void setBondOrderSum(Double bondOrderSum) {}
 
     /**
      * This field is not used by this immutable hydrogen.
      * Any setting will have no effect what so ever.
-     * 
+     *
      * @param radius The value will be disregarded.
      */
     @TestMethod("testSetIsSilent")
+    @Override
     public void setCovalentRadius(Double radius) {}
 
     /**
      * This field is not used by this immutable hydrogen.
      * Any setting will have no effect what so ever.
-     * 
+     *
      * @param charge The value will be disregarded.
      */
     @TestMethod("testSetIsSilent")
+    @Override
     public void setFormalCharge(Integer charge) {}
 
     /**
      * This field is not used by this immutable hydrogen.
      * Any setting will have no effect what so ever.
-     * 
+     *
      * @param count The value will be disregarded.
      */
     @TestMethod("testSetIsSilent")
+    @Override
     public void setFormalNeighbourCount(Integer count) {}
 
     /**
      * This field is not used by this immutable hydrogen.
      * Any setting will have no effect what so ever.
-     * 
+     *
      * @param hybridization The value will be disregarded.
      */
     @TestMethod("testSetIsSilent")
+    @Override
     public void setHybridization(Hybridization hybridization) {}
 
     /**
      * This field is not used by this immutable hydrogen.
      * Any setting will have no effect what so ever.
-     * 
+     *
      * @param maxBondOrder The value will be disregarded.
      */
     @TestMethod("testSetIsSilent")
+    @Override
     public void setMaxBondOrder(Order maxBondOrder) {}
 
     /**
      * This field is not used by this immutable hydrogen.
      * Any setting will have no effect what so ever.
-     * 
+     *
      * @param valency The value will be disregarded.
      */
     @TestMethod("testSetIsSilent")
+    @Override
     public void setValency(Integer valency) {}
 
     /**
@@ -327,6 +356,7 @@ class ImmutableHydrogen implements IAtom {
      * @return null.
      */
     @TestMethod("testReturnsNull")
+    @Override
     public Double getExactMass() {
         return null;
     }
@@ -337,6 +367,7 @@ class ImmutableHydrogen implements IAtom {
      * @return 1.
      */
     @TestMethod("testExpectedValues")
+    @Override
     public Integer getMassNumber() {
         return Integer.valueOf(1);
     }
@@ -347,6 +378,7 @@ class ImmutableHydrogen implements IAtom {
      * @return null.
      */
     @TestMethod("testReturnsNull")
+    @Override
     public Double getNaturalAbundance() {
         return null;
     }
@@ -354,66 +386,74 @@ class ImmutableHydrogen implements IAtom {
     /**
      * This field is not used by this immutable hydrogen.
      * Any setting will have no effect what so ever.
-     * 
+     *
      * @param exactMass The value will be disregarded.
      */
     @TestMethod("testSetIsSilent")
+    @Override
     public void setExactMass(Double exactMass) {}
 
     /**
      * This field is not used by this immutable hydrogen.
      * Any setting will have no effect what so ever.
-     * 
+     *
      * @param massNumber The value will be disregarded.
      */
     @TestMethod("testSetIsSilent")
+    @Override
     public void setMassNumber(Integer massNumber) {}
 
     /**
      * This field is not used by this immutable hydrogen.
      * Any setting will have no effect what so ever.
-     * 
+     *
      * @param naturalAbundance The value will be disregarded.
      */
     @TestMethod("testSetIsSilent")
+    @Override
     public void setNaturalAbundance(Double naturalAbundance) {}
 
     /**
      * Returns the atomic number of hydrogen.
-     * 
+     *
      * @return 1.
      */
     @TestMethod("testExpectedValues")
+    @Override
     public Integer getAtomicNumber() {
         return Integer.valueOf(1);
     }
 
     /**
      * Returns the symbol of the hydrogen element.
-     * 
+     *
      * @return "H".
      */
     @TestMethod("testExpectedValues")
+    @Override
     public String getSymbol() {
         return SYMBOL;
     }
 
     /** Using this method on this immutable object has no effect.
-     * 
+     *
      * @param atomicNumber An integer that will just be disregarded.
      */
     @TestMethod("testOverwriteStaticValues")
+    @Override
     public void setAtomicNumber(Integer atomicNumber) {}
 
     /** Using this method on this immutable object has no effect.
-     * 
+     *
      * @param symbol A string that will just be disregarded.
      */
     @TestMethod("testOverwriteStaticValues")
+    @Override
     public void setSymbol(String symbol) {}
 
     /** {@inheritDoc} */
     @TestMethod("testListenerStuff")
+    @Override
     public void addListener(IChemObjectListener col) {}
 
     /**
@@ -423,6 +463,7 @@ class ImmutableHydrogen implements IAtom {
      * @return null.
      */
     @TestMethod("testReturnsNull")
+    @Override
     public boolean getFlag(int flagType) {
         return false;
     }
@@ -433,10 +474,10 @@ class ImmutableHydrogen implements IAtom {
      * @return null.
      */
     @TestMethod("testReturnsNull")
+    @Override
     public boolean[] getFlags() {
         return null;
     }
-
 
     /**
      * This field is not used by this immutable hydrogen.
@@ -456,18 +497,21 @@ class ImmutableHydrogen implements IAtom {
      * @return null.
      */
     @TestMethod("testReturnsNull")
+    @Override
     public String getID() {
         return null;
     }
 
     /** {@inheritDoc} */
     @TestMethod("testListenerStuff")
+    @Override
     public int getListenerCount() {
         return 0;
     }
 
     /** {@inheritDoc} */
     @TestMethod("testListenerStuff")
+    @Override
     public boolean getNotification() {
         return false;
     }
@@ -478,6 +522,7 @@ class ImmutableHydrogen implements IAtom {
      * @return null.
      */
     @TestMethod("testReturnsNull")
+    @Override
     public Map<Object, Object> getProperties() {
         return null;
     }
@@ -489,6 +534,7 @@ class ImmutableHydrogen implements IAtom {
      * @return null.
      */
     @TestMethod("testReturnsNull")
+    @Override
     public Object getProperty(Object description) {
         return null;
     }
@@ -507,44 +553,52 @@ class ImmutableHydrogen implements IAtom {
 
     /** {@inheritDoc} */
     @TestMethod("testListenerStuff")
+    @Override
     public void notifyChanged() {}
 
     /** {@inheritDoc} */
     @TestMethod("testListenerStuff")
+    @Override
     public void notifyChanged(IChemObjectChangeEvent evt) {}
 
     /** {@inheritDoc} */
     @TestMethod("testListenerStuff")
+    @Override
     public void removeListener(IChemObjectListener col) {}
 
     /** {@inheritDoc} */
     @TestMethod("testSetIsSilent")
+    @Override
     public void removeProperty(Object description) {}
 
     /** {@inheritDoc} */
     @TestMethod("testSetIsSilent")
+    @Override
     public void setFlag(int flagType, boolean flagValue) {}
 
     /**
      * This field is not used by this immutable hydrogen.
      * Any setting will have no effect what so ever.
-     * 
+     *
      * @param flagsNew The value will be disregarded.
      */
     @TestMethod("testSetIsSilent")
+    @Override
     public void setFlags(boolean[] flagsNew) {}
 
     /**
      * This field is not used by this immutable hydrogen.
      * Any setting will have no effect what so ever.
-     * 
+     *
      * @param identifier The value will be disregarded.
      */
     @TestMethod("testSetIsSilent")
+    @Override
     public void setID(String identifier) {}
 
     /** {@inheritDoc} */
     @TestMethod("testListenerStuff")
+    @Override
     public void setNotification(boolean bool) {}
 
     /**
@@ -554,25 +608,28 @@ class ImmutableHydrogen implements IAtom {
      * @param properties The value will be disregarded.
      */
     @TestMethod("testSetIsSilent")
+    @Override
     public void setProperties(Map<Object, Object> properties) {}
-    
+
     /**
      * This field is not used by this immutable hydrogen.
      * Any setting will have no effect what so ever.
-     * 
+     *
      * @param properties The value will be disregarded.
      */
     @TestMethod("testSetIsSilent")
+    @Override
     public void addProperties(Map<Object, Object> properties) {}
 
     /**
      * This field is not used by this immutable hydrogen.
      * Any setting will have no effect what so ever.
-     * 
+     *
      * @param description The value will be disregarded.
      * @param property    The value will be disregarded.
      */
     @TestMethod("testSetIsSilent")
+    @Override
     public void setProperty(Object description, Object property) {}
 
     /**
@@ -581,6 +638,7 @@ class ImmutableHydrogen implements IAtom {
      * @return null.
      */
     @TestMethod("testReturnsNull")
+    @Override
     public IChemObjectBuilder getBuilder() {
         return null;
     }

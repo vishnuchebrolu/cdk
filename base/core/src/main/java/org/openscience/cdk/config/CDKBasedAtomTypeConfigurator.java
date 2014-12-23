@@ -42,49 +42,49 @@ import org.openscience.cdk.tools.LoggingToolFactory;
 @TestClass("org.openscience.cdk.config.CDKBasedAtomTypeConfiguratorTest")
 public class CDKBasedAtomTypeConfigurator implements IAtomTypeConfigurator {
 
-    private String configFile = "org.openscience.cdk.config.data.structgen_atomtypes.xml";
-    private InputStream ins = null;
-    
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(CDKBasedAtomTypeConfigurator.class);
+    private String              configFile = "org.openscience.cdk.config.data.structgen_atomtypes.xml";
+    private InputStream         ins        = null;
+
+    private static ILoggingTool logger     = LoggingToolFactory.createLoggingTool(CDKBasedAtomTypeConfigurator.class);
 
     @TestMethod("testCDKBasedAtomTypeConfigurator")
-    public CDKBasedAtomTypeConfigurator() {
-    }
+    public CDKBasedAtomTypeConfigurator() {}
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     @TestMethod("testSetInputStream_InputStream")
     public void setInputStream(InputStream ins) {
         this.ins = ins;
     }
-    
+
     /**
      * Reads the atom types from the CDK based atom type list.
-     * 
+     *
      * @param builder IChemObjectBuilder used to construct the IAtomType's.
-     * @throws        IOException when a problem occured with reading from the InputStream
+     * @throws        IOException when a problem occurred with reading from the InputStream
      * @return        A List with read IAtomType's.
      */
     @TestMethod("testReadAtomTypes_IChemObjectBuilder")
+    @Override
     public List<IAtomType> readAtomTypes(IChemObjectBuilder builder) throws IOException {
         List<IAtomType> atomTypes;
         if (ins == null) {
             try {
                 ins = this.getClass().getClassLoader().getResourceAsStream(configFile);
-            } catch(Exception exc) {
+            } catch (Exception exc) {
                 logger.error(exc.getMessage());
                 logger.debug(exc);
-                throw new IOException("There was a problem getting a stream for " + configFile +
-                                      " with getClass.getClassLoader.getResourceAsStream");
+                throw new IOException("There was a problem getting a stream for " + configFile
+                        + " with getClass.getClassLoader.getResourceAsStream");
             }
             if (ins == null) {
                 try {
                     ins = this.getClass().getResourceAsStream(configFile);
-                } catch(Exception exc) {
+                } catch (Exception exc) {
                     logger.error(exc.getMessage());
                     logger.debug(exc);
-                    throw new IOException("There was a problem getting a stream for " + configFile +
-                                          " with getClass.getResourceAsStream");
+                    throw new IOException("There was a problem getting a stream for " + configFile
+                            + " with getClass.getResourceAsStream");
                 }
             }
         }
@@ -98,5 +98,5 @@ public class CDKBasedAtomTypeConfigurator implements IAtomTypeConfigurator {
         }
         return atomTypes;
     }
-   
+
 }

@@ -29,19 +29,19 @@ import org.openscience.cdk.annotations.TestMethod;
  * @cdk.module  reaction
  * @cdk.githash
  */
-@TestClass(value="org.openscience.cdk.reaction.ReactionSpecificationTest")
+@TestClass(value = "org.openscience.cdk.reaction.ReactionSpecificationTest")
 public class ReactionSpecification implements IImplementationSpecification {
 
     private String specificationReference;
     private String implementationTitle;
     private String implementationIdentifier;
     private String implementationVendor;
-    
+
     /**
      * Container for specifying the type of reaction.
      *
      * @param specificationReference Reference to a formal definition in a
-     *          dictionary (e.g. in STMML format) of the descriptor, preferably 
+     *          dictionary (e.g. in STMML format) of the descriptor, preferably
      *          refering to the original article. The format of the content is
      *          expected to be &lt;dictionaryNameSpace&gt;:&lt;entryID&gt;.
      * @param implementationTitle Title for the reaction process.
@@ -49,39 +49,40 @@ public class ReactionSpecification implements IImplementationSpecification {
      *          implementation, preferably including the exact version number of
      *          the source code. E.g. $Id$ can be used when the source code is
      *          in a CVS repository.
-     * @param implementationVendor Name of the organisation/person/program/whatever 
+     * @param implementationVendor Name of the organisation/person/program/whatever
      *          who wrote/packaged the implementation.
      */
-    @TestMethod(value="testReactionSpecification_String_String_String_String")
-    public ReactionSpecification(
-        String specificationReference,
-        String implementationTitle,
-        String implementationIdentifier,
-        String implementationVendor) {
+    @TestMethod(value = "testReactionSpecification_String_String_String_String")
+    public ReactionSpecification(String specificationReference, String implementationTitle,
+            String implementationIdentifier, String implementationVendor) {
         this.specificationReference = specificationReference;
         this.implementationTitle = implementationTitle;
         this.implementationIdentifier = implementationIdentifier;
         this.implementationVendor = implementationVendor;
     }
 
-    @TestMethod(value="testGetSpecificationReference")
+    @TestMethod(value = "testGetSpecificationReference")
+    @Override
     public String getSpecificationReference() {
         return this.specificationReference;
     };
 
-    @TestMethod(value="testGetImplementationTitle")
+    @TestMethod(value = "testGetImplementationTitle")
+    @Override
     public String getImplementationTitle() {
         return this.implementationTitle;
     };
 
-    @TestMethod(value="testGetImplementationIdentifier")
+    @TestMethod(value = "testGetImplementationIdentifier")
+    @Override
     public String getImplementationIdentifier() {
         return this.implementationIdentifier;
     };
 
-    @TestMethod(value="testGetImplementationVendor")
+    @TestMethod(value = "testGetImplementationVendor")
+    @Override
     public String getImplementationVendor() {
         return this.implementationVendor;
     };
-    
+
 }

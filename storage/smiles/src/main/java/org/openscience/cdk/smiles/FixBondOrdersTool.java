@@ -43,7 +43,7 @@ import org.openscience.cdk.tools.CDKHydrogenAdder;
 /**
  * Class to Fix bond orders at present for Aromatic Rings only.
  *
- * Contains one public function: kekuliseAromaticRings(IMolecule molecule)
+ * Contains one public function: kekuliseAromaticRings(IAtomContainer molecule)
  * <ul>
  * <li>Analyses which rings are marked aromatic/SP2/Planar3
  * <li>Splits rings into groups containing independent sets of single/fused rings
@@ -55,9 +55,9 @@ import org.openscience.cdk.tools.CDKHydrogenAdder;
  * <li>All choices made to match valency against bonds used (including implicit H atoms)
  * <li>Solves other bonds as possible - dependent on previous choices - makes free
  * (random) choices only where necessary and possible
- * <li>Makes assumption that where there is a choice in bond order 
+ * <li>Makes assumption that where there is a choice in bond order
  * (not forced by previous choices) - either choice is consistent with correct solution
- * 
+ *
  * <li>Requires molecule with all rings to be solved being marked aromatic
  * (SP2/Planar3 atoms). All bonds to non-ring atoms need to be fully defined
  * (including implicit H atoms)
@@ -76,8 +76,8 @@ public class FixBondOrdersTool {
     private static class Matrix {
 
         private int[] mArray;
-        private int rowCount;
-        private int columnCount;
+        private int   rowCount;
+        private int   columnCount;
 
         public Matrix(Integer rows, Integer cols) {
 
@@ -135,18 +135,17 @@ public class FixBondOrdersTool {
     /**
      * Constructor for the FixBondOrdersTool object.
      */
-    public FixBondOrdersTool() {
-    }
+    public FixBondOrdersTool() {}
 
-/**
- * kekuliseAromaticRings - function to add double/single bond order information for molecules having rings containing all atoms marked SP2 or Planar3 hybridisation.
- * @param molecule The {@link IAtomContainer} to kekulise
- * @return The {@link IAtomContainer} with kekule structure
- * @throws CDKException 
- */
+    /**
+     * kekuliseAromaticRings - function to add double/single bond order information for molecules having rings containing all atoms marked SP2 or Planar3 hybridisation.
+     * @param molecule The {@link IAtomContainer} to kekulise
+     * @return The {@link IAtomContainer} with kekule structure
+     * @throws CDKException
+     */
     @TestMethod("testLargeRingSystem")
     public IAtomContainer kekuliseAromaticRings(IAtomContainer molecule) throws CDKException {
-    	IAtomContainer mNew = null;
+        IAtomContainer mNew = null;
         try {
             mNew = (IAtomContainer) molecule.clone();
         } catch (Exception e) {
@@ -222,10 +221,11 @@ public class FixBondOrdersTool {
 
             if (solveMatrix(M, atomNos, bondNos, freeValencies, atomNoPairs, bondOrders)) {
                 for (int j = 0; j < bondOrders.size(); j++) {
-                    mNew.getBond(bondNos.get(j)).setOrder(bondOrders.get(j) == 1 ? IBond.Order.SINGLE : IBond.Order.DOUBLE);
+                    mNew.getBond(bondNos.get(j)).setOrder(
+                            bondOrders.get(j) == 1 ? IBond.Order.SINGLE : IBond.Order.DOUBLE);
                 }
             } else {
-//                TODO Put any failure code here
+                //                TODO Put any failure code here
             }
         }
         return mNew;
@@ -251,9 +251,7 @@ public class FixBondOrdersTool {
             } else {
                 for (IAtom a : r.atoms()) {
                     Hybridization h = a.getHybridization();
-                    if (h == CDKConstants.UNSET
-                            || !(h == Hybridization.SP2
-                            || h == Hybridization.PLANAR3)) {
+                    if (h == CDKConstants.UNSET || !(h == Hybridization.SP2 || h == Hybridization.PLANAR3)) {
                         i.remove();
                         break;
                     }
@@ -265,12 +263,12 @@ public class FixBondOrdersTool {
 
     /**
      * Stores an {@link IRingSet} corresponding to a molecule using the bond numbers.
-     * 
-     * @param mol The IMolecule for which to store the IRingSet.
+     *
+     * @param mol The IAtomContainer for which to store the IRingSet.
      * @param ringSet The IRingSet to store
      * @return The List of Integer arrays for the bond numbers of each ringSet
      */
-    
+
     private List<Integer[]> getRingSystem(IAtomContainer mol, IRingSet ringSet) {
         List<Integer[]> bondsArray;
         bondsArray = new ArrayList<Integer[]>();
@@ -294,12 +292,12 @@ public class FixBondOrdersTool {
     private List<List<Integer>> assignRingGroups(List<Integer[]> rBondsArray) {
         List<List<Integer>> ringGroups;
         ringGroups = new ArrayList<List<Integer>>();
-        for (int i = 0; i < rBondsArray.size() - 1; i++) {    //for each ring except the last in rBondsArray
+        for (int i = 0; i < rBondsArray.size() - 1; i++) { //for each ring except the last in rBondsArray
             for (int j = 0; j < rBondsArray.get(i).length; j++) { //for each bond in each ring
 
                 //check there's no shared bond with any other ring already in ringGroups
                 for (int k = i + 1; k < rBondsArray.size(); k++) {
-                    for (int l = 0; l < rBondsArray.get(k).length; l++) {  //for each ring in each ring
+                    for (int l = 0; l < rBondsArray.get(k).length; l++) { //for each ring in each ring
 
                         //Is there a bond in common? Then add both rings
                         if (rBondsArray.get(i)[j] == rBondsArray.get(k)[l]) {
@@ -372,8 +370,8 @@ public class FixBondOrdersTool {
 
     /**
      * Gets the List of atom nos corresponding to a particular set of fused rings.
-     * 
-     * @param {@link IMolecule} molecule
+     *
+     * @param {@link IAtomContainer} molecule
      * @param ringGroup
      * @param {@link IRingSet} ringSet
      * @return List of atom numbers for each set
@@ -396,8 +394,8 @@ public class FixBondOrdersTool {
 
     /**
      * Gets the List of bond nos corresponding to a particular set of fused rings.
-     * 
-     * @param {@link IMolecule} molecule
+     *
+     * @param {@link IAtomContainer} molecule
      * @param ringGroup
      * @param {@link IRingSet} ringSet
      * @return List of bond numbers for each set
@@ -420,8 +418,8 @@ public class FixBondOrdersTool {
 
     /**
      * Gets List of atom number pairs for each bond in a list of bonds for the molecule.
-     * 
-     * @param {@link IMolecule} molecule
+     *
+     * @param {@link IAtomContainer} molecule
      * @param bondsToCheck
      * @return List of atom pairs
      */
@@ -439,18 +437,20 @@ public class FixBondOrdersTool {
     /**
      * Function to set up an array of integers corresponding to indicate how many free valencies need fulfilling for each atom through ring bonds.
      *
-     * @param {@link IMolecule} molecule
+     * @param {@link IAtomContainer} molecule
      * @param atomsToCheck
      * @param M
      * @return The List of free valencies available for extra ring bonding
      */
-    private List<Integer> getFreeValenciesForRingGroup(IAtomContainer molecule, List<Integer> atomsToCheck, Matrix M, IRingSet rs) {
+    private List<Integer> getFreeValenciesForRingGroup(IAtomContainer molecule, List<Integer> atomsToCheck, Matrix M,
+            IRingSet rs) {
         List<Integer> fvtc = new ArrayList<Integer>();
         for (int i = 0; i < atomsToCheck.size(); i++) {
             int j = atomsToCheck.get(i);
 
             //Put in an implicit hydrogen atom for Planar3 C- atoms in 5-membered rings (it doesn't get put in by the Smiles parser)
-            if (("C".equals(molecule.getAtom(j).getSymbol())) && (molecule.getAtom(j).getHybridization() == Hybridization.PLANAR3)) {
+            if (("C".equals(molecule.getAtom(j).getSymbol()))
+                    && (molecule.getAtom(j).getHybridization() == Hybridization.PLANAR3)) {
 
                 //Check that ring containing the atom is five-membered
                 for (IAtomContainer ac : rs.atomContainers()) {
@@ -475,7 +475,8 @@ public class FixBondOrdersTool {
             } else {
                 implicitH = molecule.getAtom(j).getImplicitHydrogenCount();
             }
-            fvtc.add(molecule.getAtom(j).getValency() - (implicitH + (int) molecule.getBondOrderSum(molecule.getAtom(j))) + M.sumOfRow(i));
+            fvtc.add(molecule.getAtom(j).getValency()
+                    - (implicitH + (int) molecule.getBondOrderSum(molecule.getAtom(j))) + M.sumOfRow(i));
         }
         return fvtc;
     }
@@ -505,7 +506,8 @@ public class FixBondOrdersTool {
      * @param bondOrder
      * @return True or false for success or failure
      */
-    private Boolean solveMatrix(Matrix M, List<Integer> atomNos, List<Integer> bondNos, List<Integer> freeValencies, List<Integer[]> atomNoPairs, List<Integer> bondOrder) {
+    private Boolean solveMatrix(Matrix M, List<Integer> atomNos, List<Integer> bondNos, List<Integer> freeValencies,
+            List<Integer[]> atomNoPairs, List<Integer> bondOrder) {
 
         // Look for bonds that need to be a certain order
         List<Integer> solved = new ArrayList<Integer>();
@@ -596,7 +598,7 @@ public class FixBondOrdersTool {
                 }
             }
 
-            // If we can't solve any bonds from the information we have so far, there must be a choice to make. 
+            // If we can't solve any bonds from the information we have so far, there must be a choice to make.
             // Pick a bond that is yet to be solved and set it as a single bond.
             if (thisRun == 0) {
                 int ring = 1;
@@ -610,7 +612,7 @@ public class FixBondOrdersTool {
                         badChoice = 1;
                     }
                     if (bondOrder.get(j) == 0 && badChoice == 0) {
-//                            javax.swing.JOptionPane.showMessageDialog(null, j);
+                        //                            javax.swing.JOptionPane.showMessageDialog(null, j);
                         bondOrder.set(j, 1);
                         ring = 0;
                         thisRun = 1;

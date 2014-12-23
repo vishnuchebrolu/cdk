@@ -60,13 +60,11 @@ public class CDK {
             return props.getProperty("version");
         } catch (Exception exception) {
             // there is no back up
-            logger.error(
-                "Error while loading the buid.props file: ", exception.getMessage()
-            );
+            logger.error("Error while loading the buid.props file: ", exception.getMessage());
             logger.debug(exception);
             exception.printStackTrace();
         }
         return "ERROR";
     }
-    
+
 }

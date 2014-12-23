@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- * 
+ *
  * MX Cheminformatics Tools for Java
  *
  * Copyright (c) 2007-2009 Metamolecular, LLC
@@ -67,7 +67,7 @@ import org.openscience.cdk.smsd.algorithm.vflib.interfaces.IState;
 /**
  * This class finds mapping states between query and target
  * molecules.
- * 
+ *
  * @cdk.module smsd
  * @cdk.githash
  * @author Syed Asad Rahman <asad@ebi.ac.uk>
@@ -75,11 +75,11 @@ import org.openscience.cdk.smsd.algorithm.vflib.interfaces.IState;
 @TestClass("org.openscience.cdk.smsd.algorithm.vflib.VFLibTest")
 public class VFState implements IState {
 
-    private List<Match> candidates;
-    private IQuery query;
-    private TargetProperties target;
-    private List<INode> queryPath;
-    private List<IAtom> targetPath;
+    private List<Match>       candidates;
+    private IQuery            query;
+    private TargetProperties  target;
+    private List<INode>       queryPath;
+    private List<IAtom>       targetPath;
     private Map<INode, IAtom> map;
 
     /**
@@ -115,6 +115,7 @@ public class VFState implements IState {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void backTrack() {
         if (queryPath.isEmpty() || isGoal()) {
             map.clear();
@@ -130,29 +131,33 @@ public class VFState implements IState {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Map<INode, IAtom> getMap() {
         return new HashMap<INode, IAtom>(map);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean hasNextCandidate() {
         return !candidates.isEmpty();
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isDead() {
         return query.countNodes() > target.getAtomCount();
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isGoal() {
         return map.size() == query.countNodes();
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isMatchFeasible(Match match) {
-        if (map.containsKey(match.getQueryNode())
-                || map.containsValue(match.getTargetAtom())) {
+        if (map.containsKey(match.getQueryNode()) || map.containsValue(match.getTargetAtom())) {
             return false;
         }
         if (!matchAtoms(match)) {
@@ -165,11 +170,13 @@ public class VFState implements IState {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Match nextCandidate() {
         return candidates.remove(candidates.size() - 1);
     }
 
     /** {@inheritDoc} */
+    @Override
     public IState nextState(Match match) {
         return new VFState(this, match);
     }
@@ -183,7 +190,7 @@ public class VFState implements IState {
         }
     }
 
-//@TODO Asad Check the Neighbour count
+    //@TODO Asad Check the Neighbour count
     private void loadCandidates(Match lastMatch) {
         IAtom atom = lastMatch.getTargetAtom();
         List<IAtom> targetNeighbors = target.getNeighbors(atom);
@@ -199,13 +206,13 @@ public class VFState implements IState {
 
     private boolean candidateFeasible(Match candidate) {
         for (INode queryAtom : map.keySet()) {
-            if (queryAtom.equals(candidate.getQueryNode())
-                    || map.get(queryAtom).equals(candidate.getTargetAtom())) {
+            if (queryAtom.equals(candidate.getQueryNode()) || map.get(queryAtom).equals(candidate.getTargetAtom())) {
                 return false;
             }
         }
         return true;
     }
+
     //This function is updated by Asad to include more matches
 
     private boolean matchAtoms(Match match) {

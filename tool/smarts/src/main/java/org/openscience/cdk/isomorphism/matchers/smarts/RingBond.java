@@ -26,24 +26,29 @@ import org.openscience.cdk.interfaces.IChemObjectBuilder;
  *
  * @cdk.module  smarts
  * @cdk.githash
- * @cdk.keyword SMARTS 
+ * @cdk.keyword SMARTS
  */
 public class RingBond extends SMARTSBond {
-	private static final long serialVersionUID = -8670609649648985629L;
-	
-	/**
-	 * Creates a new instance
-	 *
-	 */
-	public RingBond(IChemObjectBuilder builder) {
-        super(builder);
-		this.setFlag(CDKConstants.ISINRING, true);
-	}
 
-	/* (non-Javadoc)
-	 * @see org.openscience.cdk.isomorphism.matchers.smarts.SMARTSBond#matches(org.openscience.cdk.interfaces.IBond)
-	 */
-	public boolean matches(IBond bond) {
+    private static final long serialVersionUID = -8670609649648985629L;
+
+    /**
+     * Creates a new instance
+     *
+     */
+    public RingBond(IChemObjectBuilder builder) {
+        super(builder);
+        this.setFlag(CDKConstants.ISINRING, true);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.openscience.cdk.isomorphism.matchers.smarts.SMARTSBond#matches(org
+     * .openscience.cdk.interfaces.IBond)
+     */
+    @Override
+    public boolean matches(IBond bond) {
         return bond.getFlag(CDKConstants.ISINRING);
     }
 }

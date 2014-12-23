@@ -37,9 +37,8 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 class TerminalLigand extends Ligand {
 
     @TestMethod("testConstructorAndGetMethods")
-    public TerminalLigand(IAtomContainer container, VisitedAtoms visitedAtoms,
-            IAtom centralAtom, IAtom ligandAtom) {
+    public TerminalLigand(IAtomContainer container, VisitedAtoms visitedAtoms, IAtom centralAtom, IAtom ligandAtom) {
         super(container, visitedAtoms, centralAtom, ligandAtom);
     }
-    
+
 }

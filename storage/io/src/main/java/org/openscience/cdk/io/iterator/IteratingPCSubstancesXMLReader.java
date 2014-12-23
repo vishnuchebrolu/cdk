@@ -46,24 +46,23 @@ import org.xmlpull.v1.XmlPullParserFactory;
  * @cdk.module   io
  * @cdk.githash
  * @cdk.iooptions
- * 
+ *
  * @author       Egon Willighagen <egonw@users.sf.net>
  * @cdk.created  2008-05-05
  *
  * @cdk.keyword  file format, ASN
  * @cdk.keyword  PubChem
  */
-public class IteratingPCSubstancesXMLReader
-extends DefaultIteratingChemObjectReader<IChemModel> {
+public class IteratingPCSubstancesXMLReader extends DefaultIteratingChemObjectReader<IChemModel> {
 
-	private Reader primarySource;
-    private XmlPullParser parser;
+    private Reader           primarySource;
+    private XmlPullParser    parser;
     private PubChemXMLHelper parserHelper;
-    
-    private boolean nextAvailableIsKnown;
-    private boolean hasNext;
-    private IChemModel nextSubstance;
-    
+
+    private boolean          nextAvailableIsKnown;
+    private boolean          hasNext;
+    private IChemModel       nextSubstance;
+
     /**
      * Constructs a new IteratingPCSubstancesXMLReader that can read Molecule from a given Reader and IChemObjectBuilder.
      *
@@ -72,13 +71,13 @@ extends DefaultIteratingChemObjectReader<IChemModel> {
      * @throws java.io.IOException if there is error in getting the {@link IsotopeFactory}
      * @throws org.xmlpull.v1.XmlPullParserException if there is an error isn setting up the XML parser
      */
-    public IteratingPCSubstancesXMLReader(Reader in, IChemObjectBuilder builder) throws IOException, XmlPullParserException {
+    public IteratingPCSubstancesXMLReader(Reader in, IChemObjectBuilder builder) throws IOException,
+            XmlPullParserException {
         parserHelper = new PubChemXMLHelper(builder);
-        
+
         // initiate the pull parser
         XmlPullParserFactory factory = XmlPullParserFactory.newInstance(
-                System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null
-        );
+                System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
         factory.setNamespaceAware(true);
         parser = factory.newPullParser();
         primarySource = in;
@@ -100,45 +99,47 @@ extends DefaultIteratingChemObjectReader<IChemModel> {
         this(new InputStreamReader(in), builder);
     }
 
-
     @TestMethod("testGetFormat")
+    @Override
     public IResourceFormat getFormat() {
         return PubChemSubstancesXMLFormat.getInstance();
     }
 
+    @Override
     public boolean hasNext() {
         if (!nextAvailableIsKnown) {
             hasNext = false;
-            
+
             try {
                 if (parser.next() == XmlPullParser.END_DOCUMENT) return false;
-                
-            	while (parser.next() != XmlPullParser.END_DOCUMENT) {
-            		if (parser.getEventType() == XmlPullParser.START_TAG) {
-            			if (PubChemXMLHelper.EL_PCSUBSTANCE.equals(parser.getName())) {
-            				hasNext = true;
-            				break;
-            			}
-            		}
-            	}
-            	if (hasNext) {
-            		nextSubstance = parserHelper.parseSubstance(parser); 
-            	}
-            	
-			} catch (Exception e) {
-				if (mode == Mode.STRICT) {
-					throw new RuntimeException("Error while parsing the XML: " + e.getMessage(), e);
-				}
-				hasNext = false;
-			}
-            
+
+                while (parser.next() != XmlPullParser.END_DOCUMENT) {
+                    if (parser.getEventType() == XmlPullParser.START_TAG) {
+                        if (PubChemXMLHelper.EL_PCSUBSTANCE.equals(parser.getName())) {
+                            hasNext = true;
+                            break;
+                        }
+                    }
+                }
+                if (hasNext) {
+                    nextSubstance = parserHelper.parseSubstance(parser);
+                }
+
+            } catch (Exception e) {
+                if (mode == Mode.STRICT) {
+                    throw new RuntimeException("Error while parsing the XML: " + e.getMessage(), e);
+                }
+                hasNext = false;
+            }
+
             if (!hasNext) nextSubstance = null;
             nextAvailableIsKnown = true;
         }
         return hasNext;
     }
-    
-	public IChemModel next() {
+
+    @Override
+    public IChemModel next() {
         if (!nextAvailableIsKnown) {
             hasNext();
         }
@@ -148,32 +149,35 @@ extends DefaultIteratingChemObjectReader<IChemModel> {
         }
         return nextSubstance;
     }
-    
-	@TestMethod("testClose")
-  public void close() throws IOException {
-    	primarySource.close();
+
+    @TestMethod("testClose")
+    @Override
+    public void close() throws IOException {
+        primarySource.close();
     }
-    
+
+    @Override
     public void remove() {
         throw new UnsupportedOperationException();
     }
 
-	@TestMethod("testSetReader_Reader")
+    @TestMethod("testSetReader_Reader")
+    @Override
     public void setReader(Reader reader) throws CDKException {
-		primarySource = reader;
+        primarySource = reader;
         try {
-	        parser.setInput(primarySource);
+            parser.setInput(primarySource);
         } catch (XmlPullParserException e) {
-	        throw new CDKException("Error while opening the input:" + e.getMessage(), e);
+            throw new CDKException("Error while opening the input:" + e.getMessage(), e);
         }
         nextSubstance = null;
         nextAvailableIsKnown = false;
         hasNext = false;
     }
 
-	@TestMethod("testSetReader_InputStream")
+    @TestMethod("testSetReader_InputStream")
+    @Override
     public void setReader(InputStream reader) throws CDKException {
-	    setReader(new InputStreamReader(reader));
+        setReader(new InputStreamReader(reader));
     }
 }
-

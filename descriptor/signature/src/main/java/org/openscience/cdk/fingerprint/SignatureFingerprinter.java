@@ -48,7 +48,7 @@ public class SignatureFingerprinter implements IFingerprinter {
      * Initialize the fingerprinter with a defult signature depth of 1.
      */
     public SignatureFingerprinter() {
-    	this(1);
+        this(1);
     }
 
     /**
@@ -61,36 +61,36 @@ public class SignatureFingerprinter implements IFingerprinter {
     }
 
     @TestMethod("testBitFingerprint")
+    @Override
     public IBitFingerprint getBitFingerprint(IAtomContainer atomContainer) throws CDKException {
-    		return new IntArrayFingerprint(getRawFingerprint(atomContainer));
+        return new IntArrayFingerprint(getRawFingerprint(atomContainer));
     }
 
     @TestMethod("testGetRawFingerprint")
+    @Override
     public Map<String, Integer> getRawFingerprint(IAtomContainer atomContainer) throws CDKException {
-    	Map<String, Integer> map = new HashMap<String,Integer>();
-    	for (IAtom atom : atomContainer.atoms()) {
-            String signature = new AtomSignature(
-            	atom, signatureDepth, atomContainer
-            ).toCanonicalString();
+        Map<String, Integer> map = new HashMap<String, Integer>();
+        for (IAtom atom : atomContainer.atoms()) {
+            String signature = new AtomSignature(atom, signatureDepth, atomContainer).toCanonicalString();
             if (map.containsKey(signature)) {
-            	map.put(signature, map.get(signature)+1);
+                map.put(signature, map.get(signature) + 1);
             } else {
-            	map.put(signature, 1);
+                map.put(signature, 1);
             }
         }
         return map;
     }
 
     @TestMethod("testGetSize")
+    @Override
     public int getSize() {
         return -1;
     }
 
-	@Override
-	@TestMethod("testGetCountFingerprint")
-	public ICountFingerprint getCountFingerprint(IAtomContainer container)
-			throws CDKException {
-		return new IntArrayCountFingerprint(getRawFingerprint(container));
-	}
+    @Override
+    @TestMethod("testGetCountFingerprint")
+    public ICountFingerprint getCountFingerprint(IAtomContainer container) throws CDKException {
+        return new IntArrayCountFingerprint(getRawFingerprint(container));
+    }
 
 }

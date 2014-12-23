@@ -26,7 +26,7 @@ import javax.vecmath.Point3d;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.geometry.GeometryTools;
+import org.openscience.cdk.geometry.GeometryUtil;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.qsar.AbstractMolecularDescriptor;
 import org.openscience.cdk.qsar.DescriptorSpecification;
@@ -40,7 +40,6 @@ import org.openscience.cdk.tools.LoggingToolFactory;
 
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
-
 
 /**
  * Holistic descriptors described by Todeschini et al {@cdk.cite TOD98}.
@@ -123,17 +122,16 @@ import Jama.Matrix;
 @TestClass("org.openscience.cdk.qsar.descriptors.molecular.WHIMDescriptorTest")
 public class WHIMDescriptor extends AbstractMolecularDescriptor implements IMolecularDescriptor {
 
-    static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(WHIMDescriptor.class);
-    String type = "";
-    Map<String,Double> hashatwt, hashvdw, hasheneg, hashpol;
+    static ILoggingTool logger = LoggingToolFactory.createLoggingTool(WHIMDescriptor.class);
+    String              type   = "";
+    Map<String, Double> hashatwt, hashvdw, hasheneg, hashpol;
 
     public WHIMDescriptor() {
         this.type = "unity"; // default weighting scheme
 
         // set up the values from TOD98
 
-        this.hashatwt = new HashMap<String,Double>();
+        this.hashatwt = new HashMap<String, Double>();
         this.hashvdw = new HashMap<String, Double>();
         this.hasheneg = new HashMap<String, Double>();
         this.hashpol = new HashMap<String, Double>();
@@ -220,11 +218,10 @@ public class WHIMDescriptor extends AbstractMolecularDescriptor implements IMole
     }
 
     @TestMethod("testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
-        return new DescriptorSpecification(
-                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#WHIM",
-                this.getClass().getName(),
-                "The Chemistry Development Kit");
+        return new DescriptorSpecification("http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#WHIM",
+                this.getClass().getName(), "The Chemistry Development Kit");
     }
 
     ;
@@ -239,6 +236,7 @@ public class WHIMDescriptor extends AbstractMolecularDescriptor implements IMole
      * @see #getParameters
      */
     @TestMethod("testSetParameters_arrayObject")
+    @Override
     public void setParameters(Object[] params) throws CDKException {
         if (params.length != 1) {
             throw new CDKException("WHIMDescriptor requires 1 parameter");
@@ -247,11 +245,8 @@ public class WHIMDescriptor extends AbstractMolecularDescriptor implements IMole
             throw new CDKException("Parameters must be of type String");
         }
         this.type = (String) params[0];
-        if (!this.type.equals("unity") &&
-                !this.type.equals("mass") &&
-                !this.type.equals("volume") &&
-                !this.type.equals("eneg") &&
-                !this.type.equals("polar"))
+        if (!this.type.equals("unity") && !this.type.equals("mass") && !this.type.equals("volume")
+                && !this.type.equals("eneg") && !this.type.equals("polar"))
             throw new CDKException("Weighting scheme must be one of those specified in the API");
     }
 
@@ -263,22 +258,20 @@ public class WHIMDescriptor extends AbstractMolecularDescriptor implements IMole
      * @see #setParameters
      */
     @TestMethod("testGetParameters")
+    @Override
     public Object[] getParameters() {
         Object[] o = new Object[1];
         o[0] = this.type;
         return (o);
     }
 
-    @TestMethod(value="testNamesConsistency")
+    @TestMethod(value = "testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
-        String[] names = {
-                "Wlambda1", "Wlambda2", "Wlambda3",
-                "Wnu1", "Wnu2",
-                "Wgamma1", "Wgamma2", "Wgamma3",
-                "Weta1", "Weta2", "Weta3",
-                "WT", "WA", "WV", "WK", "WG", "WD"
-        };
-        for (int i = 0; i < names.length; i++) names[i] += "." + type;
+        String[] names = {"Wlambda1", "Wlambda2", "Wlambda3", "Wnu1", "Wnu2", "Wgamma1", "Wgamma2", "Wgamma3", "Weta1",
+                "Weta2", "Weta3", "WT", "WA", "WV", "WK", "WG", "WD"};
+        for (int i = 0; i < names.length; i++)
+            names[i] += "." + type;
         return names;
     }
 
@@ -288,12 +281,12 @@ public class WHIMDescriptor extends AbstractMolecularDescriptor implements IMole
      * @return The parameterNames value
      */
     @TestMethod("testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         String[] pname = new String[1];
         pname[0] = "type";
         return (pname);
     }
-
 
     /**
      * Gets the parameterType attribute of the WHIMDescriptor object.
@@ -302,18 +295,19 @@ public class WHIMDescriptor extends AbstractMolecularDescriptor implements IMole
      * @return The parameterType value
      */
     @TestMethod("testGetParameterType_String")
-    public Object getParameterType(String name) {        
+    @Override
+    public Object getParameterType(String name) {
         return ("");
     }
 
     private DescriptorValue getDummyDescriptorValue(Exception e) {
-         int ndesc = getDescriptorNames().length;
-         DoubleArrayResult results = new DoubleArrayResult(ndesc);
-         for (int i = 0; i < ndesc; i++) results.add(Double.NaN);
-         return new DescriptorValue(getSpecification(), getParameterNames(),
-                 getParameters(), results, getDescriptorNames(), e);
-     }
-    
+        int ndesc = getDescriptorNames().length;
+        DoubleArrayResult results = new DoubleArrayResult(ndesc);
+        for (int i = 0; i < ndesc; i++)
+            results.add(Double.NaN);
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), results,
+                getDescriptorNames(), e);
+    }
 
     /**
      * Calculates 11 directional and 6 non-directional WHIM descriptors for.
@@ -323,8 +317,9 @@ public class WHIMDescriptor extends AbstractMolecularDescriptor implements IMole
      * @return An ArrayList containing the descriptors in the order described above.
      */
     @TestMethod("testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtomContainer container) {
-        if (!GeometryTools.has3DCoordinates(container))
+        if (!GeometryUtil.has3DCoordinates(container))
             return getDummyDescriptorValue(new CDKException("Molecule must have 3D coordinates"));
 
         double sum = 0.0;
@@ -343,18 +338,19 @@ public class WHIMDescriptor extends AbstractMolecularDescriptor implements IMole
         // get the coordinate matrix
         double[][] cmat = new double[ac.getAtomCount()][3];
         for (int i = 0; i < ac.getAtomCount(); i++) {
-            Point3d coords = ac.getAtom(i).getPoint3d();            
+            Point3d coords = ac.getAtom(i).getPoint3d();
             cmat[i][0] = coords.x;
             cmat[i][1] = coords.y;
             cmat[i][2] = coords.z;
         }
 
         // set up the weight vector
-        Map<String,Double> hash = null;
+        Map<String, Double> hash = null;
         double[] wt = new double[ac.getAtomCount()];
 
         if (this.type.equals("unity")) {
-            for (int i = 0; i < ac.getAtomCount(); i++) wt[i] = 1.0;
+            for (int i = 0; i < ac.getAtomCount(); i++)
+                wt[i] = 1.0;
         } else {
             if (this.type.equals("mass")) {
                 hash = this.hashatwt;
@@ -384,8 +380,10 @@ public class WHIMDescriptor extends AbstractMolecularDescriptor implements IMole
         double[] nu = new double[3];
         double[] eta = new double[3];
 
-        for (int i = 0; i < 3; i++) sum += lambda[i];
-        for (int i = 0; i < 3; i++) nu[i] = lambda[i] / sum;
+        for (int i = 0; i < 3; i++)
+            sum += lambda[i];
+        for (int i = 0; i < 3; i++)
+            nu[i] = lambda[i] / sum;
 
         double[][] scores = pcaobject.getScores();
         for (int i = 0; i < 3; i++) {
@@ -413,7 +411,8 @@ public class WHIMDescriptor extends AbstractMolecularDescriptor implements IMole
                 if (!foundmatch) na++;
             }
             double n = (double) ac.getAtomCount();
-            gamma[i] = -1.0 * ((ns / n) * Math.log(ns / n) / Math.log(2.0) + (na / n) * Math.log(1.0 / n) / Math.log(2.0));
+            gamma[i] = -1.0
+                    * ((ns / n) * Math.log(ns / n) / Math.log(2.0) + (na / n) * Math.log(1.0 / n) / Math.log(2.0));
             gamma[i] = 1.0 / (1.0 + gamma[i]);
             //logger.debug("ns = "+ns+" na = "+na+"  gamma = "+gamma[i]);
         }
@@ -425,8 +424,10 @@ public class WHIMDescriptor extends AbstractMolecularDescriptor implements IMole
 
         double k = 0.0;
         sum = 0.0;
-        for (int i = 0; i < 3; i++) sum += lambda[i];
-        for (int i = 0; i < 3; i++) k = (lambda[i] / sum) - (1.0 / 3.0);
+        for (int i = 0; i < 3; i++)
+            sum += lambda[i];
+        for (int i = 0; i < 3; i++)
+            k = (lambda[i] / sum) - (1.0 / 3.0);
         k = k / (4.0 / 3.0);
 
         double g = Math.pow(gamma[0] * gamma[1] * gamma[2], 1.0 / 3.0);
@@ -456,9 +457,8 @@ public class WHIMDescriptor extends AbstractMolecularDescriptor implements IMole
         retval.add(g);
         retval.add(d);
 
-
-        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                retval, getDescriptorNames());
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), retval,
+                getDescriptorNames());
     }
 
     /**
@@ -473,17 +473,16 @@ public class WHIMDescriptor extends AbstractMolecularDescriptor implements IMole
      *         the actual type of values returned by the descriptor in the {@link org.openscience.cdk.qsar.DescriptorValue} object
      */
     @TestMethod("testGetDescriptorResultType")
+    @Override
     public IDescriptorResult getDescriptorResultType() {
         return new DoubleArrayResultType(17);
     }
 
-
     class PCA {
 
-        Matrix evec;
-        Matrix t;
+        Matrix   evec;
+        Matrix   t;
         double[] eval;
-
 
         public PCA(double[][] cmat, double[] wt) throws CDKException {
 
@@ -515,14 +514,17 @@ public class WHIMDescriptor extends AbstractMolecularDescriptor implements IMole
             // get the covariance matrix
             double[][] covmat = new double[ncol][ncol];
             double sumwt = 0.;
-            for (int i = 0; i < nrow; i++) sumwt += wt[i];
+            for (int i = 0; i < nrow; i++)
+                sumwt += wt[i];
             for (int i = 0; i < ncol; i++) {
                 double meanx = 0;
-                for (int k = 0; k < nrow; k++) meanx += d[k][i];
+                for (int k = 0; k < nrow; k++)
+                    meanx += d[k][i];
                 meanx = meanx / (double) nrow;
                 for (int j = 0; j < ncol; j++) {
                     double meany = 0.0;
-                    for (int k = 0; k < nrow; k++) meany += d[k][j];
+                    for (int k = 0; k < nrow; k++)
+                        meany += d[k][j];
                     meany = meany / (double) nrow;
 
                     double sum = 0.;
@@ -555,5 +557,3 @@ public class WHIMDescriptor extends AbstractMolecularDescriptor implements IMole
     }
 
 }
-
-

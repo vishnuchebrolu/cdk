@@ -39,22 +39,24 @@ public abstract class DefaultEventChemObjectReader extends ChemObjectIO implemen
     private ReaderEvent frameReadEvent = null;
 
     public boolean accepts(IChemObject object) {
-    	return accepts(object.getClass());
+        return accepts(object.getClass());
     }
+
+    @Override
     public boolean accepts(Class<? extends IChemObject> objectClass) {
         // leave it up the read(IChemObject) to decide by default
         return true;
     }
-    
+
     /* Extra convenience methods */
-    
+
     /**
      * File IO generally does not support removing of entries.
      */
     public void remove() {
         throw new UnsupportedOperationException();
     }
-    
+
     /**
      * Sends a frame read event to the registered ReaderListeners.
      */

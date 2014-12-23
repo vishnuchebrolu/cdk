@@ -9,12 +9,12 @@
  * which includes - but is not limited to - adding the above copyright notice to
  * the beginning of your source code files, and to any copyright notice that you
  * may distribute with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -65,9 +65,8 @@ import org.openscience.cdk.tools.LoggingToolFactory;
 @TestClass("org.openscience.cdk.io.MoSSOutputReaderTest")
 public class MoSSOutputReader extends DefaultChemObjectReader {
 
-    private BufferedReader input;
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(MoSSOutputReader.class);
+    private BufferedReader      input;
+    private static ILoggingTool logger = LoggingToolFactory.createLoggingTool(MoSSOutputReader.class);
 
     /**
      * Create a reader for MoSS output files from a {@link Reader}.
@@ -76,7 +75,7 @@ public class MoSSOutputReader extends DefaultChemObjectReader {
      */
     public MoSSOutputReader(Reader input) {
         if (input instanceof BufferedReader) {
-            this.input = (BufferedReader)input;
+            this.input = (BufferedReader) input;
         } else {
             this.input = new BufferedReader(input);
         }
@@ -100,29 +99,33 @@ public class MoSSOutputReader extends DefaultChemObjectReader {
 
     /** {@inheritDoc} */
     @TestMethod("testGetFormat")
+    @Override
     public IResourceFormat getFormat() {
         return MoSSOutputFormat.getInstance();
     }
 
     /** {@inheritDoc} */
     @TestMethod("testSetReader_Reader")
+    @Override
     public void setReader(Reader reader) throws CDKException {
         this.input = new BufferedReader(input);
     }
 
     /** {@inheritDoc} */
     @TestMethod("testSetReader_InputStream")
+    @Override
     public void setReader(InputStream input) throws CDKException {
         setReader(new InputStreamReader(input));
     }
 
     /** {@inheritDoc} */
     @TestMethod("testAccepts")
+    @Override
     public boolean accepts(Class<? extends IChemObject> testClass) {
-		if (IAtomContainerSet.class.equals(testClass)) return true;
-		if (IChemFile.class.equals(testClass)) return true;
+        if (IAtomContainerSet.class.equals(testClass)) return true;
+        if (IChemFile.class.equals(testClass)) return true;
         Class<?>[] interfaces = testClass.getInterfaces();
-        for (int i=0; i<interfaces.length; i++) {
+        for (int i = 0; i < interfaces.length; i++) {
             if (IAtomContainerSet.class.equals(interfaces[i])) return true;
             if (IChemFile.class.equals(interfaces[i])) return true;
         }
@@ -137,17 +140,18 @@ public class MoSSOutputReader extends DefaultChemObjectReader {
      * @param  object an {@link IAtomContainerSet} into which the data is stored.
      * @return        the content in a {@link IAtomContainerSet} object
      */
+    @Override
     public <T extends IChemObject> T read(T object) throws CDKException {
         if (object instanceof IAtomContainerSet) {
-            IAtomContainerSet cf = (IAtomContainerSet)object;
+            IAtomContainerSet cf = (IAtomContainerSet) object;
             try {
                 cf = readAtomContainerSet(cf);
             } catch (IOException e) {
                 logger.error("Input/Output error while reading from input.");
             }
-            return (T)cf;
+            return (T) cf;
         } else if (object instanceof IChemFile) {
-            IChemFile chemFile = (IChemFile)object;
+            IChemFile chemFile = (IChemFile) object;
             IChemSequence chemSeq = object.getBuilder().newInstance(IChemSequence.class);
             IChemModel chemModel = object.getBuilder().newInstance(IChemModel.class);
             IAtomContainerSet molSet = object.getBuilder().newInstance(IAtomContainerSet.class);
@@ -159,9 +163,9 @@ public class MoSSOutputReader extends DefaultChemObjectReader {
             chemModel.setMoleculeSet(molSet);
             chemSeq.addChemModel(chemModel);
             chemFile.addChemSequence(chemSeq);
-            return (T)chemFile;
+            return (T) chemFile;
         } else {
-            throw new CDKException("Only supported is reading of IMoleculeSet.");
+            throw new CDKException("Only supported is reading of IAtomContainerSet.");
         }
     }
 
@@ -196,6 +200,7 @@ public class MoSSOutputReader extends DefaultChemObjectReader {
 
     /** {@inheritDoc} */
     @TestMethod("testClose")
+    @Override
     public void close() throws IOException {
         input.close();
     }

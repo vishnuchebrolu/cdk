@@ -7,7 +7,7 @@
     <groupId>org.openscience.cdk</groupId>
     <artifactId>cdk</artifactId>
     <name>cdk</name>
-    <version>1.5.8-SNAPSHOT</version>
+    <version>1.5.9-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <url>http://sourceforge.net/projects/cdk/</url>
@@ -308,6 +308,9 @@
             <name>Paul Turner</name>
         </contributor>
         <contributor>
+            <name>Mark B Vine</name>
+        </contributor>
+        <contributor>
             <name>Joerg Wegner</name>
         </contributor>
         <contributor>
@@ -405,17 +408,17 @@
             <dependency>
                 <groupId>uk.ac.ebi.beam</groupId>
                 <artifactId>beam-core</artifactId>
-                <version>0.6</version>
+                <version>0.7</version>
             </dependency>
             <dependency>
                 <groupId>uk.ac.ebi.beam</groupId>
                 <artifactId>beam-func</artifactId>
-                <version>0.6</version>
+                <version>0.7</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>14.0.1</version>
+                <version>17.0</version>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>
@@ -447,8 +450,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -542,7 +545,7 @@
                     <tagletArtifact>
                         <groupId>org.openscience.cdk</groupId>
                         <artifactId>cdk-build-utils</artifactId>
-                        <version>1.0.2.1</version>
+                        <version>1.0.2.3</version>
                     </tagletArtifact>
                 </configuration>
                 <executions>
@@ -565,12 +568,15 @@
                     <rulesets>
                         <ruleset>/pmd/custom.xml</ruleset>
                     </rulesets>
+                    <excludeRoots>
+                        <excludeRoot>${basedir}/target/generated-sources/javacc</excludeRoot>
+                    </excludeRoots>
                 </configuration>
                 <dependencies>
                     <dependency>
                         <groupId>org.openscience.cdk</groupId>
                         <artifactId>cdk-build-utils</artifactId>
-                        <version>1.0.2.1</version>
+                        <version>1.0.2.3</version>
                     </dependency>
                 </dependencies>
             </plugin>          
@@ -586,7 +592,7 @@
                     <dependency>
                         <groupId>org.openscience.cdk</groupId>
                         <artifactId>cdk-build-utils</artifactId>
-                        <version>1.0.2.1</version>
+                        <version>1.0.2.3</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -619,6 +625,19 @@
                         </reports>
                     </reportSet>
                 </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <rulesets>
+                        <ruleset>/pmd/custom.xml</ruleset>
+                    </rulesets>
+                    <excludeRoots>
+                        <excludeRoot>${basedir}/target/generated-sources/javacc</excludeRoot>
+                    </excludeRoots>
+                </configuration>
             </plugin>
         </plugins>
     </reporting>
@@ -676,4 +695,11 @@
         </profile>
     </profiles>
 
+    <dependencies>
+    	<dependency>
+    		<groupId>junit</groupId>
+    		<artifactId>junit</artifactId>
+    		<scope>test</scope>
+    	</dependency>
+    </dependencies>
 </project>

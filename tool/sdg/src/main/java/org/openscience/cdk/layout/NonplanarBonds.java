@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2013 European Bioinformatics Institute (EMBL-EBI)
  *                    John May <jwmay@users.sf.net>
- *  
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- *  
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version. All we ask is that proper credit is given
- * for our work, which includes - but is not limited to - adding the above 
+ * for our work, which includes - but is not limited to - adding the above
  * copyright notice to the beginning of your source code files, and to any
  * copyright notice that you may distribute with programs based on this work.
  *
@@ -64,19 +64,19 @@ import static org.openscience.cdk.interfaces.IBond.Stereo.UP;
 final class NonplanarBonds {
 
     /** The structure we are assigning labels to. */
-    private final IAtomContainer container;
+    private final IAtomContainer          container;
 
     /** Adjacency list graph representation of the structure. */
-    private final int[][] graph;
+    private final int[][]                 graph;
 
     /** Search for cyclic atoms. */
-    private final RingSearch ringSearch;
+    private final RingSearch              ringSearch;
 
     /** Tetrahedral elements indexed by central atom. */
     private final ITetrahedralChirality[] elements;
 
     /** Lookup atom index (avoid IAtomContainer). */
-    private final Map<IAtom, Integer> atomToIndex;
+    private final Map<IAtom, Integer>     atomToIndex;
 
     /**
      * Assign non-planar, up and down labels to indicate tetrahedral
@@ -91,8 +91,7 @@ final class NonplanarBonds {
      *                                  centre
      */
     public static IAtomContainer assign(final IAtomContainer container) {
-        if (!Iterables.isEmpty(container.stereoElements()))
-            new NonplanarBonds(container);
+        if (!Iterables.isEmpty(container.stereoElements())) new NonplanarBonds(container);
         return container;
     }
 
@@ -114,18 +113,18 @@ final class NonplanarBonds {
      * container}.
      *
      * @param container structure
-     * @param g         graph adjacency list representation        
+     * @param g         graph adjacency list representation
      * @throws IllegalArgumentException an atom had no 2D coordinates or labels
      *                                  could not be assigned to a tetrahedral
      *                                  centre
      */
     NonplanarBonds(final IAtomContainer container, final int[][] g) {
 
-        this.container   = container;
-        this.elements    = new ITetrahedralChirality[container.getAtomCount()];
-        this.graph       = g;
+        this.container = container;
+        this.elements = new ITetrahedralChirality[container.getAtomCount()];
+        this.graph = g;
         this.atomToIndex = Maps.newHashMapWithExpectedSize(container.getAtomCount());
-        this.ringSearch  = new RingSearch(container, graph);
+        this.ringSearch = new RingSearch(container, graph);
 
         // clear existing up/down labels to avoid collision, this isn't strictly
         // needed if the atom positions weren't adjusted but we can't guarantee
@@ -143,8 +142,7 @@ final class NonplanarBonds {
         for (int i = 0; i < container.getAtomCount(); i++) {
             IAtom atom = container.getAtom(i);
             atomToIndex.put(atom, i);
-            if (atom.getPoint2d() == null)
-                throw new IllegalArgumentException("atom " + i + " had unset coordinates");
+            if (atom.getPoint2d() == null) throw new IllegalArgumentException("atom " + i + " had unset coordinates");
         }
 
         // index the tetrahedral elements by their focus
@@ -159,49 +157,49 @@ final class NonplanarBonds {
             }
         }
 
-        // prioritise to highly-congested tetrahedral centres first  
+        // prioritise to highly-congested tetrahedral centres first
         Arrays.sort(foci, 0, n, new Comparator<Integer>() {
-            @Override public int compare(Integer i, Integer j) {
-                return -Ints.compare(nAdjacentCentres(i),
-                                     nAdjacentCentres(j));
+
+            @Override
+            public int compare(Integer i, Integer j) {
+                return -Ints.compare(nAdjacentCentres(i), nAdjacentCentres(j));
             }
         });
 
         // label a bond on each element
         for (int i = 0; i < n; i++)
             label(elements[foci[i]]);
-        
+
         for (IStereoElement se : container.stereoElements()) {
-            if (se instanceof ExtendedTetrahedral)
-                label((ExtendedTetrahedral) se);
+            if (se instanceof ExtendedTetrahedral) label((ExtendedTetrahedral) se);
         }
     }
 
     /**
-     * Assign non-planar labels (wedge/hatch) to the bonds of extended 
+     * Assign non-planar labels (wedge/hatch) to the bonds of extended
      * tetrahedral elements to correctly represent its stereochemistry.
      *
      * @param element a extended tetrahedral element
      */
     private void label(final ExtendedTetrahedral element) {
-        
-        final IAtom   focus = element.focus();
+
+        final IAtom focus = element.focus();
         final IAtom[] atoms = element.peripherals();
         final IBond[] bonds = new IBond[4];
 
         int p = parity(element.winding());
-        
+
         List<IBond> focusBonds = container.getConnectedBondsList(focus);
-        
+
         if (focusBonds.size() != 2) {
-            LoggingToolFactory.createLoggingTool(getClass())
-                              .warn("Non-cumulated carbon presented as the focus of extended tetrahedral stereo configuration");
+            LoggingToolFactory.createLoggingTool(getClass()).warn(
+                    "Non-cumulated carbon presented as the focus of extended tetrahedral stereo configuration");
             return;
         }
-        
+
         IAtom[] terminals = element.findTerminalAtoms(container);
-        
-        IAtom left  = terminals[0];
+
+        IAtom left = terminals[0];
         IAtom right = terminals[1];
 
         // some bonds may be null if, this happens when an implicit atom
@@ -210,7 +208,7 @@ final class NonplanarBonds {
         bonds[1] = container.getBond(left, atoms[1]);
         bonds[2] = container.getBond(right, atoms[2]);
         bonds[3] = container.getBond(right, atoms[3]);
-        
+
         // find the clockwise ordering (in the plane of the page) by sorting by
         // polar corodinates
         int[] rank = new int[4];
@@ -227,20 +225,20 @@ final class NonplanarBonds {
         }
 
         int[] priority = new int[]{5, 5, 5, 5};
-        
+
         // set the label for the highest priority and available bonds on one side
         // of the cumulated system, setting both sides doesn't make sense
         int i = 0;
         for (int v : priority(atomToIndex.get(focus), atoms, 4)) {
             IBond bond = bonds[v];
-            if (bond.getStereo() == NONE && bond.getOrder() == SINGLE)
-                priority[v] = i++;
+            if (bond == null) continue;
+            if (bond.getStereo() == NONE && bond.getOrder() == SINGLE) priority[v] = i++;
         }
-        
+
         // we now check which side was more favourable and assign two labels
         // to that side only
-        if (priority[0] + priority[1] < priority[2] + priority[3]) {            
-            if (priority[0] < 5) { 
+        if (priority[0] + priority[1] < priority[2] + priority[3]) {
+            if (priority[0] < 5) {
                 bonds[0].setAtoms(new IAtom[]{left, atoms[0]});
                 bonds[0].setStereo(labels[0]);
             }
@@ -278,14 +276,12 @@ final class NonplanarBonds {
         int n = 0;
 
         // unspecified centre, no need to assign labels
-        if (p == 0)
-            return;
+        if (p == 0) return;
 
         for (int i = 0; i < 4; i++) {
             if (atoms[i] == focus) {
                 p *= parity(i); // implicit H, adjust parity
-            }
-            else {
+            } else {
                 bonds[n] = container.getBond(focus, atoms[i]);
                 atoms[n] = atoms[i];
                 n++;
@@ -326,8 +322,7 @@ final class NonplanarBonds {
             // 4 neighbors (invert every other one)
             if (n == 4) p *= -1;
 
-            labels[v] = invert == v ? p > 0 ? DOWN : UP
-                                    : p > 0 ? UP : DOWN;
+            labels[v] = invert == v ? p > 0 ? DOWN : UP : p > 0 ? UP : DOWN;
         }
 
         // set the label for the highest priority and available bond
@@ -340,7 +335,7 @@ final class NonplanarBonds {
             }
         }
 
-        // it should be possible to always assign labels somewhere -> unchecked exception 
+        // it should be possible to always assign labels somewhere -> unchecked exception
         throw new IllegalArgumentException("could not assign non-planar (up/down) labels");
     }
 
@@ -382,8 +377,7 @@ final class NonplanarBonds {
     private int nAdjacentCentres(int i) {
         int n = 0;
         for (IAtom atom : elements[i].getLigands())
-            if (elements[atomToIndex.get(atom)] != null)
-                n++;
+            if (elements[atomToIndex.get(atom)] != null) n++;
         return n;
     }
 
@@ -403,9 +397,7 @@ final class NonplanarBonds {
         for (int j = 1; j < n; j++) {
             int v = rank[j];
             int i = j - 1;
-            while ((i >= 0) && hasPriority(focus,
-                                           atomToIndex.get(atoms[v]),
-                                           atomToIndex.get(atoms[rank[i]]))) {
+            while ((i >= 0) && hasPriority(focus, atomToIndex.get(atoms[v]), atomToIndex.get(atoms[rank[i]]))) {
                 rank[i + 1] = rank[i--];
             }
             rank[i + 1] = v;
@@ -423,32 +415,24 @@ final class NonplanarBonds {
      * @return whether atom i has priority
      */
     boolean hasPriority(int focus, int i, int j) {
-        
-        // prioritise bonds to non-centres 
-        if (elements[i] == null && elements[j] != null)
-            return true;
-        if (elements[i] != null && elements[j] == null)
-            return false;
+
+        // prioritise bonds to non-centres
+        if (elements[i] == null && elements[j] != null) return true;
+        if (elements[i] != null && elements[j] == null) return false;
 
         // prioritise acyclic bonds
         boolean iCyclic = ringSearch.cyclic(focus, i);
         boolean jCyclic = ringSearch.cyclic(focus, j);
-        if (!iCyclic && jCyclic)
-            return true;
-        if (iCyclic && !jCyclic)
-            return false;
+        if (!iCyclic && jCyclic) return true;
+        if (iCyclic && !jCyclic) return false;
 
         // prioritise atoms with fewer neighbors
-        if (graph[i].length < graph[j].length)
-            return true;
-        if (graph[i].length > graph[j].length)
-            return false;
+        if (graph[i].length < graph[j].length) return true;
+        if (graph[i].length > graph[j].length) return false;
 
         // prioritise by atomic number
-        if (container.getAtom(i).getAtomicNumber() < container.getAtom(j).getAtomicNumber())
-            return true;
-        if (container.getAtom(i).getAtomicNumber() > container.getAtom(j).getAtomicNumber())
-            return false;
+        if (container.getAtom(i).getAtomicNumber() < container.getAtom(j).getAtomicNumber()) return true;
+        if (container.getAtom(i).getAtomicNumber() > container.getAtom(j).getAtomicNumber()) return false;
 
         return false;
     }
@@ -494,22 +478,17 @@ final class NonplanarBonds {
         Point2d a = atoms[i].getPoint2d();
         Point2d b = atoms[j].getPoint2d();
 
-        if (a.x - center.x >= 0 && b.x - center.x < 0)
-            return true;
-        if (a.x - center.x < 0 && b.x - center.x >= 0)
-            return false;
+        if (a.x - center.x >= 0 && b.x - center.x < 0) return true;
+        if (a.x - center.x < 0 && b.x - center.x >= 0) return false;
         if (a.x - center.x == 0 && b.x - center.x == 0) {
-            if (a.y - center.y >= 0 || b.y - center.y >= 0)
-                return a.y > b.y;
+            if (a.y - center.y >= 0 || b.y - center.y >= 0) return a.y > b.y;
             return b.y > a.y;
         }
 
         // compute the cross product of vectors (center -> a) x (center -> b)
         double det = (a.x - center.x) * (b.y - center.y) - (b.x - center.x) * (a.y - center.y);
-        if (det < 0)
-            return true;
-        if (det > 0)
-            return false;
+        if (det < 0) return true;
+        if (det > 0) return false;
 
         // points a and b are on the same line from the center
         // check which point is closer to the center

@@ -9,12 +9,12 @@
  * which includes - but is not limited to - adding the above copyright notice to
  * the beginning of your source code files, and to any copyright notice that you
  * may distribute with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -45,40 +45,49 @@ public class MoSSOutputFormat extends SimpleChemFormatMatcher implements IChemFo
 
     /** {@inheritDoc} */
     @TestMethod("testGetFormatName")
+    @Override
     public String getFormatName() {
         return "MoSS Output Format";
     }
 
     /** {@inheritDoc} */
     @TestMethod("testGetMIMEType")
+    @Override
     public String getMIMEType() {
         return "text/csv";
     }
 
     /** {@inheritDoc} */
     @TestMethod("testGetPreferredNameExtension")
+    @Override
     public String getPreferredNameExtension() {
         return getNameExtensions()[0];
     }
 
     /** {@inheritDoc} */
     @TestMethod("testGetNameExtensions")
+    @Override
     public String[] getNameExtensions() {
         return new String[]{"mossoutput"};
     }
 
     /** {@inheritDoc} */
     @TestMethod("testGetReaderClassName")
-    public String getReaderClassName() { 
+    @Override
+    public String getReaderClassName() {
         return null;
     }
 
     /** {@inheritDoc} */
     @TestMethod("testGetWriterClassName")
-    public String getWriterClassName() { return null; }
+    @Override
+    public String getWriterClassName() {
+        return null;
+    }
 
     /** {@inheritDoc} */
     @TestMethod("testMatches")
+    @Override
     public boolean matches(int lineNumber, String line) {
         if (lineNumber == 1 && line.equals("id,description,nodes,edges,s_abs,s_rel,c_abs,c_rel")) {
             return true;
@@ -88,18 +97,21 @@ public class MoSSOutputFormat extends SimpleChemFormatMatcher implements IChemFo
 
     /** {@inheritDoc} */
     @TestMethod("testIsXMLBased")
+    @Override
     public boolean isXMLBased() {
         return false;
     }
 
     /** {@inheritDoc} */
     @TestMethod("testGetSupportedDataFeatures")
+    @Override
     public int getSupportedDataFeatures() {
         return DataFeatures.HAS_GRAPH_REPRESENTATION;
     }
 
     /** {@inheritDoc} */
     @TestMethod("testGetRequiredDataFeatures")
+    @Override
     public int getRequiredDataFeatures() {
         return DataFeatures.HAS_GRAPH_REPRESENTATION;
     }

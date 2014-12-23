@@ -35,9 +35,9 @@ import javax.vecmath.Point2d;
 import java.awt.geom.Rectangle2D;
 
 /**
- * Utility class for calculating the 2D bounding rectangles (bounds) 
+ * Utility class for calculating the 2D bounding rectangles (bounds)
  * of various IChemObject subtypes - IChemModel, IReactionSet, IReaction,
- * IMoleculeSet, and IAtomContainer.
+ * IAtomContainerSet, and IAtomContainer.
  *
  * @author maclean
  * @cdk.module renderbasic
@@ -48,7 +48,7 @@ public class BoundsCalculator {
 
     /**
      * Calculate the bounding rectangle for a chem model.
-     * 
+     *
      * @param chemModel the chem model to use
      * @return the bounding rectangle of the chem model
      */
@@ -58,21 +58,17 @@ public class BoundsCalculator {
         IReactionSet reactionSet = chemModel.getReactionSet();
         Rectangle2D totalBounds = new Rectangle2D.Double();
         if (moleculeSet != null) {
-            totalBounds = totalBounds.createUnion(
-            	calculateBounds(moleculeSet)
-            );
+            totalBounds = totalBounds.createUnion(calculateBounds(moleculeSet));
         }
         if (reactionSet != null) {
-            totalBounds = totalBounds.createUnion(
-                 calculateBounds(reactionSet)
-            );
+            totalBounds = totalBounds.createUnion(calculateBounds(reactionSet));
         }
         return totalBounds;
     }
 
     /**
      * Calculate the bounding rectangle for a reaction set.
-     * 
+     *
      * @param reactionSet the reaction set to use
      * @return the bounding rectangle of the reaction set
      */
@@ -92,7 +88,7 @@ public class BoundsCalculator {
 
     /**
      * Calculate the bounding rectangle for a reaction.
-     * 
+     *
      * @param reaction the reaction to use
      * @return the bounding rectangle of the reaction
      */
@@ -110,7 +106,7 @@ public class BoundsCalculator {
 
     /**
      * Calculate the bounding rectangle for a molecule set.
-     * 
+     *
      * @param moleculeSet the molecule set to use
      * @return the bounding rectangle of the molecule set
      */
@@ -131,7 +127,7 @@ public class BoundsCalculator {
 
     /**
      * Calculate the bounding rectangle for an atom container.
-     * 
+     *
      * @param atomContainer the atom container to use
      * @return the bounding rectangle of the atom container
      */
@@ -144,9 +140,7 @@ public class BoundsCalculator {
         } else if (atomContainer.getAtomCount() == 1) {
             Point2d point = atomContainer.getAtom(0).getPoint2d();
             if (point == null) {
-                throw new IllegalArgumentException(
-                    "Cannot calculate bounds when 2D coordinates are missing."
-                );
+                throw new IllegalArgumentException("Cannot calculate bounds when 2D coordinates are missing.");
             }
             return new Rectangle2D.Double(point.x, point.y, 0, 0);
         }
@@ -159,9 +153,7 @@ public class BoundsCalculator {
         for (IAtom atom : atomContainer.atoms()) {
             Point2d point = atom.getPoint2d();
             if (point == null) {
-                throw new IllegalArgumentException(
-                    "Cannot calculate bounds when 2D coordinates are missing."
-                );
+                throw new IllegalArgumentException("Cannot calculate bounds when 2D coordinates are missing.");
             }
             xmin = Math.min(xmin, point.x);
             xmax = Math.max(xmax, point.x);

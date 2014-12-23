@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.PseudoAtom;
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.aromaticity.Aromaticity;
@@ -55,33 +54,32 @@ import org.openscience.cdk.tools.LoggingToolFactory;
 @TestClass("org.openscience.cdk.smsd.helper.MolHandlerTest")
 public class MolHandler {
 
-    private IAtomContainer atomContainer = null;
-    private boolean removeHydrogen = false;
-    private final ILoggingTool logger =
-            LoggingToolFactory.createLoggingTool(MolHandler.class);
-    private ICanonicalMoleculeLabeller canonLabeler = new CanonicalLabellingAdaptor();
+    private IAtomContainer             atomContainer  = null;
+    private boolean                    removeHydrogen = false;
+    private final ILoggingTool         logger         = LoggingToolFactory.createLoggingTool(MolHandler.class);
+    private ICanonicalMoleculeLabeller canonLabeler   = new CanonicalLabellingAdaptor();
 
     /**
      * Creates a new instance of MolHandler
-     * @param MolFile atomContainer file name
+     * @param molFile atomContainer file name
      * @param cleanMolecule
      * @param removeHydrogen
      *
      */
     @TestMethod("MolHandlerTest")
-    public MolHandler(String MolFile, boolean removeHydrogen, boolean cleanMolecule) {
+    public MolHandler(String molFile, boolean removeHydrogen, boolean cleanMolecule) {
 
         MDLReader molRead = null;
         this.removeHydrogen = removeHydrogen;
         try {
             FileInputStream readMolecule = null;
 
-            readMolecule = new FileInputStream(MolFile);
+            readMolecule = new FileInputStream(molFile);
             molRead = new MDLReader(new InputStreamReader(readMolecule));
             this.atomContainer = (IAtomContainer) molRead.read(new AtomContainer());
             molRead.close();
             readMolecule.close();
-            /*Remove Hydrogen by Asad*/
+            /* Remove Hydrogen by Asad */
             if (removeHydrogen) {
                 atomContainer = ExtAtomContainerManipulator.removeHydrogensExceptSingleAndPreserveAtomID(atomContainer);
             }
@@ -128,7 +126,8 @@ public class MolHandler {
         this.atomContainer = container;
         if (removeHydrogen) {
             try {
-                this.atomContainer = ExtAtomContainerManipulator.removeHydrogensExceptSingleAndPreserveAtomID(atomContainer);
+                this.atomContainer = ExtAtomContainerManipulator
+                        .removeHydrogensExceptSingleAndPreserveAtomID(atomContainer);
             } catch (Exception ex) {
                 logger.error(ex);
             }

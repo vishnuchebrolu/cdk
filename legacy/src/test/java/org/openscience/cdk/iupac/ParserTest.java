@@ -13,7 +13,7 @@
  *
  *   You should have received a copy of the GNU Lesser General Public
  *   License along with this library; if not, write to the Free Software
- *   Foundation, 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA. 
+ *   Foundation, 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.openscience.cdk.iupac;
 
@@ -37,128 +37,123 @@ import org.openscience.cdk.templates.MoleculeFactory;
  *
  * @author Stephen Tomkinson
  */
-public class ParserTest extends CDKTestCase
-{
+public class ParserTest extends CDKTestCase {
+
     IsomorphismTester comparer = new IsomorphismTester();
-    
+
     // Add test methods here, they have to start with 'test' name.
     // for example:
     // @Test public void testHello() {}
-    @Test public void testEthane() throws Exception
-    {
+    @Test
+    public void testEthane() throws Exception {
         IAtomContainer parserMolecule = null;
         try {
             parserMolecule = NomParser.generate("ethane", SilentChemObjectBuilder.getInstance());
         } catch (CDKException exception) {
             Assert.fail(exception.getMessage());
         }
-        IAtomContainer correctMolecule = MoleculeFactory.makeAlkane(2);   
+        IAtomContainer correctMolecule = MoleculeFactory.makeAlkane(2);
 
-        Assert.assertTrue("The molecule built by the parser isn't the same as the expected one", 
-                   comparer.isIsomorphic(parserMolecule, correctMolecule));
+        Assert.assertTrue("The molecule built by the parser isn't the same as the expected one",
+                comparer.isIsomorphic(parserMolecule, correctMolecule));
     }
 
-    @Test public void testPentane() throws Exception
-    {
+    @Test
+    public void testPentane() throws Exception {
         IAtomContainer parserMolecule = null;
         try {
             parserMolecule = NomParser.generate("pentane", SilentChemObjectBuilder.getInstance());
         } catch (CDKException exception) {
             Assert.fail(exception.getMessage());
         }
-        IAtomContainer correctMolecule = MoleculeFactory.makeAlkane(5);  
+        IAtomContainer correctMolecule = MoleculeFactory.makeAlkane(5);
 
-        Assert.assertTrue("The molecule built by the parser isn't the same as the expected one", 
-                   comparer.isIsomorphic(parserMolecule, correctMolecule));
+        Assert.assertTrue("The molecule built by the parser isn't the same as the expected one",
+                comparer.isIsomorphic(parserMolecule, correctMolecule));
     }
 
-    @Test public void testSeptane() throws Exception
-    {
+    @Test
+    public void testSeptane() throws Exception {
         IAtomContainer parserMolecule = null;
         try {
             parserMolecule = NomParser.generate("heptane", SilentChemObjectBuilder.getInstance());
         } catch (CDKException exception) {
             Assert.fail(exception.getMessage());
         }
-        IAtomContainer correctMolecule = MoleculeFactory.makeAlkane(7);  
+        IAtomContainer correctMolecule = MoleculeFactory.makeAlkane(7);
 
-        Assert.assertTrue("The molecule built by the parser isn't the same as the expected one", 
-                   comparer.isIsomorphic(parserMolecule, correctMolecule));
-    }    
-    
-    @Test public void testEicosane() throws Exception
-    {
+        Assert.assertTrue("The molecule built by the parser isn't the same as the expected one",
+                comparer.isIsomorphic(parserMolecule, correctMolecule));
+    }
+
+    @Test
+    public void testEicosane() throws Exception {
         IAtomContainer parserMolecule = NomParser.generate("Eicosane", SilentChemObjectBuilder.getInstance());
         IAtomContainer correctMolecule = MoleculeFactory.makeAlkane(20);
 
-        Assert.assertTrue("The molecule built by the parser isn't the same as the expected one", 
-                   comparer.isIsomorphic(parserMolecule, correctMolecule));
+        Assert.assertTrue("The molecule built by the parser isn't the same as the expected one",
+                comparer.isIsomorphic(parserMolecule, correctMolecule));
     }
-    
-    @Test public void testTokenMgrErrorCharacterName() throws Exception
-    {
-        try
-        {
+
+    @Test
+    public void testTokenMgrErrorCharacterName() throws Exception {
+        try {
             NomParser.generate("!\"$%^&*()-=_+", SilentChemObjectBuilder.getInstance());
             Assert.fail("Molecule was successfully generated but should have thrown a TokenMgrError");
         } catch (ParseException pe) {
-            Assert.fail("The molecule did throw a class, but it incorrectly threw a ParseException," +
-            "I was expected a TokenMgrError, perhaps this signifies a change in the error logic of JavaCC?" +
-            "In which case check the error logic of the parser.");
+            Assert.fail("The molecule did throw a class, but it incorrectly threw a ParseException,"
+                    + "I was expected a TokenMgrError, perhaps this signifies a change in the error logic of JavaCC?"
+                    + "In which case check the error logic of the parser.");
         } catch (TokenMgrError tme) {
-            Assert.assertTrue (true);
+            Assert.assertTrue(true);
         }
     }
-    
-    @Test public void testParseExceptionNoName()
-    {
-        try
-        {
+
+    @Test
+    public void testParseExceptionNoName() {
+        try {
             NomParser.generate("", SilentChemObjectBuilder.getInstance());
             Assert.fail("Molecule was successfully generated but should have thrown a ParseException");
         } catch (ParseException pe) {
-            Assert.assertTrue (true);
+            Assert.assertTrue(true);
         } catch (CDKException exception) {
             Assert.fail(exception.getMessage());
         }
     }
-        
-    @Test public void testParseExceptionMissingToken()
-    {
-        try
-        {
+
+    @Test
+    public void testParseExceptionMissingToken() {
+        try {
             NomParser.generate("ethol", SilentChemObjectBuilder.getInstance());
             Assert.fail("Molecule was successfully generated but should have thrown a ParseException");
         } catch (ParseException pe) {
-            Assert.assertTrue (true);
+            Assert.assertTrue(true);
         } catch (CDKException exception) {
             Assert.fail(exception.getMessage());
         }
     }
-    
-    @Test public void testUnconnectingGroup()
-    {
-        try
-        {
+
+    @Test
+    public void testUnconnectingGroup() {
+        try {
             NomParser.generate("7-chloropentane", SilentChemObjectBuilder.getInstance());
             Assert.fail("Molecule was successfully generated but should have thrown a ParseException");
         } catch (ParseException pe) {
-            Assert.assertTrue (true);
+            Assert.assertTrue(true);
         } catch (CDKException exception) {
             Assert.fail(exception.getMessage());
-        }        
+        }
     }
-    
-    @Test public void testUnconnectingSubChain()
-    {
-        try
-        {
+
+    @Test
+    public void testUnconnectingSubChain() {
+        try {
             NomParser.generate("9-ethylhexane", SilentChemObjectBuilder.getInstance());
             Assert.fail("Molecule was successfully generated but should have thrown a ParseException");
         } catch (ParseException pe) {
-            Assert.assertTrue (true);
+            Assert.assertTrue(true);
         } catch (CDKException exception) {
             Assert.fail(exception.getMessage());
-        }        
+        }
     }
 }

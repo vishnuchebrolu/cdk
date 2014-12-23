@@ -63,14 +63,12 @@ import java.util.ArrayList;
 @TestClass("org.openscience.cdk.qsar.descriptors.molecular.KappaShapeIndicesDescriptorTest")
 public class KappaShapeIndicesDescriptor extends AbstractMolecularDescriptor implements IMolecularDescriptor {
 
-    private static final String[] names = {"Kier1", "Kier2", "Kier3"};
+    private static final String[] NAMES = {"Kier1", "Kier2", "Kier3"};
 
     /**
      * Constructor for the KappaShapeIndicesDescriptor object
      */
-    public KappaShapeIndicesDescriptor() {
-    }
-
+    public KappaShapeIndicesDescriptor() {}
 
     /**
      * Gets the specification attribute of the
@@ -79,13 +77,12 @@ public class KappaShapeIndicesDescriptor extends AbstractMolecularDescriptor imp
      * @return The specification value
      */
     @TestMethod("testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
         return new DescriptorSpecification(
-                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#kierValues",
-                this.getClass().getName(),
-                "The Chemistry Development Kit");
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#kierValues", this.getClass()
+                        .getName(), "The Chemistry Development Kit");
     }
-
 
     /**
      * Sets the parameters attribute of the
@@ -95,10 +92,10 @@ public class KappaShapeIndicesDescriptor extends AbstractMolecularDescriptor imp
      * @throws CDKException Description of the Exception
      */
     @TestMethod("testSetParameters_arrayObject")
+    @Override
     public void setParameters(Object[] params) throws CDKException {
         // no parameters for this descriptor
     }
-
 
     /**
      * Gets the parameters attribute of the
@@ -107,16 +104,17 @@ public class KappaShapeIndicesDescriptor extends AbstractMolecularDescriptor imp
      * @return The parameters value
      */
     @TestMethod("testGetParameters")
+    @Override
     public Object[] getParameters() {
         // no parameters to return
         return (null);
     }
 
-    @TestMethod(value="testNamesConsistency")
+    @TestMethod(value = "testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
-        return names;
+        return NAMES;
     }
-
 
     /**
      * calculates the kier shape indices for an atom container
@@ -126,6 +124,7 @@ public class KappaShapeIndicesDescriptor extends AbstractMolecularDescriptor imp
      * @throws CDKException Possible Exceptions
      */
     @TestMethod("testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtomContainer container) {
         IAtomContainer atomContainer;
         try {
@@ -136,7 +135,7 @@ public class KappaShapeIndicesDescriptor extends AbstractMolecularDescriptor imp
             kierValues.add(Double.NaN);
             kierValues.add(Double.NaN);
             return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), kierValues,
-                getDescriptorNames());
+                    getDescriptorNames());
         }
         atomContainer = AtomContainerManipulator.removeHydrogens(atomContainer);
 
@@ -163,15 +162,16 @@ public class KappaShapeIndicesDescriptor extends AbstractMolecularDescriptor imp
         for (int a1 = 0; a1 < atomsCount; a1++) {
             bond1 = 0;
             firstAtomNeighboors = atomContainer.getConnectedAtomsList(atomContainer.getAtom(a1));
-            for (int a2 = 0; a2 < firstAtomNeighboors.size(); a2 ++) {
+            for (int a2 = 0; a2 < firstAtomNeighboors.size(); a2++) {
                 bond1 = atomContainer.getBondNumber(atomContainer.getAtom(a1), (IAtom) firstAtomNeighboors.get(a2));
                 if (!singlePaths.contains(new Double(bond1))) {
                     singlePaths.add(bond1);
                     java.util.Collections.sort(singlePaths);
                 }
                 secondAtomNeighboors = atomContainer.getConnectedAtomsList((IAtom) firstAtomNeighboors.get(a2));
-                for (int a3 = 0; a3 < secondAtomNeighboors.size(); a3 ++) {
-                    bond2 = atomContainer.getBondNumber((IAtom) firstAtomNeighboors.get(a2), (IAtom) secondAtomNeighboors.get(a3));
+                for (int a3 = 0; a3 < secondAtomNeighboors.size(); a3++) {
+                    bond2 = atomContainer.getBondNumber((IAtom) firstAtomNeighboors.get(a2),
+                            (IAtom) secondAtomNeighboors.get(a3));
                     if (!singlePaths.contains(new Double(bond2))) {
                         singlePaths.add(bond2);
                     }
@@ -185,8 +185,9 @@ public class KappaShapeIndicesDescriptor extends AbstractMolecularDescriptor imp
                         doublePaths.add(tmpbond2);
                     }
                     thirdAtomNeighboors = atomContainer.getConnectedAtomsList((IAtom) secondAtomNeighboors.get(a3));
-                    for (int a4 = 0; a4 < thirdAtomNeighboors.size(); a4 ++) {
-                        bond3 = atomContainer.getBondNumber((IAtom) secondAtomNeighboors.get(a3), (IAtom) thirdAtomNeighboors.get(a4));
+                    for (int a4 = 0; a4 < thirdAtomNeighboors.size(); a4++) {
+                        bond3 = atomContainer.getBondNumber((IAtom) secondAtomNeighboors.get(a3),
+                                (IAtom) thirdAtomNeighboors.get(a4));
                         if (!singlePaths.contains(new Double(bond3))) {
                             singlePaths.add(bond3);
                         }
@@ -216,20 +217,26 @@ public class KappaShapeIndicesDescriptor extends AbstractMolecularDescriptor imp
                 kier2 = 0;
                 kier3 = 0;
             } else {
-                if (doublePaths.size() == 0) kier2 = Double.NaN;
+                if (doublePaths.size() == 0)
+                    kier2 = Double.NaN;
                 else
-                    kier2 = (((atomsCount - 1) * ((atomsCount - 2) * (atomsCount - 2))) / (doublePaths.size() * doublePaths.size()));
+                    kier2 = (((atomsCount - 1) * ((atomsCount - 2) * (atomsCount - 2))) / (doublePaths.size() * doublePaths
+                            .size()));
                 if (atomsCount == 3) {
                     kier3 = 0;
                 } else {
                     if (atomsCount % 2 != 0) {
-                        if (triplePaths.size() == 0) kier3 = Double.NaN;
+                        if (triplePaths.size() == 0)
+                            kier3 = Double.NaN;
                         else
-                            kier3 = (((atomsCount - 1) * ((atomsCount - 3) * (atomsCount - 3))) / (triplePaths.size() * triplePaths.size()));
+                            kier3 = (((atomsCount - 1) * ((atomsCount - 3) * (atomsCount - 3))) / (triplePaths.size() * triplePaths
+                                    .size()));
                     } else {
-                        if (triplePaths.size() == 0) kier3 = Double.NaN;
+                        if (triplePaths.size() == 0)
+                            kier3 = Double.NaN;
                         else
-                            kier3 = (((atomsCount - 3) * ((atomsCount - 2) * (atomsCount - 2))) / (triplePaths.size() * triplePaths.size()));
+                            kier3 = (((atomsCount - 3) * ((atomsCount - 2) * (atomsCount - 2))) / (triplePaths.size() * triplePaths
+                                    .size()));
                     }
                 }
             }
@@ -254,10 +261,10 @@ public class KappaShapeIndicesDescriptor extends AbstractMolecularDescriptor imp
      *         the actual type of values returned by the descriptor in the {@link org.openscience.cdk.qsar.DescriptorValue} object
      */
     @TestMethod("testGetDescriptorResultType")
+    @Override
     public IDescriptorResult getDescriptorResultType() {
         return new DoubleArrayResultType(3);
     }
-
 
     /**
      * Gets the parameterNames attribute of the
@@ -266,11 +273,11 @@ public class KappaShapeIndicesDescriptor extends AbstractMolecularDescriptor imp
      * @return The parameterNames value
      */
     @TestMethod("testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         // no param names to return
         return (null);
     }
-
 
     /**
      * Gets the parameterType attribute of the
@@ -280,8 +287,8 @@ public class KappaShapeIndicesDescriptor extends AbstractMolecularDescriptor imp
      * @return The parameterType value
      */
     @TestMethod("testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
         return (null);
     }
 }
-

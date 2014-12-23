@@ -1,7 +1,7 @@
 /* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
- * 
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -10,12 +10,12 @@
  * - but is not limited to - adding the above copyright notice to the beginning
  * of your source code files, and to any copyright notice that you may distribute
  * with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -47,21 +47,21 @@ public class AtomContainerSetManipulator {
 
     @TestMethod("testGetAtomCount_IAtomContainerSet")
     public static int getAtomCount(IAtomContainerSet set) {
-		int count = 0;
+        int count = 0;
         for (IAtomContainer atomContainer : set.atomContainers()) {
             count += (atomContainer).getAtomCount();
         }
         return count;
-	}
+    }
 
     @TestMethod("testGetBondCount_IAtomContainerSet")
     public static int getBondCount(IAtomContainerSet set) {
-		int count = 0;
+        int count = 0;
         for (IAtomContainer atomContainer : set.atomContainers()) {
             count += (atomContainer).getBondCount();
         }
         return count;
-	}
+    }
 
     @TestMethod("testRemoveAtomAndConnectedElectronContainers_IAtomContainerSet_IAtom")
     public static void removeAtomAndConnectedElectronContainers(IAtomContainerSet set, IAtom atom) {
@@ -96,8 +96,8 @@ public class AtomContainerSetManipulator {
             }
         }
     }
-    
-	/**
+
+    /**
      * Returns all the AtomContainer's of a MoleculeSet.
      *
      * @param set The collection of IAtomContainer objects
@@ -105,55 +105,55 @@ public class AtomContainerSetManipulator {
      */
     @TestMethod("testGetAllAtomContainers_IAtomContainerSet")
     public static List<IAtomContainer> getAllAtomContainers(IAtomContainerSet set) {
-    	List<IAtomContainer> atomContainerList = new ArrayList<IAtomContainer>();
+        List<IAtomContainer> atomContainerList = new ArrayList<IAtomContainer>();
         for (IAtomContainer atomContainer : set.atomContainers()) {
             atomContainerList.add(atomContainer);
         }
-    	return atomContainerList;
+        return atomContainerList;
     }
-	
-	/**
-	 * @param set The collection of IAtomContainer objects
+
+    /**
+     * @param set The collection of IAtomContainer objects
      * @return The summed charges of all atoms in this set.
-	 */
+     */
     @TestMethod("testGetTotalCharge_IAtomContainerSet")
     public static double getTotalCharge(IAtomContainerSet set) {
-		double charge = 0;
-		for (int i = 0; i < set.getAtomContainerCount(); i++) {
-			int thisCharge = AtomContainerManipulator.getTotalFormalCharge(set.getAtomContainer(i));
-			double stoich = set.getMultiplier(i);
-			charge += stoich * thisCharge;
-		}
-		return charge;
-	}
-	
-	/**
-	 * @param set The collection of IAtomContainer objects
+        double charge = 0;
+        for (int i = 0; i < set.getAtomContainerCount(); i++) {
+            int thisCharge = AtomContainerManipulator.getTotalFormalCharge(set.getAtomContainer(i));
+            double stoich = set.getMultiplier(i);
+            charge += stoich * thisCharge;
+        }
+        return charge;
+    }
+
+    /**
+     * @param set The collection of IAtomContainer objects
      * @return The summed formal charges of all atoms in this set.
-	 */
+     */
     @TestMethod("testGetTotalFormalCharge_IAtomContainerSet")
     public static double getTotalFormalCharge(IAtomContainerSet set) {
-		int charge = 0;
-		for (int i = 0; i < set.getAtomContainerCount(); i++) {
-			int thisCharge = AtomContainerManipulator.getTotalFormalCharge(set.getAtomContainer(i));
-			double stoich = set.getMultiplier(i);
-			charge += stoich * thisCharge;
-		}
-		return charge;
-	}
-	
-	/**
-	 * @param set  The collection of IAtomContainer objects
+        int charge = 0;
+        for (int i = 0; i < set.getAtomContainerCount(); i++) {
+            int thisCharge = AtomContainerManipulator.getTotalFormalCharge(set.getAtomContainer(i));
+            double stoich = set.getMultiplier(i);
+            charge += stoich * thisCharge;
+        }
+        return charge;
+    }
+
+    /**
+     * @param set  The collection of IAtomContainer objects
      * @return The summed implicit hydrogens of all atoms in this set.
-	 */
+     */
     @TestMethod("testGetTotalHydrogenCount_IAtomContainerSet")
     public static int getTotalHydrogenCount(IAtomContainerSet set) {
-		int hCount = 0;
-		for (int i = 0; i < set.getAtomContainerCount(); i++) {
-			hCount += AtomContainerManipulator.getTotalHydrogenCount(set.getAtomContainer(i));
-		}
-		return hCount;
-	}
+        int hCount = 0;
+        for (int i = 0; i < set.getAtomContainerCount(); i++) {
+            hCount += AtomContainerManipulator.getTotalHydrogenCount(set.getAtomContainer(i));
+        }
+        return hCount;
+    }
 
     @TestMethod("testGetAllIDs_IAtomContainerSet")
     public static List<String> getAllIDs(IAtomContainerSet set) {
@@ -195,10 +195,10 @@ public class AtomContainerSetManipulator {
         }
         return null;
     }
-    
+
     /**
      * Does not recursively return the contents of the AtomContainer.
-     * 
+     *
      * @param set The collection of IAtomContainer objects
      * @return a list of individual ChemObject's
      */
@@ -211,7 +211,7 @@ public class AtomContainerSetManipulator {
         }
         return list;
     }
-        
+
     /**
      * <p>Sorts the IAtomContainers in the given IAtomContainerSet by the following
      * criteria with decreasing priority:</p>
@@ -233,23 +233,20 @@ public class AtomContainerSetManipulator {
         for (Object anAtomContainerList : atomContainerList)
             atomContainerSet.addAtomContainer((IAtomContainer) anAtomContainerList);
     }
-    
+
     /**
      * Tells if an AtomContainerSet contains at least one AtomContainer with the
      * same ID as atomContainer. Note this checks getID() for equality, not pointers.
-     * 
+     *
      * @param id The IAtomContainer to look for
      * @param atomContainerSet The collection of IAtomContainer objects
      */
     @TestMethod("testContainsByID_IAtomContainerSet_IAtomContainer")
-	public static boolean containsByID(IAtomContainerSet atomContainerSet,
-			String id) {
-		for(IAtomContainer ac : atomContainerSet.atomContainers()){
-			if(ac.getID()!=null && ac.getID().equals(id))
-				return true;
-		}
-		return false;
-	}
-    
-}
+    public static boolean containsByID(IAtomContainerSet atomContainerSet, String id) {
+        for (IAtomContainer ac : atomContainerSet.atomContainers()) {
+            if (ac.getID() != null && ac.getID().equals(id)) return true;
+        }
+        return false;
+    }
 
+}

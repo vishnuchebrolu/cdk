@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2013 European Bioinformatics Institute (EMBL-EBI)
  *                    John May <jwmay@users.sf.net>
- *  
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- *  
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version. All we ask is that proper credit is given
- * for our work, which includes - but is not limited to - adding the above 
+ * for our work, which includes - but is not limited to - adding the above
  * copyright notice to the beginning of your source code files, and to any
  * copyright notice that you may distribute with programs based on this work.
  *
@@ -56,25 +56,29 @@ abstract class Suppressed {
 
     /**
      * Access which vertices are suppressed as a fixed-size array.
-     * 
+     *
      * @return the suppressed vertices
      */
     abstract int[] toArray();
 
     /** Default 'empty' implementation always returns false. */
     private static final class Empty extends Suppressed {
+
         /** @inheritDoc */
-        @Override boolean contains(int i) {
+        @Override
+        boolean contains(int i) {
             return false;
         }
 
         /** @inheritDoc */
-        @Override int count() {
+        @Override
+        int count() {
             return 0;
         }
 
         /** @inheritDoc */
-        @Override int[] toArray() {
+        @Override
+        int[] toArray() {
             return new int[0];
         }
     }
@@ -99,19 +103,22 @@ abstract class Suppressed {
         }
 
         /** @inheritDoc */
-        @Override boolean contains(int i) {
+        @Override
+        boolean contains(int i) {
             return set.get(i);
         }
 
         /** @inheritDoc */
-        @Override int count() {
+        @Override
+        int count() {
             return set.cardinality();
         }
-        
-        /** @inheritDoc */        
-        @Override int[] toArray() {
+
+        /** @inheritDoc */
+        @Override
+        int[] toArray() {
             int[] xs = new int[count()];
-            int   n  = 0;
+            int n = 0;
             for (int i = set.nextSetBit(0); i >= 0; i = set.nextSetBit(i + 1)) {
                 xs[n++] = i;
             }

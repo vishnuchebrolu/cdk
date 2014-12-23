@@ -1,5 +1,5 @@
 /* Copyright (C) 2012   Syed Asad Rahman <asad@ebi.ac.uk>
- *           
+ *
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -23,7 +23,10 @@
  */
 package org.openscience.cdk.fingerprint;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
@@ -35,28 +38,28 @@ import org.openscience.cdk.interfaces.IAtomContainer;
  * symbol and hybridization states. This will aid in finding a deterministic
  * path rather than Stochastic one. </P>
  *
- * @author Syed Asad Rahman (2012) 
- * @cdk.keyword fingerprint 
- * @cdk.keyword similarity 
+ * @author Syed Asad Rahman (2012)
+ * @cdk.keyword fingerprint
+ * @cdk.keyword similarity
  * @cdk.module fingerprint
  * @cdk.githash
- * 
+ *
  */
 @TestClass("org.openscience.cdk.fingerprint.SimpleAtomCanonicalizerTest")
 public class SimpleAtomCanonicalizer {
 
-	/**
-	 * @param container the container
-	 * @return canonicalized atoms
-	 */
+    /**
+     * @param container the container
+     * @return canonicalized atoms
+     */
     @TestMethod("testCanonicalizeAtoms")
-	public Collection<IAtom> canonicalizeAtoms(IAtomContainer container) {
-		
-		List<IAtom> canonicalizedVertexList = new ArrayList<IAtom>();
+    public Collection<IAtom> canonicalizeAtoms(IAtomContainer container) {
+
+        List<IAtom> canonicalizedVertexList = new ArrayList<IAtom>();
         for (IAtom atom : container.atoms()) {
             canonicalizedVertexList.add(atom);
         }
-		Collections.sort(canonicalizedVertexList, new SimpleAtomComparator());
-		return canonicalizedVertexList;
-	}
+        Collections.sort(canonicalizedVertexList, new SimpleAtomComparator());
+        return canonicalizedVertexList;
+    }
 }

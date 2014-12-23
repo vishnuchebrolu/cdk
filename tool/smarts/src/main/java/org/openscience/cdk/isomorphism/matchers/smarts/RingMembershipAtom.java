@@ -25,7 +25,7 @@ import org.openscience.cdk.interfaces.IChemObjectBuilder;
 /**
  * This query is found in a specified number of ring. The ring membership is
  * specified with the SMARTS {@code R<NUMBER>}. The membership depends on the
- * ring set used and as such is not a portable term. If the Smallest Set of 
+ * ring set used and as such is not a portable term. If the Smallest Set of
  * Smallest Rings (SSSR) is used then changing the order of atoms
  * <i>may</i> change which atoms match in a pattern.
  *
@@ -60,7 +60,6 @@ public class RingMembershipAtom extends SMARTSAtom {
     @Override
     @TestMethod("matches")
     public boolean matches(IAtom atom) {
-        return ringNumber < 0 ? invariants(atom).ringConnectivity() > 0
-                              : ringNumber == invariants(atom).ringNumber();
+        return ringNumber < 0 ? invariants(atom).ringConnectivity() > 0 : ringNumber == invariants(atom).ringNumber();
     }
 }

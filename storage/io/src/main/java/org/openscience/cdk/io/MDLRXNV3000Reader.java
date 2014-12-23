@@ -52,91 +52,96 @@ import org.openscience.cdk.tools.LoggingToolFactory;
  *
  * @author  Egon Willighagen <egonw@sci.kun.nl>
  * @cdk.created 2003-10-05
- * 
+ *
  * @cdk.keyword MDL V3000
  * @cdk.require java1.4+
  */
 @TestClass("org.openscience.cdk.io.MDLRXNV3000ReaderTest")
 public class MDLRXNV3000Reader extends DefaultChemObjectReader {
 
-    BufferedReader input = null;
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(MDLRXNV3000Reader.class);
+    BufferedReader              input  = null;
+    private static ILoggingTool logger = LoggingToolFactory.createLoggingTool(MDLRXNV3000Reader.class);
 
     public MDLRXNV3000Reader(Reader in) {
-    	this(in, Mode.RELAXED);
+        this(in, Mode.RELAXED);
     }
+
     public MDLRXNV3000Reader(Reader in, Mode mode) {
         if (in instanceof BufferedReader) {
-        	input = (BufferedReader)in;
+            input = (BufferedReader) in;
         } else {
-        	input = new BufferedReader(in);
+            input = new BufferedReader(in);
         }
         initIOSettings();
         super.mode = mode;
     }
 
     public MDLRXNV3000Reader(InputStream input) {
-    	this(input, Mode.RELAXED);
+        this(input, Mode.RELAXED);
     }
+
     public MDLRXNV3000Reader(InputStream input, Mode mode) {
         this(new InputStreamReader(input), mode);
     }
-    
+
     public MDLRXNV3000Reader() {
         this(new StringReader(""));
     }
-    
+
     @TestMethod("testGetFormat")
+    @Override
     public IResourceFormat getFormat() {
         return MDLRXNV3000Format.getInstance();
     }
 
     @TestMethod("testSetReader_Reader")
+    @Override
     public void setReader(Reader input) throws CDKException {
         if (input instanceof BufferedReader) {
-            this.input = (BufferedReader)input;
+            this.input = (BufferedReader) input;
         } else {
             this.input = new BufferedReader(input);
         }
     }
 
     @TestMethod("testSetReader_InputStream")
+    @Override
     public void setReader(InputStream input) throws CDKException {
         setReader(new InputStreamReader(input));
     }
 
     @TestMethod("testAccepts")
+    @Override
     public boolean accepts(Class<? extends IChemObject> classObject) {
         if (IChemModel.class.equals(classObject)) return true;
         if (IReaction.class.equals(classObject)) return true;
-		Class<?>[] interfaces = classObject.getInterfaces();
-		for (int i=0; i<interfaces.length; i++) {
-			if (IChemModel.class.equals(interfaces[i])) return true;
-			if (IReaction.class.equals(interfaces[i])) return true;
-		}
-    Class superClass = classObject.getSuperclass();
-    if (superClass != null) return this.accepts(superClass);
-		return false;
-	}
+        Class<?>[] interfaces = classObject.getInterfaces();
+        for (int i = 0; i < interfaces.length; i++) {
+            if (IChemModel.class.equals(interfaces[i])) return true;
+            if (IReaction.class.equals(interfaces[i])) return true;
+        }
+        Class superClass = classObject.getSuperclass();
+        if (superClass != null) return this.accepts(superClass);
+        return false;
+    }
 
     @TestMethod("testReadReactions1")
+    @Override
     public <T extends IChemObject> T read(T object) throws CDKException {
-         if (object instanceof IReaction) {
-             return (T)readReaction(object.getBuilder());
-         } else if (object instanceof IChemModel) {
-             IChemModel model = object.getBuilder().newInstance(IChemModel.class);
-             IReactionSet reactionSet = object.getBuilder().newInstance(IReactionSet.class);
-             reactionSet.addReaction(readReaction(object.getBuilder()));
-             model.setReactionSet(reactionSet);
-             return (T)model;
-         } else {
-             throw new CDKException("Only supported are Reaction and ChemModel, and not " +
-                 object.getClass().getName() + "."
-             );
-         }
-     }
-    
+        if (object instanceof IReaction) {
+            return (T) readReaction(object.getBuilder());
+        } else if (object instanceof IChemModel) {
+            IChemModel model = object.getBuilder().newInstance(IChemModel.class);
+            IReactionSet reactionSet = object.getBuilder().newInstance(IReactionSet.class);
+            reactionSet.addReaction(readReaction(object.getBuilder()));
+            model.setReactionSet(reactionSet);
+            return (T) model;
+        } else {
+            throw new CDKException("Only supported are Reaction and ChemModel, and not " + object.getClass().getName()
+                    + ".");
+        }
+    }
+
     /**
      * Reads the command on this line. If the line is continued on the next, that
      * part is added.
@@ -146,9 +151,9 @@ public class MDLRXNV3000Reader extends DefaultChemObjectReader {
     private String readCommand() throws CDKException {
         String line = readLine();
         if (line.startsWith("M  V30 ")) {
-            String command =  line.substring(7);
+            String command = line.substring(7);
             if (command.endsWith("-")) {
-                command = command.substring(0, command.length()-1);
+                command = command.substring(0, command.length() - 1);
                 command += readCommand();
             }
             return command;
@@ -156,7 +161,7 @@ public class MDLRXNV3000Reader extends DefaultChemObjectReader {
             throw new CDKException("Could not read MDL file: unexpected line: " + line);
         }
     }
-    
+
     private String readLine() throws CDKException {
         String line = null;
         try {
@@ -170,7 +175,7 @@ public class MDLRXNV3000Reader extends DefaultChemObjectReader {
         }
         return line;
     }
-    
+
     private IReaction readReaction(IChemObjectBuilder builder) throws CDKException {
         IReaction reaction = builder.newInstance(IReaction.class);
         readLine(); // first line should be $RXN
@@ -200,9 +205,9 @@ public class MDLRXNV3000Reader extends DefaultChemObjectReader {
                 logger.warn("Waiting for COUNTS line, but found: " + command);
             }
         }
-        
+
         // now read the reactants
-        for (int i=1; i<=reactantCount; i++) {
+        for (int i = 1; i <= reactantCount; i++) {
             StringBuffer molFile = new StringBuffer();
             String announceMDLFileLine = readCommand();
             if (!announceMDLFileLine.equals("BEGIN REACTANT")) {
@@ -216,29 +221,25 @@ public class MDLRXNV3000Reader extends DefaultChemObjectReader {
                 molFile.append(molFileLine);
                 molFile.append(System.getProperty("line.separator"));
             };
-            
+
             try {
                 // read MDL molfile content
-                MDLV3000Reader reader = new MDLV3000Reader(
-                    new StringReader(molFile.toString()),
-                    super.mode
-                );
-                IAtomContainer reactant = (IAtomContainer)reader.read(
-                  builder.newInstance(IAtomContainer.class));
+                MDLV3000Reader reader = new MDLV3000Reader(new StringReader(molFile.toString()), super.mode);
+                IAtomContainer reactant = (IAtomContainer) reader.read(builder.newInstance(IAtomContainer.class));
                 reader.close();
-                  
+
                 // add reactant
                 reaction.addReactant(reactant);
-            } catch (Exception exception) {
+            } catch (IllegalArgumentException | CDKException | IOException exception) {
                 String error = "Error while reading reactant: " + exception.getMessage();
                 logger.error(error);
                 logger.debug(exception);
                 throw new CDKException(error, exception);
             }
         }
-        
+
         // now read the products
-        for (int i=1; i<=productCount; i++) {
+        for (int i = 1; i <= productCount; i++) {
             StringBuffer molFile = new StringBuffer();
             String announceMDLFileLine = readCommand();
             if (!announceMDLFileLine.equals("BEGIN PRODUCT")) {
@@ -252,25 +253,23 @@ public class MDLRXNV3000Reader extends DefaultChemObjectReader {
                 molFile.append(molFileLine);
                 molFile.append(System.getProperty("line.separator"));
             };
-            
+
             try {
                 // read MDL molfile content
-                MDLV3000Reader reader = new MDLV3000Reader(
-                  new StringReader(molFile.toString()));
-                IAtomContainer product = (IAtomContainer)reader.read(
-                  builder.newInstance(IAtomContainer.class));
+                MDLV3000Reader reader = new MDLV3000Reader(new StringReader(molFile.toString()));
+                IAtomContainer product = (IAtomContainer) reader.read(builder.newInstance(IAtomContainer.class));
                 reader.close();
-                  
+
                 // add product
                 reaction.addProduct(product);
-            } catch (Exception exception) {
+            } catch (IllegalArgumentException | CDKException | IOException exception) {
                 String error = "Error while reading product: " + exception.getMessage();
                 logger.error(error);
                 logger.debug(exception);
                 throw new CDKException(error, exception);
             }
         }
-        
+
         return reaction;
     }
 
@@ -296,12 +295,11 @@ public class MDLRXNV3000Reader extends DefaultChemObjectReader {
     }
 
     @TestMethod("testClose")
+    @Override
     public void close() throws IOException {
         input.close();
     }
-    
-    private void initIOSettings() {
-    }
 
-    
+    private void initIOSettings() {}
+
 }

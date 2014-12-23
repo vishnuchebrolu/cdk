@@ -1,5 +1,6 @@
 /* Copyright (C) 2008  Rajarshi Guha <rajarshi@users.sf.net>
  *               2011  Jonathan Alvarsson <jonalv@users.sf.net>
+ *               2014  Mark B Vine (orcid:0000-0002-7794-0426)
  *
  * Contact: cdk-devel@lists.sf.net
  *
@@ -15,7 +16,7 @@
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
- * Foundation, 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA. 
+ * Foundation, 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.openscience.cdk.tools.periodictable;
 
@@ -31,8 +32,8 @@ import java.util.Set;
 import static org.openscience.cdk.config.Elements.*;
 
 /**
- * Represents elements of the Periodic Table. <p/> This utility class was 
- * previously useful when one wants generic properties of elements such as 
+ * Represents elements of the Periodic Table. <p/> This utility class was
+ * previously useful when one wants generic properties of elements such as
  * atomic number, VdW radius etc. The new approach to this is to use the
  * {@link Elements} enumeration.
  *
@@ -52,13 +53,13 @@ public final class PeriodicTable {
     private static volatile Map<Elements, String> ids;
 
     /** A lock used for locking CAD ID initialisation. */
-    private final static Object lock = new Object();
+    private final static Object                   LOCK = new Object();
 
     /**
      * Get the Van der Waals radius for the element in question.
      *
      * @param symbol The symbol of the element
-     * @return the van der waals radius
+     * @return the Van der waals radius
      */
     @TestMethod("testTable")
     public static Double getVdwRadius(String symbol) {
@@ -194,34 +195,21 @@ public final class PeriodicTable {
 
     /**
      * Enumeration of chemical series and the elements which are members of each
-     * serie.
+     * series.
      */
     private enum Series {
-        NonMetals(Sulfur, Selenium, Oxygen, Carbon, Phosphorus, Hydrogen,
-                  Nitrogen),
-        NobleGasses(Helium, Krypton, Xenon, Argon, Radon, Neon),
-        AlkaliMetals(Sodium, Rubidium, Potassium, Caesium, Francium,
-                     Lithium),
-        AlkaliEarthMetals(Strontium, Radium, Calcium, Magnesium, Barium,
-                          Beryllium),
-        Metalloids(Silicon, Arsenic, Tellurium, Germanium, Antimony, Polonium,
-                   Boron),
-        Halogens(Fluorine, Iodine, Chlorine, Astatine, Bromine),
-        Metals(Gallium, Indium, Aluminium, Thallium, Tin, Lead, Bismuth),
-        TransitionMetals(Seaborgium, Hafnium, Roentgenium, Iridium, Nickel,
-                         Meitnerium, Yttrium, Copper, Rutherfordium, Tungsten,
-                         Copernicium, Rhodium, Cobalt, Zinc, Platinum, Gold,
-                         Cadmium, Manganese, Darmstadtium, Dubnium, Palladium,
-                         Vanadium, Titanium, Tantalum, Chromium, Molybdenum,
-                         Ruthenium, Zirconium, Osmium, Bohrium, Rhenium,
-                         Niobium, Scandium, Technetium, Hassium, Mercury,
-                         Iron, Silver),
-        Lanthanides(Terbium, Samarium, Lutetium, Neodymium, Cerium, Europium,
-                    Gadolinium, Thulium, Lanthanum, Erbium, Promethium,
-                    Holmium, Praseodymium, Dysprosium, Ytterbium),
-        Actinides(Fermium, Protactinium, Plutonium, Thorium, Lawrencium,
-                  Einsteinium, Nobelium, Actinium, Americium, Curium,
-                  Berkelium, Mendelevium, Uranium, Californium, Neptunium);
+        NonMetals(Sulfur, Selenium, Oxygen, Carbon, Phosphorus, Hydrogen, Nitrogen), NobleGasses(Helium, Krypton,
+                Xenon, Argon, Radon, Neon), AlkaliMetals(Sodium, Rubidium, Potassium, Caesium, Francium, Lithium), AlkaliEarthMetals(
+                Strontium, Radium, Calcium, Magnesium, Barium, Beryllium), Metalloids(Silicon, Arsenic, Tellurium,
+                Germanium, Antimony, Polonium, Boron), Halogens(Fluorine, Iodine, Chlorine, Astatine, Bromine), Metals(
+                Gallium, Indium, Aluminium, Thallium, Tin, Lead, Bismuth), TransitionMetals(Seaborgium, Hafnium,
+                Roentgenium, Iridium, Nickel, Meitnerium, Yttrium, Copper, Rutherfordium, Tungsten, Copernicium,
+                Rhodium, Cobalt, Zinc, Platinum, Gold, Cadmium, Manganese, Darmstadtium, Dubnium, Palladium, Vanadium,
+                Titanium, Tantalum, Chromium, Molybdenum, Ruthenium, Zirconium, Osmium, Bohrium, Rhenium, Niobium,
+                Scandium, Technetium, Hassium, Mercury, Iron, Silver), Lanthanides(Terbium, Samarium, Lutetium,
+                Neodymium, Cerium, Europium, Gadolinium, Thulium, Lanthanum, Erbium, Promethium, Holmium, Praseodymium,
+                Dysprosium, Ytterbium), Actinides(Fermium, Protactinium, Plutonium, Thorium, Lawrencium, Einsteinium,
+                Nobelium, Actinium, Americium, Curium, Berkelium, Mendelevium, Uranium, Californium, Neptunium);
 
         private final Set<Elements> elements;
 
@@ -240,32 +228,22 @@ public final class PeriodicTable {
      */
     private enum Phase {
 
-        Solid(Sulfur, Hafnium, Terbium, Calcium, Gadolinium,
-              Nickel, Cerium, Germanium, Phosphorus, Copper,
-              Polonium, Lead, Gold, Iodine, Cadmium, Ytterbium,
-              Manganese, Lithium, Palladium, Vanadium, Chromium,
-              Molybdenum, Potassium, Ruthenium, Osmium, Boron,
-              Bismuth, Rhenium, Holmium, Niobium, Praseodymium,
-              Barium, Antimony, Thallium, Iron, Silver, Silicon,
-              Caesium, Astatine, Iridium, Francium, Lutetium,
-              Yttrium, Rubidium, Lanthanum, Tungsten, Erbium,
-              Selenium, Gallium, Carbon, Rhodium, Uranium,
-              Dysprosium, Cobalt, Zinc, Platinum, Protactinium,
-              Titanium, Arsenic, Tantalum, Thorium, Samarium,
-              Europium, Neodymium, Zirconium, Radium, Thulium,
-              Sodium, Scandium, Tellurium, Indium, Beryllium,
-              Aluminium, Strontium, Tin, Magnesium),
+        Solid(Sulfur, Hafnium, Terbium, Calcium, Gadolinium, Nickel, Cerium, Germanium, Phosphorus, Copper, Polonium,
+                Lead, Gold, Iodine, Cadmium, Ytterbium, Manganese, Lithium, Palladium, Vanadium, Chromium, Molybdenum,
+                Potassium, Ruthenium, Osmium, Boron, Bismuth, Rhenium, Holmium, Niobium, Praseodymium, Barium,
+                Antimony, Thallium, Iron, Silver, Silicon, Caesium, Astatine, Iridium, Francium, Lutetium, Yttrium,
+                Rubidium, Lanthanum, Tungsten, Erbium, Selenium, Gallium, Carbon, Rhodium, Uranium, Dysprosium, Cobalt,
+                Zinc, Platinum, Protactinium, Titanium, Arsenic, Tantalum, Thorium, Samarium, Europium, Neodymium,
+                Zirconium, Radium, Thulium, Sodium, Scandium, Tellurium, Indium, Beryllium, Aluminium, Strontium, Tin,
+                Magnesium),
 
         Liquid(Bromine, Mercury),
 
-        Gas(Fluorine, Oxygen, Xenon, Argon, Chlorine, Helium,
-            Krypton, Hydrogen, Radon, Nitrogen, Neon),
+        Gas(Fluorine, Oxygen, Xenon, Argon, Chlorine, Helium, Krypton, Hydrogen, Radon, Nitrogen, Neon),
 
-        Synthetic(Fermium, Seaborgium, Plutonium, Roentgenium, Lawrencium,
-                  Meitnerium, Einsteinium, Nobelium, Actinium, Rutherfordium,
-                  Americium, Curium, Bohrium, Berkelium, Promethium, Copernicium,
-                  Technetium, Hassium, Californium, Mendelevium, Neptunium,
-                  Darmstadtium, Dubnium);
+        Synthetic(Fermium, Seaborgium, Plutonium, Roentgenium, Lawrencium, Meitnerium, Einsteinium, Nobelium, Actinium,
+                Rutherfordium, Americium, Curium, Bohrium, Berkelium, Promethium, Copernicium, Technetium, Hassium,
+                Californium, Mendelevium, Neptunium, Darmstadtium, Dubnium);
 
         private final Set<Elements> elements;
 
@@ -281,12 +259,12 @@ public final class PeriodicTable {
     /**
      * Lazily obtain the CAS ID Mapping.
      *
-     * @return cas id mapping
+     * @return CAS id mapping
      */
     private static Map<Elements, String> casIds() {
         Map<Elements, String> result = ids;
         if (result == null) {
-            synchronized (lock) {
+            synchronized (LOCK) {
                 result = ids;
                 if (result == null) {
                     ids = result = initCasIds();
@@ -411,11 +389,11 @@ public final class PeriodicTable {
         ids.put(Meitnerium, "54038-01-6");
         ids.put(Darmstadtium, "54083-77-1");
         ids.put(Roentgenium, "54386-24-2");
-        ids.put(Copernicium, "");
+        ids.put(Copernicium, "54084-26-3");
         ids.put(Ununtrium, "");
-        ids.put(Flerovium, "");
+        ids.put(Flerovium, "54085-16-4");
         ids.put(Ununpentium, "");
-        ids.put(Livermorium, "");
+        ids.put(Livermorium, "54100-71-9");
         ids.put(Ununseptium, "");
         ids.put(Ununoctium, "");
         return ids;

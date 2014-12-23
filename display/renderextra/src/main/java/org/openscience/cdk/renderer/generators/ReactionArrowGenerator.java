@@ -35,7 +35,7 @@ import org.openscience.cdk.renderer.generators.BasicSceneGenerator.Scale;
 
 /**
  * Generate the arrow for a reaction.
- * 
+ *
  * @author maclean
  * @cdk.module renderextra
  * @cdk.githash
@@ -43,39 +43,27 @@ import org.openscience.cdk.renderer.generators.BasicSceneGenerator.Scale;
 @TestClass("org.openscience.cdk.renderer.generators.ReactionArrowGeneratorTest")
 public class ReactionArrowGenerator implements IGenerator<IReaction> {
 
-	/** {@inheritDoc} */
-	@Override
-	@TestMethod("testEmptyReaction")
-	public IRenderingElement generate(IReaction reaction, RendererModel model) {
-        Rectangle2D totalBoundsReactants = 
-        	BoundsCalculator.calculateBounds(reaction.getReactants());
-        Rectangle2D totalBoundsProducts = 
-        	BoundsCalculator.calculateBounds(reaction.getProducts());
-        
-        if (totalBoundsReactants == null || totalBoundsProducts == null)
-        	return null;
-        
-        double separation = model.getParameter(BondLength.class)
-    		.getValue() / model.getParameter(Scale.class).getValue();
-        Color foregroundColor = model.getParameter(
-            BasicSceneGenerator.ForegroundColor.class).getValue();
-        return new ArrowElement(
-        	totalBoundsReactants.getMaxX() + separation,
-            totalBoundsReactants.getCenterY(), 
-            totalBoundsProducts.getMinX() - separation, 
-            totalBoundsReactants.getCenterY(),
-            1 / model.getParameter(Scale.class).getValue(), true,
-            foregroundColor
-        );
-	}
+    /** {@inheritDoc} */
+    @Override
+    @TestMethod("testEmptyReaction")
+    public IRenderingElement generate(IReaction reaction, RendererModel model) {
+        Rectangle2D totalBoundsReactants = BoundsCalculator.calculateBounds(reaction.getReactants());
+        Rectangle2D totalBoundsProducts = BoundsCalculator.calculateBounds(reaction.getProducts());
 
-	/** {@inheritDoc} */
-	@Override
-	@TestMethod("testGetParameters")
-	public List<IGeneratorParameter<?>> getParameters() {
-        return Arrays.asList(
-            new IGeneratorParameter<?>[] {
-            }
-        );
+        if (totalBoundsReactants == null || totalBoundsProducts == null) return null;
+
+        double separation = model.getParameter(BondLength.class).getValue()
+                / model.getParameter(Scale.class).getValue();
+        Color foregroundColor = model.getParameter(BasicSceneGenerator.ForegroundColor.class).getValue();
+        return new ArrowElement(totalBoundsReactants.getMaxX() + separation, totalBoundsReactants.getCenterY(),
+                totalBoundsProducts.getMinX() - separation, totalBoundsReactants.getCenterY(), 1 / model.getParameter(
+                        Scale.class).getValue(), true, foregroundColor);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    @TestMethod("testGetParameters")
+    public List<IGeneratorParameter<?>> getParameters() {
+        return Arrays.asList(new IGeneratorParameter<?>[]{});
     }
 }

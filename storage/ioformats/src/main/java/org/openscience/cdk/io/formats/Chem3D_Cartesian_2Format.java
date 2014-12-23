@@ -23,9 +23,9 @@ import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.tools.DataFeatures;
 
 /**
- * 
+ *
  * @author Miguel Rojas
- * 
+ *
  * @cdk.module ioformats
  * @cdk.githash
  * @cdk.set    io-formats
@@ -33,51 +33,67 @@ import org.openscience.cdk.tools.DataFeatures;
 @TestClass("org.openscience.cdk.io.formats.Chem3D_Cartesian_2FormatTest")
 public class Chem3D_Cartesian_2Format extends AbstractResourceFormat implements IChemFormat {
 
-	private static IResourceFormat myself = null;
-	
+    private static IResourceFormat myself = null;
+
     public Chem3D_Cartesian_2Format() {}
-    
+
     @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {
-    	if (myself == null) myself = new Chem3D_Cartesian_2Format();
-    	return myself;
+        if (myself == null) myself = new Chem3D_Cartesian_2Format();
+        return myself;
     }
 
     @TestMethod("testGetFormatName")
+    @Override
     public String getFormatName() {
         return "Chem3D Cartesian 2";
     }
 
     @TestMethod("testGetMIMEType")
+    @Override
     public String getMIMEType() {
         return null;
     }
+
     @TestMethod("testGetPreferredNameExtension")
+    @Override
     public String getPreferredNameExtension() {
         return getNameExtensions()[0];
     }
+
     @TestMethod("testGetNameExtensions")
+    @Override
     public String[] getNameExtensions() {
         return new String[]{"c3d2"};
     }
 
     @TestMethod("testGetReaderClassName")
-    public String getReaderClassName() { return null; }
+    @Override
+    public String getReaderClassName() {
+        return null;
+    }
+
     @TestMethod("testGetWriterClassName")
-    public String getWriterClassName() { return null; }
+    @Override
+    public String getWriterClassName() {
+        return null;
+    }
 
-	@TestMethod("testIsXMLBased")
+    @TestMethod("testIsXMLBased")
+    @Override
     public boolean isXMLBased() {
-		return false;
-	}
+        return false;
+    }
 
-	@TestMethod("testGetSupportedDataFeatures")
-	public int getSupportedDataFeatures() {
-		return DataFeatures.NONE;
-	}
+    @TestMethod("testGetSupportedDataFeatures")
+    @Override
+    public int getSupportedDataFeatures() {
+        return DataFeatures.NONE;
+    }
 
-	@TestMethod("testGetRequiredDataFeatures")
+    @TestMethod("testGetRequiredDataFeatures")
+    @Override
     public int getRequiredDataFeatures() {
-		return DataFeatures.NONE;
-	}
+        return DataFeatures.NONE;
+    }
 }

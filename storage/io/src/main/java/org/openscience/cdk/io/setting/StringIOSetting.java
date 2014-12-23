@@ -30,15 +30,15 @@ import org.openscience.cdk.exception.CDKException;
  */
 public class StringIOSetting extends IOSetting {
 
-    public StringIOSetting(String name, Importance level, 
-                         String question, String defaultSetting) {
+    public StringIOSetting(String name, Importance level, String question, String defaultSetting) {
         super(name, level, question, defaultSetting);
     }
-    
+
     /**
      * Sets the setting for a certain question. The setting
      * is of type String, and any string is accepted.
      */
+    @Override
     public void setSetting(String setting) throws CDKException {
         // anything is accepted
         super.setSetting(setting);

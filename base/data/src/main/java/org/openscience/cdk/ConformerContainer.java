@@ -1,6 +1,6 @@
 /* Copyright (C) 2004-2008  Rajarshi Guha <rajarshi.guha@gmail.com>
  *
- *  Contact: cdk-devel@lists.sourceforge.net 
+ *  Contact: cdk-devel@lists.sourceforge.net
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public License
@@ -18,13 +18,18 @@
  */
 package org.openscience.cdk;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+
+import javax.vecmath.Point3d;
+
 import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
-
-import javax.vecmath.Point3d;
-import java.util.*;
 
 /**
  * A memory-efficient data structure to store conformers for a single molecule.
@@ -56,8 +61,9 @@ import java.util.*;
  */
 @TestClass("org.openscience.cdk.ConformerContainer")
 public class ConformerContainer implements List<IAtomContainer> {
-    private IAtomContainer atomContainer = null;
-    private String title = null;
+
+    private IAtomContainer  atomContainer = null;
+    private String          title         = null;
     private List<Point3d[]> coordinates;
 
     private Point3d[] getCoordinateList(IAtomContainer atomContainer) {
@@ -70,7 +76,6 @@ public class ConformerContainer implements List<IAtomContainer> {
         }
         return tmp;
     }
-
 
     public ConformerContainer() {
         coordinates = new ArrayList<Point3d[]>();
@@ -106,8 +111,7 @@ public class ConformerContainer implements List<IAtomContainer> {
      * @param atomContainers The array of conformers
      */
     public ConformerContainer(IAtomContainer[] atomContainers) {
-        if (atomContainers.length == 0)
-            throw new IllegalArgumentException("Can't use a zero-length molecule array");
+        if (atomContainers.length == 0) throw new IllegalArgumentException("Can't use a zero-length molecule array");
 
         // lets check that the titles match
         title = (String) atomContainers[0].getProperty(CDKConstants.TITLE);
@@ -143,6 +147,7 @@ public class ConformerContainer implements List<IAtomContainer> {
      * @return The number of conformers
      */
     @TestMethod("testSize")
+    @Override
     public int size() {
         return coordinates.size();
     }
@@ -153,6 +158,7 @@ public class ConformerContainer implements List<IAtomContainer> {
      * @return true if there is at least one conformer, otherwise false
      */
     @TestMethod("testIsEmpty")
+    @Override
     public boolean isEmpty() {
         return coordinates.isEmpty();
     }
@@ -169,6 +175,7 @@ public class ConformerContainer implements List<IAtomContainer> {
      * @return true if it is present, false otherwise
      */
     @TestMethod("testContains, testContains_Object")
+    @Override
     public boolean contains(Object o) {
         return indexOf(o) != -1;
     }
@@ -180,6 +187,7 @@ public class ConformerContainer implements List<IAtomContainer> {
      *         corresponding to the current conformer.
      */
     @TestMethod("testIterator, testIterator2")
+    @Override
     public Iterator<IAtomContainer> iterator() {
         return new CCIterator();
     }
@@ -194,6 +202,7 @@ public class ConformerContainer implements List<IAtomContainer> {
      * @return The conformers as an array of individual IAtomContainers.
      */
     @TestMethod("testToArray")
+    @Override
     public Object[] toArray() {
         IAtomContainer[] ret = new IAtomContainer[coordinates.size()];
         int index = 0;
@@ -213,6 +222,7 @@ public class ConformerContainer implements List<IAtomContainer> {
     }
 
     @TestMethod("testToArray_arrayObject")
+    @Override
     public <IAtomContainer> IAtomContainer[] toArray(IAtomContainer[] ts) {
         throw new UnsupportedOperationException();
     }
@@ -232,19 +242,18 @@ public class ConformerContainer implements List<IAtomContainer> {
      * @return true
      */
     @TestMethod("testAdd_IAtomContainer")
+    @Override
     public boolean add(IAtomContainer atomContainer) {
         if (this.atomContainer == null) {
             this.atomContainer = atomContainer;
             title = (String) atomContainer.getProperty(CDKConstants.TITLE);
         }
-        if (title==null){
-            throw new IllegalArgumentException(
-                                               "At least one of the input molecules does not have a title");
+        if (title == null) {
+            throw new IllegalArgumentException("At least one of the input molecules does not have a title");
         }
         if (!title.equals(atomContainer.getProperty(CDKConstants.TITLE)))
-            throw new IllegalArgumentException(
-            	"The input molecules does not have the same title ('" + title + 
-            	"') as the other conformers ('" + atomContainer.getProperty(CDKConstants.TITLE) + "')");
+            throw new IllegalArgumentException("The input molecules does not have the same title ('" + title
+                    + "') as the other conformers ('" + atomContainer.getProperty(CDKConstants.TITLE) + "')");
 
         if (atomContainer.getAtomCount() != this.atomContainer.getAtomCount())
             throw new IllegalArgumentException("Doesn't have the same number of atoms as the rest of the conformers");
@@ -260,6 +269,7 @@ public class ConformerContainer implements List<IAtomContainer> {
      * @return true if the specified conformer was present and removed, false if not found
      */
     @TestMethod("testRemove_Object")
+    @Override
     public boolean remove(Object o) {
         IAtomContainer atomContainer = (IAtomContainer) o;
 
@@ -275,26 +285,31 @@ public class ConformerContainer implements List<IAtomContainer> {
     }
 
     @TestMethod("testContainsAll_Collection")
+    @Override
     public boolean containsAll(Collection<?> objects) {
         throw new UnsupportedOperationException();
     }
 
     @TestMethod("testAddAll_Collection")
+    @Override
     public boolean addAll(Collection<? extends IAtomContainer> atomContainers) {
         throw new UnsupportedOperationException();
     }
 
     @TestMethod("testAddAll_int_Collection")
+    @Override
     public boolean addAll(int i, Collection<? extends IAtomContainer> iAtomContainers) {
         throw new UnsupportedOperationException();
     }
 
     @TestMethod("testRemoveAll_Collectio")
+    @Override
     public boolean removeAll(Collection<?> objects) {
         throw new UnsupportedOperationException();
     }
 
     @TestMethod("testRetainAll_Collection")
+    @Override
     public boolean retainAll(Collection<?> objects) {
         throw new UnsupportedOperationException();
     }
@@ -303,6 +318,7 @@ public class ConformerContainer implements List<IAtomContainer> {
      * Get rid of all the conformers but keeps atom and bond information.
      */
     @TestMethod("testClear")
+    @Override
     public void clear() {
         coordinates.clear();
     }
@@ -314,6 +330,7 @@ public class ConformerContainer implements List<IAtomContainer> {
      * @return The conformer
      */
     @TestMethod("testGet_int, testGet2")
+    @Override
     public IAtomContainer get(int i) {
         Point3d[] tmp = coordinates.get(i);
         for (int j = 0; j < atomContainer.getAtomCount(); j++) {
@@ -324,9 +341,11 @@ public class ConformerContainer implements List<IAtomContainer> {
     }
 
     @TestMethod("testSet_int_IAtomContainer")
+    @Override
     public IAtomContainer set(int i, IAtomContainer atomContainer) {
         if (!title.equals(atomContainer.getProperty(CDKConstants.TITLE)))
-            throw new IllegalArgumentException("The input molecules does not have the same title as the other conformers");
+            throw new IllegalArgumentException(
+                    "The input molecules does not have the same title as the other conformers");
         Point3d[] tmp = getCoordinateList(atomContainer);
         IAtomContainer oldAtomContainer = get(i);
         coordinates.set(i, tmp);
@@ -334,6 +353,7 @@ public class ConformerContainer implements List<IAtomContainer> {
     }
 
     @TestMethod("testAdd_int_IAtomContainer")
+    @Override
     public void add(int i, IAtomContainer atomContainer) {
         if (this.atomContainer == null) {
             this.atomContainer = atomContainer;
@@ -341,7 +361,8 @@ public class ConformerContainer implements List<IAtomContainer> {
         }
 
         if (!title.equals(atomContainer.getProperty(CDKConstants.TITLE)))
-            throw new IllegalArgumentException("The input molecules does not have the same title as the other conformers");
+            throw new IllegalArgumentException(
+                    "The input molecules does not have the same title as the other conformers");
 
         if (atomContainer.getAtomCount() != this.atomContainer.getAtomCount())
             throw new IllegalArgumentException("Doesn't have the same number of atoms as the rest of the conformers");
@@ -357,6 +378,7 @@ public class ConformerContainer implements List<IAtomContainer> {
      * @return The conformer that was at the specified position
      */
     @TestMethod("testRemove_int")
+    @Override
     public IAtomContainer remove(int i) {
         IAtomContainer oldAtomContainer = get(i);
         coordinates.remove(i);
@@ -374,6 +396,7 @@ public class ConformerContainer implements List<IAtomContainer> {
      * @return The index where o was found
      */
     @TestMethod("testIndexOf_Object")
+    @Override
     public int indexOf(Object o) {
         IAtomContainer atomContainer = (IAtomContainer) o;
         if (!atomContainer.getProperty(CDKConstants.TITLE).equals(title)) return -1;
@@ -408,6 +431,7 @@ public class ConformerContainer implements List<IAtomContainer> {
      * @return The index where o was found
      */
     @TestMethod("testLastIndexOf_Object")
+    @Override
     public int lastIndexOf(Object o) {
         IAtomContainer atomContainer = (IAtomContainer) o;
         if (!atomContainer.getProperty(CDKConstants.TITLE).equals(title)) return -1;
@@ -431,29 +455,34 @@ public class ConformerContainer implements List<IAtomContainer> {
     }
 
     @TestMethod("testListIterator")
+    @Override
     public ListIterator<IAtomContainer> listIterator() {
         throw new UnsupportedOperationException();
     }
 
     @TestMethod("testListIterator_int")
+    @Override
     public ListIterator<IAtomContainer> listIterator(int i) {
         throw new UnsupportedOperationException();
     }
 
     @TestMethod("testSubList_int_int")
+    @Override
     public List<IAtomContainer> subList(int i, int i1) {
         throw new UnsupportedOperationException();
     }
 
-
     private class CCIterator implements Iterator<IAtomContainer> {
-        int current = 0;
-        int last = -1;
 
+        int current = 0;
+        int last    = -1;
+
+        @Override
         public boolean hasNext() {
             return current != coordinates.size();
         }
 
+        @Override
         public IAtomContainer next() {
             Point3d[] tmp = coordinates.get(current);
             for (int j = 0; j < atomContainer.getAtomCount(); j++) {
@@ -464,9 +493,9 @@ public class ConformerContainer implements List<IAtomContainer> {
             return atomContainer;
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }
     }
 }
-

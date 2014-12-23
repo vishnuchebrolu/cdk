@@ -50,11 +50,10 @@ import org.openscience.cdk.tools.LoggingToolFactory;
  * @author  Bradley A. Smith <bradley@baysmith.com>
  */
 public class ReaderFactory {
-    
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(ReaderFactory.class);
-    private FormatFactory formatFactory = null;
-    private int headerLength = 8192;
+
+    private static ILoggingTool logger        = LoggingToolFactory.createLoggingTool(ReaderFactory.class);
+    private FormatFactory       formatFactory = null;
+    private int                 headerLength  = 8192;
 
     /**
      * Constructs a ReaderFactory which tries to detect the format in the
@@ -81,9 +80,9 @@ public class ReaderFactory {
     public void registerFormat(IChemFormatMatcher format) {
         formatFactory.registerFormat(format);
     }
-    
-    public List<IChemFormatMatcher> getFormats(){
-    	return formatFactory.getFormats();
+
+    public List<IChemFormatMatcher> getFormats() {
+        return formatFactory.getFormats();
     }
 
     /**
@@ -104,7 +103,7 @@ public class ReaderFactory {
             if (reader != null) {
                 try {
                     reader.setReader(input);
-                } catch ( CDKException e1 ) {
+                } catch (CDKException e1) {
                     IOException wrapper = new IOException("Exception while setting the InputStream: " + e1.getMessage());
                     wrapper.initCause(e1);
                     throw wrapper;
@@ -119,10 +118,8 @@ public class ReaderFactory {
             countRead = bistream.read(abMagic, 0, 4);
             bistream.reset();
             if (countRead == 4) {
-                if (abMagic[0] == (byte)0x1F && abMagic[1] == (byte)0x8B) {
-                    istreamToRead = new BufferedInputStream(
-                        new GZIPInputStream(bistream)
-                    );
+                if (abMagic[0] == (byte) 0x1F && abMagic[1] == (byte) 0x8B) {
+                    istreamToRead = new BufferedInputStream(new GZIPInputStream(bistream));
                 }
             }
             format = formatFactory.guessFormat(istreamToRead);
@@ -130,7 +127,7 @@ public class ReaderFactory {
             if (reader != null) {
                 try {
                     reader.setReader(istreamToRead);
-                } catch ( CDKException e1 ) {
+                } catch (CDKException e1) {
                     IOException wrapper = new IOException("Exception while setting the InputStream: " + e1.getMessage());
                     wrapper.initCause(e1);
                     throw wrapper;
@@ -139,7 +136,7 @@ public class ReaderFactory {
         }
         return reader;
     }
-    
+
     /**
      * Creates a new IChemObjectReader based on the given IChemFormat.
      *
@@ -151,12 +148,12 @@ public class ReaderFactory {
             if (readerClassName != null) {
                 try {
                     // make a new instance of this class
-                	return (ISimpleChemObjectReader)this.getClass().getClassLoader().
-                        loadClass(readerClassName).newInstance();
+                    return (ISimpleChemObjectReader) this.getClass().getClassLoader().loadClass(readerClassName)
+                            .newInstance();
                 } catch (ClassNotFoundException exception) {
                     logger.error("Could not find this ChemObjectReader: ", readerClassName);
                     logger.debug(exception);
-                } catch (Exception exception) {
+                } catch (InstantiationException | IllegalAccessException exception) {
                     logger.error("Could not create this ChemObjectReader: ", readerClassName);
                     logger.debug(exception);
                 }
@@ -165,14 +162,14 @@ public class ReaderFactory {
             }
         } else {
             logger.warn("ChemFormat is not recognized.");
-        } 
+        }
         return null;
     }
-    
+
     /**
      * Detects the format of the Reader input, and if known, it will return
-     * a CDK Reader to read the format. This method is not able to detect the 
-     * format of gziped files. Use createReader(InputStream) instead for such 
+     * a CDK Reader to read the format. This method is not able to detect the
+     * format of gziped files. Use createReader(InputStream) instead for such
      * files.
      *
      * @see #createReader(InputStream)
@@ -181,13 +178,13 @@ public class ReaderFactory {
         if (!(input instanceof BufferedReader)) {
             input = new BufferedReader(input);
         }
-        IChemFormat chemFormat = formatFactory.guessFormat((BufferedReader)input);
+        IChemFormat chemFormat = formatFactory.guessFormat((BufferedReader) input);
         ISimpleChemObjectReader coReader = createReader(chemFormat);
-        try {        	
-        	coReader.setReader(input);
+        try {
+            coReader.setReader(input);
         } catch (Exception exception) {
-        	logger.error("Could not set the Reader source: ", exception.getMessage());
-        	logger.debug(exception);
+            logger.error("Could not set the Reader source: ", exception.getMessage());
+            logger.debug(exception);
         }
         return coReader;
     }

@@ -59,8 +59,7 @@ public class MMFF94PartialCharges implements IChargeCalculator {
     /**
      * Constructor for the MMFF94PartialCharges object
      */
-    public MMFF94PartialCharges() {
-    }
+    public MMFF94PartialCharges() {}
 
     /**
      * Main method which assigns MMFF94 partial charges
@@ -76,7 +75,7 @@ public class MMFF94PartialCharges implements IChargeCalculator {
         Map<String, Object> parameterSet = ffc.getParameterSet();
         // for this calculation,
         // we need some values stored in the vector "data" in the
-        // hashtable of these atomTypes:		
+        // hashtable of these atomTypes:
         double charge = 0;
         double formalCharge = 0;
         double formalChargeNeigh = 0;
@@ -111,18 +110,18 @@ public class MMFF94PartialCharges implements IChargeCalculator {
                 dataNeigh = parameterSet.get("data" + neighbour.getAtomTypeName());
                 LOG.debug("     dataNeigh is " + dataNeigh);
                 if (parameterSet.containsKey("bond" + thisAtom.getAtomTypeName() + ";" + neighbour.getAtomTypeName())) {
-                    bondData = parameterSet.get("bond" + thisAtom.getAtomTypeName() + ";" + neighbour.getAtomTypeName());
+                    bondData = parameterSet
+                            .get("bond" + thisAtom.getAtomTypeName() + ";" + neighbour.getAtomTypeName());
                     sumOfBondIncrements -= (Double) ((List) bondData).get(4);
-                }
-                else if (parameterSet.containsKey("bond" + neighbour.getAtomTypeName() + ";" + thisAtom.getAtomTypeName())) {
-                    bondData = parameterSet.get("bond" + neighbour.getAtomTypeName() + ";" + thisAtom.getAtomTypeName());
+                } else if (parameterSet.containsKey("bond" + neighbour.getAtomTypeName() + ";"
+                        + thisAtom.getAtomTypeName())) {
+                    bondData = parameterSet
+                            .get("bond" + neighbour.getAtomTypeName() + ";" + thisAtom.getAtomTypeName());
                     sumOfBondIncrements += (Double) ((List) bondData).get(4);
-                }
-                else {
+                } else {
                     // Maybe not all bonds have pbci in mmff94.prm, i.e. C-N
                     sumOfBondIncrements += (theta - (Double) ((List) dataNeigh).get(5));
                 }
-
 
                 dataNeigh = parameterSet.get("data" + neighbour.getID());
                 formalChargeNeigh = neighbour.getCharge();
@@ -131,19 +130,18 @@ public class MMFF94PartialCharges implements IChargeCalculator {
             charge += sumOfFormalCharges * theta;
             charge += sumOfBondIncrements;
             thisAtom.setProperty("MMFF94charge", charge);
-            LOG.debug("Final MMFF94charge on : " + thisAtom.getAtomTypeName() + " is " + thisAtom.getProperty("MMFF94charge") + "\n");
+            LOG.debug("Final MMFF94charge on : " + thisAtom.getAtomTypeName() + " is "
+                    + thisAtom.getProperty("MMFF94charge") + "\n");
         }
         return ac;
     }
 
+    @Override
     public void calculateCharges(IAtomContainer container) throws CDKException {
         try {
             assignMMFF94PartialCharges(container);
         } catch (Exception exception) {
-            throw new CDKException(
-                    "Could not calculate MMFF94 partial charges: " +
-                            exception.getMessage(), exception
-            );
+            throw new CDKException("Could not calculate MMFF94 partial charges: " + exception.getMessage(), exception);
         }
     }
 }

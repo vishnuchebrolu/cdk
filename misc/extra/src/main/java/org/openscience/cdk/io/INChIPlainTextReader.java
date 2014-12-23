@@ -45,12 +45,12 @@ import org.openscience.cdk.io.formats.IResourceFormat;
 import org.openscience.cdk.io.inchi.INChIContentProcessorTool;
 
 /**
- * Reads the content of a IUPAC/NIST Chemical Identifier (INChI) plain text 
+ * Reads the content of a IUPAC/NIST Chemical Identifier (INChI) plain text
  * document. This reader parses output generated with INChI 1.12beta like:
  * <pre>
- * 
+ *
  * Input_File: "E:\Program Files\INChI\inchi-samples\Figure04.mol"
- * 
+ *
  * Structure: 1
  * INChI=1.12Beta/C6H6/c1-2-4-6-5-3-1/h1-6H
  * AuxInfo=1.12Beta/0/N:1,2,3,4,5,6/E:(1,2,3,4,5,6)/rA:6CCCCCC/rB:s1;d1;d2;s3;s4d5;/rC:5.6378,-4.0013,0;5.6378,-5.3313,0;4.4859,-3.3363,0;4.4859,-5.9963,0;3.3341,-4.0013,0;3.3341,-5.3313,0;
@@ -72,7 +72,7 @@ import org.openscience.cdk.io.inchi.INChIContentProcessorTool;
 @TestClass("org.openscience.cdk.io.INChIPlainTextReaderTest")
 public class INChIPlainTextReader extends DefaultChemObjectReader {
 
-    private BufferedReader input;
+    private BufferedReader            input;
     private INChIContentProcessorTool inchiTool;
 
     /**
@@ -89,26 +89,29 @@ public class INChIPlainTextReader extends DefaultChemObjectReader {
     public INChIPlainTextReader(InputStream input) {
         this(new InputStreamReader(input));
     }
-    
+
     public INChIPlainTextReader() {
         this(new StringReader(""));
     }
-    
+
     @TestMethod("testGetFormat")
+    @Override
     public IResourceFormat getFormat() {
         return INChIPlainTextFormat.getInstance();
     }
-    
+
     @TestMethod("testSetReader_Reader")
+    @Override
     public void setReader(Reader input) {
         if (input instanceof BufferedReader) {
-            this.input = (BufferedReader)input;
+            this.input = (BufferedReader) input;
         } else {
             this.input = new BufferedReader(input);
         }
     }
 
     @TestMethod("testSetReader_InputStream")
+    @Override
     public void setReader(InputStream input) throws CDKException {
         setReader(new InputStreamReader(input));
     }
@@ -118,17 +121,18 @@ public class INChIPlainTextReader extends DefaultChemObjectReader {
      */
     private void init() {}
 
-	@TestMethod("testAccepts")
+    @TestMethod("testAccepts")
+    @Override
     public boolean accepts(Class<? extends IChemObject> classObject) {
         if (IChemFile.class.equals(classObject)) return true;
-		Class<?>[] interfaces = classObject.getInterfaces();
-		for (int i=0; i<interfaces.length; i++) {
-			if (IChemFile.class.equals(interfaces[i])) return true;
-		}
-    Class superClass = classObject.getSuperclass();
-    if (superClass != null) return this.accepts(superClass);
-		return false;
-	}
+        Class<?>[] interfaces = classObject.getInterfaces();
+        for (int i = 0; i < interfaces.length; i++) {
+            if (IChemFile.class.equals(interfaces[i])) return true;
+        }
+        Class superClass = classObject.getSuperclass();
+        if (superClass != null) return this.accepts(superClass);
+        return false;
+    }
 
     /**
      * Reads a IChemObject of type object from input.
@@ -137,9 +141,10 @@ public class INChIPlainTextReader extends DefaultChemObjectReader {
      * @param  object type of requested IChemObject
      * @return the content in a ChemFile object
      */
-	public <T extends IChemObject> T read(T object) throws CDKException {
+    @Override
+    public <T extends IChemObject> T read(T object) throws CDKException {
         if (object instanceof IChemFile) {
-            return (T)readChemFile((IChemFile)object);
+            return (T) readChemFile((IChemFile) object);
         } else {
             throw new CDKException("Only supported is reading of ChemFile objects.");
         }
@@ -156,7 +161,7 @@ public class INChIPlainTextReader extends DefaultChemObjectReader {
         // have to do stuff here
         try {
             String line = null;
-            while ((line = input.readLine())!=null) {
+            while ((line = input.readLine()) != null) {
                 if (line.startsWith("INChI=") || line.startsWith("InChI=")) {
                     // ok, the fun starts
                     cf = cf.getBuilder().newInstance(IChemFile.class);
@@ -169,14 +174,13 @@ public class INChIPlainTextReader extends DefaultChemObjectReader {
                     final String formula = tokenizer.nextToken(); // C6H6
                     final String connections = tokenizer.nextToken().substring(1); // 1-2-4-6-5-3-1
                     //final String hydrogens = tokenizer.nextToken().substring(1); // 1-6H
-                    
+
                     IAtomContainer parsedContent = inchiTool.processFormula(
-                    		cf.getBuilder().newInstance(IAtomContainer.class), formula
-                    );
+                            cf.getBuilder().newInstance(IAtomContainer.class), formula);
                     inchiTool.processConnections(connections, parsedContent, -1);
-                    
+
                     IAtomContainerSet moleculeSet = cf.getBuilder().newInstance(IAtomContainerSet.class);
-                    moleculeSet.addAtomContainer(cf.getBuilder().newInstance(IAtomContainer.class,parsedContent));
+                    moleculeSet.addAtomContainer(cf.getBuilder().newInstance(IAtomContainer.class, parsedContent));
                     IChemModel model = cf.getBuilder().newInstance(IChemModel.class);
                     model.setMoleculeSet(moleculeSet);
                     IChemSequence sequence = cf.getBuilder().newInstance(IChemSequence.class);
@@ -184,7 +188,7 @@ public class INChIPlainTextReader extends DefaultChemObjectReader {
                     cf.addChemSequence(sequence);
                 }
             }
-        } catch (Exception exception) {
+        } catch (IOException | IllegalArgumentException exception) {
             exception.printStackTrace();
             throw new CDKException("Error while reading INChI file: " + exception.getMessage(), exception);
         }
@@ -192,8 +196,8 @@ public class INChIPlainTextReader extends DefaultChemObjectReader {
     }
 
     @TestMethod("testClose")
+    @Override
     public void close() throws IOException {
         input.close();
     }
 }
-

@@ -18,7 +18,6 @@
  */
 package org.openscience.cdk.io.listener;
 
-
 /**
  * Allows monitoring of progress of writing activities.
  *
@@ -28,5 +27,5 @@ package org.openscience.cdk.io.listener;
  * @author Egon Willighagen <egonw@sci.kun.nl>
  */
 public interface IWriterListener extends IChemObjectIOListener {
-  
+
 }

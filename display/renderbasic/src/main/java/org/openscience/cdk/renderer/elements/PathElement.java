@@ -28,7 +28,7 @@ import org.openscience.cdk.annotations.TestMethod;
 
 /**
  * A path composed of points.
- * 
+ *
  * @cdk.module renderbasic
  * @cdk.githash
  */
@@ -37,10 +37,10 @@ public class PathElement implements IRenderingElement {
 
     /** The points that make up the path. **/
     public final List<Point2d> points;
-    
+
     /** The color of the path. **/
-    public final Color color;
-    
+    public final Color         color;
+
     /**
      * Make a path from the list of points.
      *
@@ -52,9 +52,10 @@ public class PathElement implements IRenderingElement {
         this.points = points;
         this.color = color;
     }
-    
+
     /** {@inheritDoc} **/
     @TestMethod("testAccept")
+    @Override
     public void accept(IRenderingVisitor v) {
         v.visit(this);
     }

@@ -1,5 +1,5 @@
 /* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
- * 
+ *
  * Contact: cdk-devel@lists.sourceforge.net
  *
  *  This library is free software; you can redistribute it and/or
@@ -67,8 +67,7 @@ public class HINWriter extends DefaultChemObjectWriter {
                 writer = new BufferedWriter(out);
             }
         } catch (Exception exc) {
-            LoggingToolFactory.createLoggingTool(HINWriter.class)
-                .debug(exc.toString());
+            LoggingToolFactory.createLoggingTool(HINWriter.class).debug(exc.toString());
         }
     }
 
@@ -81,10 +80,12 @@ public class HINWriter extends DefaultChemObjectWriter {
     }
 
     @TestMethod("testGetFormat")
+    @Override
     public IResourceFormat getFormat() {
         return HINFormat.getInstance();
     }
 
+    @Override
     public void setWriter(Writer out) throws CDKException {
         if (out instanceof BufferedWriter) {
             writer = (BufferedWriter) out;
@@ -93,6 +94,7 @@ public class HINWriter extends DefaultChemObjectWriter {
         }
     }
 
+    @Override
     public void setWriter(OutputStream output) throws CDKException {
         setWriter(new OutputStreamWriter(output));
     }
@@ -101,11 +103,13 @@ public class HINWriter extends DefaultChemObjectWriter {
      * Flushes the output and closes this object.
      */
     @TestMethod("testClose")
+    @Override
     public void close() throws IOException {
         writer.close();
     }
 
     @TestMethod("testAccepts")
+    @Override
     public boolean accepts(Class<? extends IChemObject> classObject) {
         Class<?>[] interfaces = classObject.getInterfaces();
         for (Class<?> anInterface : interfaces) {
@@ -115,13 +119,14 @@ public class HINWriter extends DefaultChemObjectWriter {
         return false;
     }
 
+    @Override
     public void write(IChemObject object) throws CDKException {
         if (object instanceof IAtomContainer) {
             try {
                 IAtomContainerSet som = object.getBuilder().newInstance(IAtomContainerSet.class);
                 som.addAtomContainer((IAtomContainer) object);
                 writeAtomContainer(som);
-            } catch (Exception ex) {
+            } catch (IllegalArgumentException | IOException ex) {
                 throw new CDKException("Error while writing HIN file: " + ex.getMessage(), ex);
             }
         } else if (object instanceof IAtomContainerSet) {
@@ -163,21 +168,19 @@ public class HINWriter extends DefaultChemObjectWriter {
 
                 // Loop through the atoms and write them out:
                 Iterator<IAtom> atoms = mol.atoms().iterator();
-                
+
                 int i = 0;
                 while (atoms.hasNext()) {
-                	IAtom atom = atoms.next();
+                    IAtom atom = atoms.next();
                     String line = "atom ";
 
                     sym = atom.getSymbol();
                     chrg = atom.getCharge();
                     Point3d point = atom.getPoint3d();
 
-                    line = line + Integer.toString(i + 1) + " - " + sym + " ** - " +
-                            Double.toString(chrg) + " " +
-                            Double.toString(point.x) + " " +
-                            Double.toString(point.y) + " " +
-                            Double.toString(point.z) + " ";
+                    line = line + Integer.toString(i + 1) + " - " + sym + " ** - " + Double.toString(chrg) + " "
+                            + Double.toString(point.x) + " " + Double.toString(point.y) + " "
+                            + Double.toString(point.z) + " ";
 
                     String buf = "";
                     int ncon = 0;
@@ -194,9 +197,12 @@ public class HINWriter extends DefaultChemObjectWriter {
                             // get the serial no for this atom
                             serial = mol.getAtomNumber(connectedAtom);
 
-                            if (bondOrder == IBond.Order.SINGLE) bondType = "s";
-                            else if (bondOrder == IBond.Order.DOUBLE) bondType = "d";
-                            else if (bondOrder == IBond.Order.TRIPLE) bondType = "t";
+                            if (bondOrder == IBond.Order.SINGLE)
+                                bondType = "s";
+                            else if (bondOrder == IBond.Order.DOUBLE)
+                                bondType = "d";
+                            else if (bondOrder == IBond.Order.TRIPLE)
+                                bondType = "t";
                             else if (bond.getFlag(CDKConstants.ISAROMATIC)) bondType = "a";
                             buf = buf + Integer.toString(serial + 1) + " " + bondType + " ";
                             ncon++;
@@ -216,5 +222,3 @@ public class HINWriter extends DefaultChemObjectWriter {
         }
     }
 }
-
-

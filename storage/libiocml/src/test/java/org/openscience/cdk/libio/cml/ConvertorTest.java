@@ -1,7 +1,7 @@
 /* Copyright (C) 2007  Stefan Kuhn <shk3@users.sf.net>
- * 
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -10,16 +10,16 @@
  * - but is not limited to - adding the above copyright notice to the beginning
  * of your source code files, and to any copyright notice that you may distribute
  * with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- * 
+ *
  */
 package org.openscience.cdk.libio.cml;
 
@@ -45,13 +45,11 @@ public class ConvertorTest extends CDKTestCase {
     /**
      * @cdk.bug 1748257
      */
-    @Ignore("moved to MDMoleculeTest") public void testBug1748257 () {
-    }
-    
+    @Ignore("moved to MDMoleculeTest")
+    public void testBug1748257() {}
 
     @Test
     public void testCdkBondToCMLBond_Wedge() throws IOException {
-
 
         IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
         IBond bond = builder.newInstance(IBond.class);
@@ -79,7 +77,6 @@ public class ConvertorTest extends CDKTestCase {
     @Test
     public void testCdkBondToCMLBond_Hatch() throws IOException {
 
-
         IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
         IBond bond = builder.newInstance(IBond.class);
         bond.setOrder(IBond.Order.SINGLE);
@@ -101,8 +98,6 @@ public class ConvertorTest extends CDKTestCase {
 
         Assert.assertTrue(actual.contains(expected));
 
-
     }
-
 
 }

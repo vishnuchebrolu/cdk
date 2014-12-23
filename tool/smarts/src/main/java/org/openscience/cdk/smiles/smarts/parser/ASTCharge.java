@@ -27,10 +27,11 @@ package org.openscience.cdk.smiles.smarts.parser;
  * @cdk.keyword SMARTS
  */
 class ASTCharge extends SimpleNode {
+
     /**
      * The value of the charge.
      */
-    private int charge;
+    private int     charge;
 
     /**
      * Whether the charge is positive.
@@ -65,9 +66,13 @@ class ASTCharge extends SimpleNode {
         return isPositive;
     }
 
-    /* (non-Javadoc)
-     * @see org.openscience.cdk.smiles.smarts.parser.SimpleNode#jjtAccept(org.openscience.cdk.smiles.smarts.parser.SMARTSParserVisitor, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.openscience.cdk.smiles.smarts.parser.SimpleNode#jjtAccept(org.openscience
+     * .cdk.smiles.smarts.parser.SMARTSParserVisitor, java.lang.Object)
      */
+    @Override
     public Object jjtAccept(SMARTSParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }

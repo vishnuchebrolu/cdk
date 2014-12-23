@@ -74,16 +74,15 @@ import java.util.List;
  */
 @TestClass("org.openscience.cdk.qsar.descriptors.molecular.LargestChainDescriptorTest")
 public class LargestChainDescriptor extends AbstractMolecularDescriptor implements IMolecularDescriptor {
-    private boolean checkAromaticity = false;
-    private boolean checkRingSystem = false;
-    private static final String[] names = {"nAtomLC"};
 
+    private boolean               checkAromaticity = false;
+    private boolean               checkRingSystem  = false;
+    private static final String[] NAMES            = {"nAtomLC"};
 
     /**
      * Constructor for the LargestChain object.
      */
-    public LargestChainDescriptor() {
-    }
+    public LargestChainDescriptor() {}
 
     /**
      * Returns a <code>Map</code> which specifies which descriptor
@@ -101,13 +100,12 @@ public class LargestChainDescriptor extends AbstractMolecularDescriptor implemen
      * @return An object containing the descriptor specification
      */
     @TestMethod("testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
         return new DescriptorSpecification(
-                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#largestChain",
-                this.getClass().getName(),
-                "The Chemistry Development Kit");
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#largestChain", this.getClass()
+                        .getName(), "The Chemistry Development Kit");
     }
-
 
     /**
      * Sets the parameters attribute of the LargestChain object.
@@ -120,6 +118,7 @@ public class LargestChainDescriptor extends AbstractMolecularDescriptor implemen
      * @see #getParameters
      */
     @TestMethod("testSetParameters_arrayObject")
+    @Override
     public void setParameters(Object[] params) throws CDKException {
         if (params.length > 2) {
             throw new CDKException("LargestChainDescriptor only expects two parameter");
@@ -132,7 +131,6 @@ public class LargestChainDescriptor extends AbstractMolecularDescriptor implemen
         checkRingSystem = (Boolean) params[1];
     }
 
-
     /**
      * Gets the parameters attribute of the LargestChainDescriptor object.
      *
@@ -140,6 +138,7 @@ public class LargestChainDescriptor extends AbstractMolecularDescriptor implemen
      * @see #setParameters
      */
     @TestMethod("testGetParameters")
+    @Override
     public Object[] getParameters() {
         // return the parameters as used for the descriptor calculation
         Object[] params = new Object[2];
@@ -148,14 +147,15 @@ public class LargestChainDescriptor extends AbstractMolecularDescriptor implemen
         return params;
     }
 
-    @TestMethod(value="testNamesConsistency")
+    @TestMethod(value = "testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
-        return names;
+        return NAMES;
     }
 
     private DescriptorValue getDummyDescriptorValue(Exception e) {
-        return new DescriptorValue(getSpecification(), getParameterNames(),
-                getParameters(), new IntegerResult((int) Double.NaN), getDescriptorNames(), e);
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new IntegerResult(
+                (int) Double.NaN), getDescriptorNames(), e);
     }
 
     /**
@@ -174,6 +174,7 @@ public class LargestChainDescriptor extends AbstractMolecularDescriptor implemen
      * @see #setParameters
      */
     @TestMethod("testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtomContainer atomContainer) {
         IAtomContainer container;
         try {
@@ -184,10 +185,10 @@ public class LargestChainDescriptor extends AbstractMolecularDescriptor implemen
 
         //logger.debug("LargestChainDescriptor");
         boolean[] originalFlag4 = new boolean[container.getAtomCount()];
-        for (int i=0; i<originalFlag4.length; i++) {
+        for (int i = 0; i < originalFlag4.length; i++) {
             originalFlag4[i] = container.getAtom(i).getFlag(CDKConstants.VISITED);
         }
-    	if (checkRingSystem) {
+        if (checkRingSystem) {
             IRingSet rs;
             try {
                 rs = new SpanningTree(container).getBasicRings();
@@ -195,12 +196,12 @@ public class LargestChainDescriptor extends AbstractMolecularDescriptor implemen
                 return getDummyDescriptorValue(e);
             }
             for (int i = 0; i < container.getAtomCount(); i++) {
-    			if (rs.contains(container.getAtom(i))) {
-    				container.getAtom(i).setFlag(CDKConstants.ISINRING, true);
-    			}
-    		}
-    	}
-        
+                if (rs.contains(container.getAtom(i))) {
+                    container.getAtom(i).setFlag(CDKConstants.ISINRING, true);
+                }
+            }
+        }
+
         if (checkAromaticity) {
             try {
                 AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(container);
@@ -227,8 +228,8 @@ public class LargestChainDescriptor extends AbstractMolecularDescriptor implemen
             IAtom atomi = container.getAtom(i);
             // chain sp3
             //logger.debug("atom:"+i+" maxBondOrder:"+container.getMaximumBondOrder(atoms[i])+" Aromatic:"+atoms[i].getFlag(CDKConstants.ISAROMATIC)+" Ring:"+atoms[i].getFlag(CDKConstants.ISINRING)+" FormalCharge:"+atoms[i].getFormalCharge()+" Charge:"+atoms[i].getCharge()+" Flag:"+atoms[i].getFlag(CDKConstants.VISITED));
-            if ((!atomi.getFlag(CDKConstants.ISAROMATIC) && !atomi.getFlag(CDKConstants.ISINRING)) & !atomi.getFlag(CDKConstants.VISITED))
-            {
+            if ((!atomi.getFlag(CDKConstants.ISAROMATIC) && !atomi.getFlag(CDKConstants.ISINRING))
+                    & !atomi.getFlag(CDKConstants.VISITED)) {
                 //logger.debug("...... -> containercepted");
                 startSphere = new ArrayList<IAtom>();
                 path = new ArrayList<IAtom>();
@@ -245,9 +246,8 @@ public class LargestChainDescriptor extends AbstractMolecularDescriptor implemen
 
         }
 
-        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                new IntegerResult(largestChainAtomsCount),
-                getDescriptorNames());
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new IntegerResult(
+                largestChainAtomsCount), getDescriptorNames());
     }
 
     /**
@@ -262,6 +262,7 @@ public class LargestChainDescriptor extends AbstractMolecularDescriptor implemen
      *         the actual type of values returned by the descriptor in the {@link org.openscience.cdk.qsar.DescriptorValue} object
      */
     @TestMethod("testGetDescriptorResultType")
+    @Override
     public IDescriptorResult getDescriptorResultType() {
         return new IntegerResult(1);
     }
@@ -291,7 +292,8 @@ public class LargestChainDescriptor extends AbstractMolecularDescriptor implemen
             List<IBond> bonds = container.getConnectedBondsList(atom);
             for (IBond bond : bonds) {
                 nextAtom = bond.getConnectedAtom(atom);
-                if ((!nextAtom.getFlag(CDKConstants.ISAROMATIC) && !nextAtom.getFlag(CDKConstants.ISINRING)) & !nextAtom.getFlag(CDKConstants.VISITED)) {
+                if ((!nextAtom.getFlag(CDKConstants.ISAROMATIC) && !nextAtom.getFlag(CDKConstants.ISINRING))
+                        & !nextAtom.getFlag(CDKConstants.VISITED)) {
                     //logger.debug("BDS> AtomNr:"+container.getAtomNumber(nextAtom)+" maxBondOrder:"+container.getMaximumBondOrder(nextAtom)+" Aromatic:"+nextAtom.getFlag(CDKConstants.ISAROMATIC)+" FormalCharge:"+nextAtom.getFormalCharge()+" Charge:"+nextAtom.getCharge()+" Flag:"+nextAtom.getFlag(CDKConstants.VISITED));
                     path.add(nextAtom);
                     //logger.debug("BreadthFirstSearch is meeting new atom " + (nextAtomNr + 1));
@@ -309,20 +311,19 @@ public class LargestChainDescriptor extends AbstractMolecularDescriptor implemen
         }
     }
 
-
     /**
      * Gets the parameterNames attribute of the LargestPiSystemDescriptor object.
      *
      * @return The parameterNames value
      */
     @TestMethod("testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         String[] params = new String[2];
         params[0] = "checkAromaticity";
         params[1] = "checkRingSystem";
         return params;
     }
-
 
     /**
      * Gets the parameterType attribute of the LargestChainDescriptor object.
@@ -331,6 +332,7 @@ public class LargestChainDescriptor extends AbstractMolecularDescriptor implemen
      * @return An Object of class equal to that of the parameter being requested
      */
     @TestMethod("testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
         return true;
     }

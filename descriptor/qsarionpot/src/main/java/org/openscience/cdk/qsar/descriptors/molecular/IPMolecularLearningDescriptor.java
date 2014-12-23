@@ -1,5 +1,5 @@
 /* Copyright (C) 2006-2007  Miguel Rojas <miguel.rojas@uni-koeln.de>
- * 
+ *
  * Contact: cdk-devel@lists.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or modify
@@ -72,31 +72,28 @@ import org.openscience.cdk.tools.LonePairElectronChecker;
  * @see IPAtomicHOSEDescriptor
  * @see IPBondLearningDescriptor
  */
-@TestClass(value="org.openscience.cdk.qsar.descriptors.molecular.IPMolecularLearningDescriptorTest")
+@TestClass(value = "org.openscience.cdk.qsar.descriptors.molecular.IPMolecularLearningDescriptorTest")
 public class IPMolecularLearningDescriptor extends AbstractMolecularDescriptor implements IMolecularDescriptor {
 
-    private boolean addlp = true;
+    private boolean               addlp = true;
     private static final String[] names = {"MolIP"};
 
     /**
      *  Constructor for the IPMolecularLearningDescriptor object
      */
-    public IPMolecularLearningDescriptor() { }
-
+    public IPMolecularLearningDescriptor() {}
 
     /**
      *  Gets the specification attribute of the IPMolecularLearningDescriptor object
      *
      *@return    The specification value
      */
-    @TestMethod(value="testGetSpecification")
+    @TestMethod(value = "testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
-        return new DescriptorSpecification(
-            "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#ip",
-            this.getClass().getName(),
-            "The Chemistry Development Kit");
+        return new DescriptorSpecification("http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#ip",
+                this.getClass().getName(), "The Chemistry Development Kit");
     }
-
 
     /**
      *  Sets the parameters attribute of the IPMolecularLearningDescriptor object
@@ -104,29 +101,30 @@ public class IPMolecularLearningDescriptor extends AbstractMolecularDescriptor i
      *@param  params            The new parameters value
      *@exception  CDKException  Description of the Exception
      */
-    @TestMethod(value="testSetParameters_arrayObject")
+    @TestMethod(value = "testSetParameters_arrayObject")
+    @Override
     public void setParameters(Object[] params) throws CDKException {
         if (params.length != 1) throw new CDKException("One parameter expected");
         if (!(params[0] instanceof Boolean)) throw new CDKException("Boolean parameter expected");
         addlp = (Boolean) params[0];
     }
 
-
     /**
      * Gets the parameters attribute of the IPMolecularLearningDescriptor object
      *
      * @return The parameters value
      */
-    @TestMethod(value="testGetParameters")
+    @TestMethod(value = "testGetParameters")
+    @Override
     public Object[] getParameters() {
         return new Object[]{addlp};
     }
 
-    @TestMethod(value="testNamesConsistency")
+    @TestMethod(value = "testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
         return names;
     }
-
 
     /**
      *  It calculates the first ionization energy of a molecule.
@@ -135,6 +133,7 @@ public class IPMolecularLearningDescriptor extends AbstractMolecularDescriptor i
      *@return                   The first ionization energy
      */
     @TestMethod(value = "testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtomContainer atomContainer) {
         IAtomContainer local;
         if (addlp) {
@@ -143,24 +142,25 @@ public class IPMolecularLearningDescriptor extends AbstractMolecularDescriptor i
                 LonePairElectronChecker lpcheck = new LonePairElectronChecker();
                 lpcheck.saturate(local);
             } catch (CloneNotSupportedException e) {
-                return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                        new DoubleResult(Double.NaN), getDescriptorNames(), e);
+                return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new DoubleResult(
+                        Double.NaN), getDescriptorNames(), e);
             } catch (CDKException e) {
-                return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                        new DoubleResult(Double.NaN), getDescriptorNames(), e);
+                return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new DoubleResult(
+                        Double.NaN), getDescriptorNames(), e);
             }
 
-        } else local = atomContainer;
+        } else
+            local = atomContainer;
 
         DoubleResult value;
         try {
             value = new DoubleResult(((DoubleArrayResult) calculatePlus(local).getValue()).get(0));
         } catch (CDKException e) {
-            return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                    new DoubleResult(Double.NaN), getDescriptorNames(), e);
+            return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new DoubleResult(
+                    Double.NaN), getDescriptorNames(), e);
         }
-        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                value, getDescriptorNames());
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), value,
+                getDescriptorNames());
     }
 
     /**
@@ -170,25 +170,22 @@ public class IPMolecularLearningDescriptor extends AbstractMolecularDescriptor i
      *@return                   The 1, 2, .. ionization energies
      *@exception  CDKException  Possible Exceptions
      */
-    @TestMethod(value="testIPDescriptor_2,testIPDescriptor_3")
+    @TestMethod(value = "testIPDescriptor_2,testIPDescriptor_3")
     public DescriptorValue calculatePlus(IAtomContainer container) throws CDKException {
 
         ArrayList<Double> dar = new ArrayList<Double>();
-        for(Iterator<IAtom> itA = container.atoms().iterator(); itA.hasNext();){
+        for (Iterator<IAtom> itA = container.atoms().iterator(); itA.hasNext();) {
             IAtom atom = itA.next();
-            double value = IonizationPotentialTool.predictIP(container,atom);
-            if(value != 0)
-    			dar.add(value);
+            double value = IonizationPotentialTool.predictIP(container, atom);
+            if (value != 0) dar.add(value);
         }
-        for(Iterator<IBond> itB = container.bonds().iterator(); itB.hasNext();){
+        for (Iterator<IBond> itB = container.bonds().iterator(); itB.hasNext();) {
             IBond bond = itB.next();
-            if(bond.getOrder() == IBond.Order.DOUBLE 
-            		& bond.getAtom(0).getSymbol().equals("C")
-            		& bond.getAtom(1).getSymbol().equals("C")){
-            	double value = IonizationPotentialTool.predictIP(container,bond);
-                if(value != 0)
-            		dar.add(value);
-                
+            if (bond.getOrder() == IBond.Order.DOUBLE & bond.getAtom(0).getSymbol().equals("C")
+                    & bond.getAtom(1).getSymbol().equals("C")) {
+                double value = IonizationPotentialTool.predictIP(container, bond);
+                if (value != 0) dar.add(value);
+
             }
         }
 
@@ -196,7 +193,7 @@ public class IPMolecularLearningDescriptor extends AbstractMolecularDescriptor i
 
         return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), results,
                 getDescriptorNames(), null);
-   
+
     }
 
     /**
@@ -205,24 +202,24 @@ public class IPMolecularLearningDescriptor extends AbstractMolecularDescriptor i
      * @param array The ArrayList to order
      * @return      The DoubleArrayResult ordered
      */
-    private DoubleArrayResult arrangingEnergy(ArrayList<Double> array){
+    private DoubleArrayResult arrangingEnergy(ArrayList<Double> array) {
 
-    	DoubleArrayResult results = new DoubleArrayResult();
-    	int count = array.size();
-    	for(int i = 0; i < count; i++){
-	    	double min = array.get(0);
-	    	int pos = 0;
-			for(int j = 0; j < array.size(); j++){
-				double value = array.get(j);
-				if( value < min){
-					min = value;
-					pos = j;
-				}
-			}
-	    	array.remove(pos);
-	    	results.add(min);
-    	}
-    	return results;
+        DoubleArrayResult results = new DoubleArrayResult();
+        int count = array.size();
+        for (int i = 0; i < count; i++) {
+            double min = array.get(0);
+            int pos = 0;
+            for (int j = 0; j < array.size(); j++) {
+                double value = array.get(j);
+                if (value < min) {
+                    min = value;
+                    pos = j;
+                }
+            }
+            array.remove(pos);
+            results.add(min);
+        }
+        return results;
     }
 
     /**
@@ -237,21 +234,21 @@ public class IPMolecularLearningDescriptor extends AbstractMolecularDescriptor i
      *         the actual type of values returned by the descriptor in the {@link org.openscience.cdk.qsar.DescriptorValue} object
      */
     @TestMethod("testGetDescriptorResultType")
+    @Override
     public IDescriptorResult getDescriptorResultType() {
         return new DoubleResultType();
     }
-    
+
     /**
      *  Gets the parameterNames attribute of the IPMolecularLearningDescriptor object
      *
      *@return    The parameterNames value
      */
-    @TestMethod(value="testGetParameterNames")
+    @TestMethod(value = "testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
-        return new String[] {"addlp"};
+        return new String[]{"addlp"};
     }
-
-
 
     /**
      *  Gets the parameterType attribute of the IPMolecularLearningDescriptor object
@@ -259,11 +256,10 @@ public class IPMolecularLearningDescriptor extends AbstractMolecularDescriptor i
      *@param  name  Description of the Parameter
      *@return       The parameterType value
      */
-    @TestMethod(value="testGetParameterType_String")
+    @TestMethod(value = "testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
         return addlp;
     }
-    
-    
-}
 
+}

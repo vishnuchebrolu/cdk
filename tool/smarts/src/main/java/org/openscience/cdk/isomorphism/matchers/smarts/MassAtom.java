@@ -32,7 +32,8 @@ import org.openscience.cdk.interfaces.IChemObjectBuilder;
  * @cdk.githash
  * @cdk.keyword SMARTS
  */
-public class MassAtom extends SMARTSAtom{
+public class MassAtom extends SMARTSAtom {
+
     /**
      * Creates a new instance
      *
@@ -43,17 +44,24 @@ public class MassAtom extends SMARTSAtom{
         this.setMassNumber(mass);
     }
 
-    /* (non-Javadoc)
-     * @see org.openscience.cdk.isomorphism.matchers.smarts.SMARTSAtom#matches(org.openscience.cdk.interfaces.IAtom)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.openscience.cdk.isomorphism.matchers.smarts.SMARTSAtom#matches(org
+     * .openscience.cdk.interfaces.IAtom)
      */
-    public boolean matches(IAtom atom){
-        return atom.getMassNumber()==this.getMassNumber();
+    @Override
+    public boolean matches(IAtom atom) {
+        return atom.getMassNumber() == this.getMassNumber();
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
      * @see org.openscience.cdk.PseudoAtom#toString()
      */
-    public String toString(){
-        return ("(MassAtom("+ this.getMassNumber() + ")");
+    @Override
+    public String toString() {
+        return ("(MassAtom(" + this.getMassNumber() + ")");
     }
-    
+
 }

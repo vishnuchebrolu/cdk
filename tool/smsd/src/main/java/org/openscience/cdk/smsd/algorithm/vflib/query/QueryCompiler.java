@@ -70,14 +70,14 @@ import org.openscience.cdk.smsd.algorithm.vflib.interfaces.IQueryCompiler;
 @TestClass("org.openscience.cdk.smsd.algorithm.vflib.VFLibTest")
 public class QueryCompiler implements IQueryCompiler {
 
-    private IAtomContainer molecule = null;
-    private IQueryAtomContainer queryMolecule = null;
-    private boolean shouldMatchBonds = true;
+    private IAtomContainer      molecule         = null;
+    private IQueryAtomContainer queryMolecule    = null;
+    private boolean             shouldMatchBonds = true;
 
     /**
      * Construct query object from the molecule
      * @param molecule
-     * @param shouldMatchBonds 
+     * @param shouldMatchBonds
      */
     public QueryCompiler(IAtomContainer molecule, boolean shouldMatchBonds) {
         this.setMolecule(molecule);
@@ -117,6 +117,7 @@ public class QueryCompiler implements IQueryCompiler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public IQuery compile() {
         return this.queryMolecule == null ? build(molecule) : build(queryMolecule);
     }

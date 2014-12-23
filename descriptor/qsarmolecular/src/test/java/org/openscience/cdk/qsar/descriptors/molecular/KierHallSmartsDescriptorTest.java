@@ -1,20 +1,20 @@
 /* Copyright (C) 2008 Rajarshi Guha
- * 
+ *
  * Contact: rajarshi@users.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA. 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.openscience.cdk.qsar.descriptors.molecular;
 
@@ -38,8 +38,7 @@ public class KierHallSmartsDescriptorTest extends MolecularDescriptorTest {
 
     private String[] names;
 
-    public KierHallSmartsDescriptorTest() {
-    }
+    public KierHallSmartsDescriptorTest() {}
 
     @Before
     public void setUp() throws Exception {
@@ -49,12 +48,13 @@ public class KierHallSmartsDescriptorTest extends MolecularDescriptorTest {
 
     private int getIndex(String name) {
         for (int i = 0; i < names.length; i++) {
-            if (names[i].equals(name)) return i;        
+            if (names[i].equals(name)) return i;
         }
         return -1;
     }
 
-    @Test public void test1() throws Exception {
+    @Test
+    public void test1() throws Exception {
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer mol = sp.parseSmiles("CCO");
 
@@ -87,7 +87,8 @@ public class KierHallSmartsDescriptorTest extends MolecularDescriptorTest {
         Assert.assertEquals(1, result.get(getIndex("khs.ssNH")));
     }
 
-    @Test public void test3() throws Exception {
+    @Test
+    public void test3() throws Exception {
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer mol = sp.parseSmiles("C#CC(C)(C)C(C)(C)C#C");
 

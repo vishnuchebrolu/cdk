@@ -39,8 +39,8 @@ import org.openscience.cdk.interfaces.IChemObjectBuilder;
 public class SymbolSetQueryAtom extends QueryAtom implements IQueryAtom {
 
     private static final long serialVersionUID = 7539577277779603551L;
-    
-    private Set<String> symbols = new HashSet<String>();
+
+    private Set<String>       symbols          = new HashSet<String>();
 
     /**
      *  Constructor for the SymbolSetQueryAtom object
@@ -48,7 +48,8 @@ public class SymbolSetQueryAtom extends QueryAtom implements IQueryAtom {
     public SymbolSetQueryAtom(IChemObjectBuilder builder) {
         super(builder);
     }
-    public void setOperator(String str){}
+
+    public void setOperator(String str) {}
 
     /**
      *  The matches implementation of the QueryAtom interface.
@@ -56,10 +57,10 @@ public class SymbolSetQueryAtom extends QueryAtom implements IQueryAtom {
      *@param  atom  The atom to be matched by this QueryAtom
      *@return       true if Atom matched
      */
+    @Override
     public boolean matches(IAtom atom) {
         return symbols.contains(atom.getSymbol());
     }
-
 
     /**
      *  Add a symbol to this QueryAtom
@@ -70,7 +71,6 @@ public class SymbolSetQueryAtom extends QueryAtom implements IQueryAtom {
         symbols.add(symbol);
     }
 
-
     /**
      *  Remove a symbol from this QueryAtom
      *
@@ -79,7 +79,6 @@ public class SymbolSetQueryAtom extends QueryAtom implements IQueryAtom {
     public void removeSymbol(String symbol) {
         symbols.remove(symbol);
     }
-
 
     /**
      *  Check whether a symbol is already registered
@@ -91,7 +90,6 @@ public class SymbolSetQueryAtom extends QueryAtom implements IQueryAtom {
         return symbols.contains(symbol);
     }
 
-
     /**
      *  Retrieve the Set of symbols
      *
@@ -101,23 +99,23 @@ public class SymbolSetQueryAtom extends QueryAtom implements IQueryAtom {
         return symbols;
     }
 
-
     /**
      *  The toString method
      *
      *@return    The String representation of this object.
      */
+    @Override
     public String toString() {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         s.append("SymbolSetQueryAtom(");
         s.append(this.hashCode() + ", ");
         s.append(symbols.toString());
-        s.append(")");
+        s.append(')');
         return s.toString();
     }
 
-    @Override public IAtom clone() throws CloneNotSupportedException {
+    @Override
+    public IAtom clone() throws CloneNotSupportedException {
         throw new CloneNotSupportedException();
     }
 }
-

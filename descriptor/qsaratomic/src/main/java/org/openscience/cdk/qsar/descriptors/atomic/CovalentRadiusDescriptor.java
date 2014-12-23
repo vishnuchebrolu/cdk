@@ -59,12 +59,11 @@ import org.openscience.cdk.tools.LoggingToolFactory;
  * @cdk.set        qsar-descriptors
  * @cdk.dictref qsar-descriptors:covalentradius
  */
-@TestClass(value="org.openscience.cdk.qsar.descriptors.atomic.CovalentRadiusDescriptorTest")
+@TestClass(value = "org.openscience.cdk.qsar.descriptors.atomic.CovalentRadiusDescriptorTest")
 public class CovalentRadiusDescriptor extends AbstractAtomicDescriptor implements IAtomicDescriptor {
 
-    private AtomTypeFactory factory = null;
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(CovalentRadiusDescriptor.class);
+    private AtomTypeFactory     factory = null;
+    private static ILoggingTool logger  = LoggingToolFactory.createLoggingTool(CovalentRadiusDescriptor.class);
 
     /**
      *  Constructor for the CovalentRadiusDescriptor object.
@@ -72,13 +71,11 @@ public class CovalentRadiusDescriptor extends AbstractAtomicDescriptor implement
      *  @throws IOException if an error ocurrs when reading atom type information
      *  @throws ClassNotFoundException if an error occurs during tom typing
      */
-    public CovalentRadiusDescriptor() throws IOException, ClassNotFoundException {
-    }
-
+    public CovalentRadiusDescriptor() throws IOException, ClassNotFoundException {}
 
     /**
      * Returns a <code>Map</code> which specifies which descriptor
-     * is implemented by this class. 
+     * is implemented by this class.
      *
      * These fields are used in the map:
      * <ul>
@@ -91,22 +88,20 @@ public class CovalentRadiusDescriptor extends AbstractAtomicDescriptor implement
      *
      * @return An object containing the descriptor specification
      */
-    @TestMethod(value="testGetSpecification")
+    @TestMethod(value = "testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
         return new DescriptorSpecification(
-                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#covalentradius",
-                this.getClass().getName(),
-                "The Chemistry Development Kit");
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#covalentradius", this.getClass()
+                        .getName(), "The Chemistry Development Kit");
     }
-
 
     /**
      * This descriptor does have any parameter.
      */
-    @TestMethod(value="testSetParameters_arrayObject")
-    public void setParameters(Object[] params) throws CDKException {
-    }
-
+    @TestMethod(value = "testSetParameters_arrayObject")
+    @Override
+    public void setParameters(Object[] params) throws CDKException {}
 
     /**
      *  Gets the parameters attribute of the VdWRadiusDescriptor object.
@@ -114,37 +109,36 @@ public class CovalentRadiusDescriptor extends AbstractAtomicDescriptor implement
      * @return    The parameters value
      * @see #setParameters
      */
-    @TestMethod(value="testGetParameters")
+    @TestMethod(value = "testGetParameters")
+    @Override
     public Object[] getParameters() {
         return null;
     }
 
-    @TestMethod(value="testNamesConsistency")
+    @TestMethod(value = "testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
         return new String[]{"covalentRadius"};
     }
-
 
     /**
      *  This method calculate the Covalent radius of an atom.
      *
      *@param  atom              The IAtom for which the DescriptorValue is requested
      *@param  container         The {@link IAtomContainer} for which the descriptor is to be calculated
-     *@return                   The Covalent radius of the atom     
+     *@return                   The Covalent radius of the atom
      */
 
-    @TestMethod(value="testCalculate_IAtomContainer")
+    @TestMethod(value = "testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtom atom, IAtomContainer container) {
-        if (factory == null) 
+        if (factory == null)
             try {
-                factory = AtomTypeFactory.getInstance(
-                    "org/openscience/cdk/config/data/jmol_atomtypes.txt", 
-                    container.getBuilder()
-                );
+                factory = AtomTypeFactory.getInstance("org/openscience/cdk/config/data/jmol_atomtypes.txt",
+                        container.getBuilder());
             } catch (Exception exception) {
-              return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                    new DoubleResult(Double.NaN),
-                    getDescriptorNames(), exception);
+                return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new DoubleResult(
+                        Double.NaN), getDescriptorNames(), exception);
             }
 
         double covalentradius;
@@ -152,24 +146,22 @@ public class CovalentRadiusDescriptor extends AbstractAtomicDescriptor implement
             String symbol = atom.getSymbol();
             IAtomType type = factory.getAtomType(symbol);
             covalentradius = type.getCovalentRadius();
-            return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                    new DoubleResult(covalentradius),
-                    getDescriptorNames());
+            return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new DoubleResult(
+                    covalentradius), getDescriptorNames());
         } catch (Exception exception) {
             logger.debug(exception);
-            return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                    new DoubleResult(Double.NaN),
-                    getDescriptorNames(), exception);
+            return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new DoubleResult(
+                    Double.NaN), getDescriptorNames(), exception);
         }
     }
-
 
     /**
      *  Gets the parameterNames attribute of the VdWRadiusDescriptor object.
      *
      * @return    The parameterNames value
      */
-    @TestMethod(value="testGetParameterNames")
+    @TestMethod(value = "testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         return new String[0];
     }
@@ -180,9 +172,9 @@ public class CovalentRadiusDescriptor extends AbstractAtomicDescriptor implement
      * @param  name  Description of the Parameter
      * @return       An Object of class equal to that of the parameter being requested
      */
-    @TestMethod(value="testGetParameterType_String")
+    @TestMethod(value = "testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
         return null;
     }
 }
-
